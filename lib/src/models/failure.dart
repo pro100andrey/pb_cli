@@ -197,5 +197,8 @@ extension SuccessResultExtension<T> on T {
   CliResult<T> asResult() => Result.success(this);
 }
 
+/// Type alias for a CLI operation result.
 typedef CliResult<T> = Result<T, Failure>;
+
+/// Type alias for a future CLI operation result.
 typedef CliFuture<T> = Future<CliResult<T>>;
