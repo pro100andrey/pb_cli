@@ -6,82 +6,67 @@ import 'package:pocketbase/pocketbase.dart';
 
 import '../../client/pb_client.dart';
 import '../../extensions/string_style.dart';
-import '../../inputs/credentials.dart';
-import '../../models/credentials.dart';
-import '../../models/failure.dart';
+import '../../failure/common.dart';
+import '../../failure/failure.dart';
 import '../../models/result.dart';
-import '../../repositories/factory.dart';
 import '../../utils/path.dart';
 import '../../utils/schema_checker.dart';
+import '../../utils/strings.dart';
 import '../../utils/utils.dart';
+import 'context.dart';
 
 class PushCommand extends Command {
   PushCommand({required Logger logger}) : _logger = logger {
     argParser
       ..addOption(
-        'batch-size',
-        abbr: 'b',
-        help: 'Number of records to create per batch. Maximum is 50.',
-        defaultsTo: '20',
+        S.batchSizeOptionName,
+        abbr: S.batchSizeOptionAbbr,
+        help: S.pushBatchSizeOptionHelp,
+        defaultsTo: S.pushBatchSizeOptionDefault,
       )
       ..addFlag(
-        'truncate',
-        abbr: 't',
-        help: 'Whether to truncate existing collections before import',
+        S.truncateFlagName,
+        abbr: S.truncateFlagAbbr,
+        help: S.truncateFlagHelp,
       );
   }
 
   @override
-  final name = 'push';
+  final name = S.pushCommand;
 
   @override
-  final description =
-      'Pushes the local PocketBase schema and seed data to the remote '
-      'instance.';
+  final description = S.pushDescription;
 
   final Logger _logger;
 
   @override
   Future<int> run() async {
     final dir = DirectoryPath(argResults!['dir']);
-    if (dir.validate() case final Failure result) {
-      return result.exitCode;
+    // Validate directory path
+    if (dir.notFound) {
+      return Failure.exIO;
     }
 
-    final repositories = RepositoryFactory(dir);
+    if (!dir.notFound && !dir.isDirectory) {
+      return Failure.exIO;
+    }
 
-    final configRepository = repositories.createConfigRepository();
-    final schemaRepository = repositories.createSchemaRepository();
-    final envRepository = repositories.createEnvRepository();
-    final dotenv = envRepository.readEnv();
-    final config = configRepository.readConfig();
-
-    final credentialsResult = resolveCredentials(
-      config: config,
-      dotenv: dotenv,
-      input: ConsoleCredentialsInput(_logger),
+    final ctxResult = await resolveCommandContext(
+      dir: dir,
+      logger: _logger,
     );
-    if (credentialsResult case Result(:final error?)) {
+
+    if (ctxResult case Result(:final error?)) {
       _logger.err(error.message);
-
       return error.exitCode;
     }
 
-    final credentials = credentialsResult.value;
-
-    final pbResult = await resolvePbClient(
-      host: credentials.host,
-      usernameOrEmail: credentials.usernameOrEmail,
-      password: credentials.password,
-      token: credentials.token,
-    );
-
-    if (pbResult case Result(:final error?)) {
-      _logger.err('Failed to connect to PocketBase: ${error.message}');
-      return error.exitCode;
-    }
-
-    final pb = pbResult.value;
+    final (
+      :repositories,
+      :inputs,
+      :pbClient,
+      :credentials,
+    ) = ctxResult.value;
 
     // final dirArg = argResults!['dir'] as String;
     // final dir = DirectoryPath(dirArg);
@@ -109,7 +94,7 @@ class PushCommand extends Command {
             _logger.confirm('Truncate collections before seeding?'));
 
     await _seedCollections(
-      pb: pb,
+      pb: pbClient,
       batchSize: batchSize,
       truncate: truncate,
     );
@@ -123,11 +108,8 @@ class PushCommand extends Command {
     // Fetch the current schema from the remote PocketBase instance
     final collectionsResult = await pb.getCollections();
 
-    if (collectionsResult case Result(:final error)) {
-      _logger.err(
-        'Failed to fetch remote schema: $error. '
-        'Cannot proceed with schema import.',
-      );
+    if (collectionsResult case Result(:final error?)) {
+      _logger.err(error.fetchCollectionsSchema);
       return;
     }
 

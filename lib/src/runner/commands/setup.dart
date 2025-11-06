@@ -1,85 +1,71 @@
 import 'package:args/command_runner.dart';
 import 'package:mason_logger/mason_logger.dart';
 
-import '../../client/pb_client.dart';
 import '../../extensions/string_style.dart';
-import '../../inputs/factory.dart';
-import '../../models/credentials.dart';
+import '../../failure/common.dart';
 import '../../models/credentials_source.dart';
-import '../../models/failure.dart';
 import '../../models/result.dart';
-import '../../repositories/factory.dart';
 import '../../utils/path.dart';
+import '../../utils/strings.dart';
+import '../../utils/validation.dart';
+import 'context.dart';
 
 class SetupCommand extends Command {
   SetupCommand({required Logger logger}) : _logger = logger {
     argParser.addOption(
-      'dir',
-      abbr: 'd',
-      help:
-          'The local working directory for storing the PocketBase schema, '
-          'config, and seed data files.',
+      S.dirOptionName,
+      abbr: S.dirOptionAbbr,
+      help: S.dirOptionHelp,
       mandatory: true,
     );
   }
 
   @override
-  final name = 'setup';
+  final name = S.setupCommand;
 
   @override
-  final description =
-      'Setup the local environment for managing PocketBase schema and data.';
+  final description = S.setupDescription;
 
   final Logger _logger;
 
   @override
   Future<int> run() async {
-    final dir = DirectoryPath(argResults!['dir']);
-    if (dir.validate() case final Failure result) {
-      return result.exitCode;
+    final dirPath = argResults![S.dirOptionName] as String;
+    final dir = DirectoryPath(dirPath);
+
+    // Validate directory path
+    if (dir.validateIsDirectory() case final failure?) {
+      _logger.err(failure.message);
+      return failure.exitCode;
     }
 
-    _logger.info('Configuring setup...');
+    _logger.info(S.startSetupForDir(dir.path));
 
-    final repositories = RepositoryFactory(dir);
-    final configRepository = repositories.createConfigRepository();
-    final envRepository = repositories.createEnvRepository();
+    
 
-    final inputs = InputsFactory(_logger);
-
-    final dotenv = envRepository.readEnv();
-    final config = configRepository.readConfig();
-
-    final credentialsResult = resolveCredentials(
-      dotenv: dotenv,
-      config: config,
-      input: inputs.createCredentialsInput(),
-    );
-
-    if (credentialsResult case Result(:final error?)) {
+    final ctxResult = await resolveCommandContext(dir: dir, logger: _logger);
+    if (ctxResult case Result(:final error?)) {
       _logger.err(error.message);
       return error.exitCode;
     }
 
-    final credentials = credentialsResult.value;
-    final pbResult = await resolvePbClient(
-      host: credentials.host,
-      usernameOrEmail: credentials.usernameOrEmail,
-      password: credentials.password,
-      token: credentials.token,
-    );
+    final (
+      :repositories,
+      :inputs,
+      :pbClient,
+      :credentials,
+    ) = ctxResult.value;
 
-    if (pbResult case Result(:final error?)) {
-      _logger.err('Failed to connect to PocketBase: ${error.message}');
-      return error.exitCode;
-    }
+    final configRepository = repositories.createConfigRepository();
+    final config = configRepository.readConfig();
 
-    final pb = pbResult.value;
+    final envRepository = repositories.createEnvRepository();
+    final dotenv = envRepository.readEnv();
 
     // Fetch the current schema from the remote PocketBase instance
-    final collectionsResult = await pb.getCollections();
+    final collectionsResult = await pbClient.getCollections();
     if (collectionsResult case Result(:final error?)) {
-      _logger.err('Failed to fetch collections: ${error.message}');
+      _logger.err(error.fetchCollectionsSchema);
       return error.exitCode;
     }
 
@@ -128,7 +114,7 @@ class SetupCommand extends Command {
             pbHost: credentials.host,
             pbUsername: credentials.usernameOrEmail,
             pbPassword: credentials.password,
-            pbToken: pb.instance.authStore.token,
+            pbToken: pbClient.instance.authStore.token,
           ),
         );
 

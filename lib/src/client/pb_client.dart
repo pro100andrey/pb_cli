@@ -1,13 +1,14 @@
 import 'package:mason_logger/mason_logger.dart';
 import 'package:pocketbase/pocketbase.dart';
 
-import '../models/failure.dart';
+import '../failure/failure.dart';
 import '../models/result.dart';
 
 Future<CliResult<PbClient>> resolvePbClient({
   required String host,
   required String usernameOrEmail,
   required String password,
+  required Logger logger,
   String? token,
 }) async {
   final auth = AuthStore();
@@ -18,7 +19,6 @@ Future<CliResult<PbClient>> resolvePbClient({
 
   final pb = PocketBase(host, authStore: auth);
   final pbClient = PbClient._(pb: pb);
-  final logger = Logger();
 
   // Return existing authenticated client
   if (auth.token.isNotEmpty && auth.isValid) {

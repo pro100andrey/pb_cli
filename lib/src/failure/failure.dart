@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'result.dart';
+import '../models/result.dart';
 
 const int kSuccess = 0;
 

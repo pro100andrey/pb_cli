@@ -1,5 +1,8 @@
 import 'package:io/ansi.dart' as ansi;
 
+/// Regular expression to match ANSI escape codes.
+final _ansiRegex = RegExp(r'\x1B\[[0-9;]*[A-Za-z]');
+
 /// Extension that adds styling capabilities to String objects using ANSI codes.
 ///
 /// Example usage:
@@ -139,4 +142,6 @@ extension StringStyleExt on String {
 
   /// Reset blinking text style only.
   String get resetBlink => ansi.resetBlink.wrap(this)!;
+
+  String get plain => replaceAll(_ansiRegex, '');
 }

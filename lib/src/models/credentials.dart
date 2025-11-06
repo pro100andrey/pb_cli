@@ -1,7 +1,7 @@
 import '../inputs/credentials.dart';
 import 'config.dart';
 import 'dotenv.dart';
-import 'failure.dart';
+import '../failure/failure.dart';
 
 /// Model class to hold PocketBase admin credentials.
 ///
@@ -76,39 +76,13 @@ CliResult<Credentials> resolveCredentials({
   }
 
   // Fall back to interactive prompting
-  return _promptForCredentials(input);
-}
-
-/// Prompts the user for all required credential information.
-///
-/// [input] The interface for gathering user input.
-///
-/// Returns a [CliResult] containing either the collected [Credentials] or
-/// a [Failure] if any required field is empty.
-CliResult<Credentials> _promptForCredentials(CredentialsInput input) {
-  // Prompt for host URL
   final hostResponse = input.promptHost();
-  if (hostResponse.isEmpty) {
-    return Failure.data(
-      message: 'PocketBase host URL cannot be empty.',
-    ).asResult();
-  }
 
   // Prompt for username/email
-  final usernameResponse = input.promptUsername();
-  if (usernameResponse.isEmpty) {
-    return Failure.data(
-      message: 'Superuser username/email cannot be empty.',
-    ).asResult();
-  }
+  final usernameResponse = input.promptUsername(defaultValue: 'admin');
 
   // Prompt for password (hidden input)
-  final passwordResponse = input.promptPassword();
-  if (passwordResponse.isEmpty) {
-    return Failure.data(
-      message: 'Superuser password cannot be empty.',
-    ).asResult();
-  }
+  final passwordResponse = input.promptPassword(defaultValue: 'password');
 
   final credentials = Credentials(
     host: hostResponse,

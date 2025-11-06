@@ -3,8 +3,6 @@ import 'dart:io';
 import 'package:meta/meta.dart';
 import 'package:path/path.dart' as p;
 
-import '../models/failure.dart';
-
 /// A record type that caches various path-related computations to avoid
 /// repeated file system operations and path manipulations.
 typedef PathCache = ({
@@ -148,19 +146,6 @@ extension type DirectoryPath._(PathCache _cache) implements FileEntityPath {
 
     return FilePath(joinedPath);
   }
-
-  /// Validates that the path is suitable for directory operations.
-  ///
-  /// Returns a [Failure] if the path exists but is not a directory,
-  /// or null if validation passes.
-  Failure? validate() {
-    if (!notFound && !_cache.isDirectory) {
-      return Failure.io(
-        message: 'Path "$path" exists but is not a directory.',
-      );
-    }
-    return null;
-  }
 }
 
 /// Extension type for file paths that provides file-specific operations
@@ -194,18 +179,5 @@ extension type FilePath._(PathCache _cache) implements FileEntityPath {
   /// Writes the given [content] string to the file synchronously.
   void writeAsString(String content) {
     _file.writeAsStringSync(content);
-  }
-
-  /// Validates that the path is suitable for file operations.
-  ///
-  /// Returns a [Failure] if the path exists but is not a file,
-  /// or null if validation passes.
-  Failure? validate() {
-    if (!notFound && !_cache.isFile) {
-      return Failure.io(
-        message: 'Path "$path" exists but is not a file.',
-      );
-    }
-    return null;
   }
 }

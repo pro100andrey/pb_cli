@@ -29,6 +29,13 @@
             "program": "bin/pb_cli.dart",
             "type": "dart",
             "flutterMode": "debug",
+            "console": "terminal",
+            "presentation": {
+                "order": 1,
+                "focus": true,
+                "hidden": false,
+                "group": "Seeder"
+            },
             "args": [
                 "push",
                 "--env=.env",
@@ -42,9 +49,16 @@
             "program": "bin/pb_cli.dart",
             "type": "dart",
             "flutterMode": "debug",
+            "console": "terminal",
+            "presentation": {
+                "order": 1,
+                "focus": true,
+                "hidden": false,
+                "group": "Seeder"
+            },
             "args": [
                 "pull",
-                "--env=.env",
+                "--dir=./pb_data",
                 "--verbose"
             ]
         }
