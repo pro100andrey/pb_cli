@@ -10,7 +10,6 @@ build/
 pubspec.lock
 
 # IDE files
-.vscode/
 .idea/
 *.iml
 *.ipr

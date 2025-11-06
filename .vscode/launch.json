@@ -1,0 +1,52 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Setup",
+            "request": "launch",
+            "program": "bin/pb_cli.dart",
+            "type": "dart",
+            "flutterMode": "debug",
+            "console": "terminal",
+            "presentation": {
+                "order": 1,
+                "focus": true,
+                "hidden": false,
+                "group": "Seeder"
+            },
+            "args": [
+                "setup",
+                "--verbose",
+                "--dir=./pb_data"
+            ]
+        },
+        {
+            "name": "Push",
+            "request": "launch",
+            "program": "bin/pb_cli.dart",
+            "type": "dart",
+            "flutterMode": "debug",
+            "args": [
+                "push",
+                "--env=.env",
+                "--truncate",
+                "--verbose"
+            ]
+        },
+        {
+            "name": "Pull",
+            "request": "launch",
+            "program": "bin/pb_cli.dart",
+            "type": "dart",
+            "flutterMode": "debug",
+            "args": [
+                "pull",
+                "--env=.env",
+                "--verbose"
+            ]
+        }
+    ]
+}
