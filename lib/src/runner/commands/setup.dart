@@ -1,7 +1,6 @@
 import 'package:args/command_runner.dart';
 import 'package:mason_logger/mason_logger.dart';
 
-import '../../extensions/string_style.dart';
 import '../../failure/common.dart';
 import '../../models/credentials_source.dart';
 import '../../models/result.dart';
@@ -39,10 +38,10 @@ class SetupCommand extends Command {
       return failure.exitCode;
     }
 
+    _logger.info(S.setupDirectoryStart(dir.path));
+
     final ctxResult = await resolveCommandContext(dir: dir, logger: _logger);
     if (ctxResult case Result(:final error?)) {
-      _logger.err(error.message);
-
       return error.exitCode;
     }
 
@@ -78,7 +77,7 @@ class SetupCommand extends Command {
     );
 
     if (managedCollections.isEmpty) {
-      _logger.warn('No collections selected for management');
+      _logger.warn(S.noCollectionsSelected);
     }
 
     final source = CredentialsSource.fromTitle(
@@ -95,13 +94,13 @@ class SetupCommand extends Command {
         .isNotEmpty;
 
     if (!sourceChanged && !managedCollectionsChanged) {
-      _logger.info('Setup is already up to date.'.green);
+      _logger.info(S.setupAlreadyUpToDate);
       return ExitCode.success.code;
     }
 
     if (dir.notFound) {
       dir.create();
-      _logger.info('Created directory: ${dir.path}');
+      _logger.info(S.directoryCreated(dir.path));
     }
 
     switch (source) {
@@ -115,10 +114,10 @@ class SetupCommand extends Command {
           ),
         );
 
-        _logger.info('.env file updated with provided credentials.');
+        _logger.info(S.envFileUpdated);
 
       case _:
-        _logger.info('Using interactive credentials; no .env update needed.');
+        _logger.info(S.interactiveCredentialsSelected);
     }
 
     configRepository.writeConfig(
@@ -128,10 +127,8 @@ class SetupCommand extends Command {
       ),
     );
     _logger
-      ..success('Setup completed successfully!')
-      ..info(
-        'You can now use other commands to manage your PocketBase data.',
-      );
+      ..success(S.setupCompleted)
+      ..info(S.setupNextSteps);
 
     return ExitCode.success.code;
   }

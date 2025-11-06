@@ -3,6 +3,8 @@ import 'package:pocketbase/pocketbase.dart';
 
 import '../failure/failure.dart';
 import '../models/result.dart';
+import '../utils/console.dart';
+import '../utils/strings.dart';
 
 Future<CliResult<PbClient>> resolvePbClient({
   required String host,
@@ -37,7 +39,13 @@ Future<CliResult<PbClient>> resolvePbClient({
   );
 
   if (authResult case Result(:final error?)) {
-    loginProgress.fail('Authentication failed: ${error.message}');
+    loginProgress.fail(
+      Console.error(
+        S.pocketBaseFailed(error.message),
+        context: error.details?.toString(),
+        suggestion: 'Check your credentials and try again.',
+      ),
+    );
     return error.asResult();
   }
 
@@ -104,7 +112,7 @@ final class PbClient {
 
       final message = switch (e) {
         ClientException(response: {'message': final String message}) =>
-          '${e.statusCode} - $message',
+          '(${e.statusCode}) $message',
 
         ClientException(originalError: Exception())
             when originalError != null =>
@@ -116,6 +124,7 @@ final class PbClient {
       final failure = Failure.fromHttpStatus(
         e.statusCode,
         message: message,
+        details: e.url,
       );
 
       return failure.asResult();

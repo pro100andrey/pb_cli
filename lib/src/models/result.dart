@@ -102,6 +102,12 @@ sealed class Result<T, E> {
     (value) => value,
     (_) => defaultValue(),
   );
+
+  /// Returns `true` if this is a [SuccessResult], otherwise `false`.
+  bool get isSuccess => this is SuccessResult<T, E>;
+
+  /// Returns `true` if this is a [FailureResult], otherwise `false`.
+  bool get isFailure => this is FailureResult<T, E>;
 }
 
 /// A successful result containing a [value] of type [T].

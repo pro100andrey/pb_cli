@@ -1,7 +1,6 @@
 import 'package:mason_logger/mason_logger.dart';
 
 import '../../client/pb_client.dart';
-import '../../extensions/string_style.dart';
 import '../../failure/failure.dart';
 import '../../inputs/factory.dart';
 import '../../models/credentials.dart';
@@ -29,14 +28,6 @@ Future<Result<CommandContext, Failure>> resolveCommandContext({
 
   final inputs = InputsFactory(logger);
 
-  if (!dotenv.isComplete) {
-    logger.info(
-      'Environment variables are incomplete. '
-              'Falling back to command-line inputs.'
-          .yellow,
-    );
-  }
-
   final credentialsResult = resolveCredentials(
     dotenv: dotenv,
     config: config,
@@ -48,6 +39,7 @@ Future<Result<CommandContext, Failure>> resolveCommandContext({
   }
 
   final credentials = credentialsResult.value;
+
   final pbResult = await resolvePbClient(
     host: credentials.host,
     usernameOrEmail: credentials.usernameOrEmail,

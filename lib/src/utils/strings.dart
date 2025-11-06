@@ -58,6 +58,30 @@ abstract final class S {
       'Whether to truncate existing collections before import.';
 
   // Info Messages
-  static String startSetupForDir(String dir) =>
+  static String setupDirectoryStart(String dir) =>
       'Starting setup for directory: ${dir.yellow.underlined}';
+
+  static String directoryCreated(String path) => 'Created directory: $path';
+
+  static const String setupAlreadyUpToDate = 'Setup is already up to date.';
+
+  static const String envFileUpdated = '.env file updated with credentials.';
+
+  static const String interactiveCredentialsSelected =
+      'Using interactive credentials.';
+
+  static const String setupNextSteps =
+      'Use pull/push commands to manage your PocketBase data.';
+
+  // Warning Messages
+  static const String noCollectionsSelected =
+      'No collections selected for management.';
+
+  // Success Messages
+  static const String setupCompleted = 'Setup completed successfully!';
+
+  // Error Messages
+
+  static String pocketBaseFailed(String error) =>
+      'PocketBase: $error.';
 }

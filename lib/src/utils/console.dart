@@ -28,10 +28,23 @@ abstract final class Console {
   /// Cli.error('Connection failed', context: 'Unable to reach server');
   /// // 'Error: Connection failed\nDetails: Unable to reach server'
   /// ```
-  static String error(String message, {String? context}) {
-    final buffer = StringBuffer(' $message');
+  static String error(
+    String message, {
+    String? context,
+    String? suggestion,
+    int messagePadding = 0,
+    int initialPadding = 2,
+    int suggestionPadding = 2,
+  }) {
+    String pad(String text, int spaces) =>
+        ' ' * spaces + text.replaceAll('\n', '\n${' ' * spaces}');
+
+    final buffer = StringBuffer(pad(message.red, messagePadding));
     if (context != null) {
-      buffer.write('\nDetails: $context');
+      buffer.write('\n Details: ${pad(context, initialPadding)}');
+    }
+    if (suggestion != null) {
+      buffer.write('\n Suggestion: ${pad(suggestion, suggestionPadding)}');
     }
 
     return buffer.toString();

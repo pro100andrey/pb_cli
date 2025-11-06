@@ -14,7 +14,7 @@ const int kSuccess = 0;
 /// clearly communicates the cause of failure to the caller or CI system.
 class Failure {
   /// Creates a [Failure] with a specific message and exit code.
-  const Failure({required this.message, required this.exitCode});
+  const Failure({required this.message, required this.exitCode, this.details});
 
   /// Generic, unspecified error.
   ///
@@ -22,14 +22,15 @@ class Failure {
   /// Typically indicates a bug or unforeseen condition.
   ///
   /// Exit code: **EX_GENERAL = 1**
-  Failure.generic({required this.message}) : exitCode = exGeneric;
+  Failure.generic({required this.message, this.details}) : exitCode = exGeneric;
 
   /// User aborted the operation.
   ///
   /// Use this when the user cancels an operation or declines a prompt.
   ///
   /// Exit code: **EX_USER_ABORTED = 2**
-  Failure.userAborted({required this.message}) : exitCode = exUserAborted;
+  Failure.userAborted({required this.message, this.details})
+    : exitCode = exUserAborted;
 
   /// Command line usage error.
   ///
@@ -37,7 +38,7 @@ class Failure {
   /// Example: user did not provide mandatory flags or options.
   ///
   /// Exit code: **EX_USAGE = 64**
-  Failure.usage({required this.message}) : exitCode = exUsage;
+  Failure.usage({required this.message, this.details}) : exitCode = exUsage;
 
   /// Data format or type error.
   ///
@@ -45,14 +46,14 @@ class Failure {
   /// Example: JSON/YAML parsing failure, unexpected value type.
   ///
   /// Exit code: **EX_DATAERR = 65**
-  Failure.data({required this.message}) : exitCode = exData;
+  Failure.data({required this.message, this.details}) : exitCode = exData;
 
   /// Input file missing or cannot be opened.
   ///
   /// Use this when a required file does not exist or is inaccessible.
   ///
   /// Exit code: **EX_NOINPUT = 66**
-  Failure.noInput({required this.message}) : exitCode = exNoInput;
+  Failure.noInput({required this.message, this.details}) : exitCode = exNoInput;
 
   /// Remote host not found or unreachable.
   ///
@@ -60,7 +61,7 @@ class Failure {
   /// failures.
   ///
   /// Exit code: **EX_NOHOST = 68**
-  Failure.noHost({required this.message}) : exitCode = exNoHost;
+  Failure.noHost({required this.message, this.details}) : exitCode = exNoHost;
 
   /// Service or dependency unavailable.
   ///
@@ -68,14 +69,16 @@ class Failure {
   /// or temporarily not responding (e.g., HTTP 503, API outage).
   ///
   /// Exit code: **EX_UNAVAILABLE = 69**
-  Failure.unavailable({required this.message}) : exitCode = exUnavailable;
+  Failure.unavailable({required this.message, this.details})
+    : exitCode = exUnavailable;
 
   /// Internal software error.
   ///
   /// Use this for unexpected exceptions, logic errors, or internal bugs.
   ///
   /// Exit code: **EX_SOFTWARE = 70**
-  Failure.software({required this.message}) : exitCode = exSoftware;
+  Failure.software({required this.message, this.details})
+    : exitCode = exSoftware;
 
   /// I/O failure during read or write operation.
   ///
@@ -83,7 +86,7 @@ class Failure {
   /// fails unexpectedly.
   ///
   /// Exit code: **EX_IOERR = 74**
-  Failure.io({required this.message}) : exitCode = exIO;
+  Failure.io({required this.message, this.details}) : exitCode = exIO;
 
   /// Temporary failure where retry may succeed.
   ///
@@ -91,7 +94,7 @@ class Failure {
   /// or when a resource is temporarily locked.
   ///
   /// Exit code: **EX_TEMPFAIL = 75**
-  Failure.temp({required this.message}) : exitCode = exTempFail;
+  Failure.temp({required this.message, this.details}) : exitCode = exTempFail;
 
   /// Permission denied or authentication failure.
   ///
@@ -99,7 +102,8 @@ class Failure {
   /// fails.
   ///
   /// Exit code: **EX_NOPERM = 77**
-  Failure.permission({required this.message}) : exitCode = exNoPerm;
+  Failure.permission({required this.message, this.details})
+    : exitCode = exNoPerm;
 
   /// Configuration error.
   ///
@@ -107,7 +111,7 @@ class Failure {
   /// unsupported options.
   ///
   /// Exit code: **EX_CONFIG = 78**
-  Failure.config({required this.message}) : exitCode = exConfig;
+  Failure.config({required this.message, this.details}) : exitCode = exConfig;
 
   /// Returns a [Failure] corresponding to an HTTP status code.
   ///
@@ -118,26 +122,30 @@ class Failure {
   /// - 408, 429 → temporary failure (EX_TEMPFAIL)
   /// - 500–599 → service unavailable (EX_UNAVAILABLE)
   /// - otherwise → internal software error (EX_SOFTWARE)
-  factory Failure.fromHttpStatus(int statusCode, {String? message}) {
+  factory Failure.fromHttpStatus(
+    int statusCode, {
+    String? message,
+    Object? details,
+  }) {
     message ??= 'HTTP request failed with status $statusCode';
 
     if (statusCode >= 500 && statusCode < 600) {
-      return Failure.unavailable(message: message);
+      return Failure.unavailable(message: message, details: details);
     }
 
     switch (statusCode) {
       case 400: // Bad Request - invalid request syntax
-        return Failure.usage(message: message);
+        return Failure.usage(message: message, details: details);
       case 401: // Unauthorized - authentication required
       case 403: // Forbidden - access denied
-        return Failure.permission(message: message);
+        return Failure.permission(message: message, details: details);
       case 404: // Not Found - resource unavailable
-        return Failure.unavailable(message: message);
+        return Failure.unavailable(message: message, details: details);
       case 408: // Request Timeout - temporary network issue
       case 429: // Too Many Requests - rate limiting
-        return Failure.temp(message: message);
+        return Failure.temp(message: message, details: details);
       default: // Unhandled status codes
-        return Failure.software(message: message);
+        return Failure.software(message: message, details: details);
     }
   }
 
@@ -182,6 +190,9 @@ class Failure {
 
   /// The human-readable description of the failure.
   final String message;
+
+  /// Optional additional details about the failure.
+  final Object? details;
 
   @override
   String toString() => 'Failure: $message (exit code: $exitCode)';
