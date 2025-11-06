@@ -1,7 +1,7 @@
+import '../failure/failure.dart';
 import '../inputs/credentials.dart';
 import 'config.dart';
 import 'dotenv.dart';
-import '../failure/failure.dart';
 
 /// Model class to hold PocketBase admin credentials.
 ///

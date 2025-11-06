@@ -39,13 +39,10 @@ class SetupCommand extends Command {
       return failure.exitCode;
     }
 
-    _logger.info(S.startSetupForDir(dir.path));
-
-    
-
     final ctxResult = await resolveCommandContext(dir: dir, logger: _logger);
     if (ctxResult case Result(:final error?)) {
       _logger.err(error.message);
+
       return error.exitCode;
     }
 

@@ -7,7 +7,6 @@ import '../../inputs/factory.dart';
 import '../../models/credentials.dart';
 import '../../models/result.dart';
 import '../../repositories/factory.dart';
-import '../../utils/cli.dart';
 import '../../utils/path.dart';
 
 typedef CommandContext = ({
@@ -32,13 +31,9 @@ Future<Result<CommandContext, Failure>> resolveCommandContext({
 
   if (!dotenv.isComplete) {
     logger.info(
-      Cli.table(
-        headers: ['Name'.blue, 'Status'.red, ''],
-        rows: [
-          ['users', 'synced'.green, 'test'.gray],
-          ['posts', 'pending'.yellow],
-        ],
-      ),
+      'Environment variables are incomplete. '
+              'Falling back to command-line inputs.'
+          .yellow,
     );
   }
 

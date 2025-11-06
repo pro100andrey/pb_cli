@@ -7,7 +7,7 @@ library;
 import '../extensions/string_style.dart';
 
 // ignore_for_file: avoid_classes_with_only_static_members
-abstract final class Cli {
+abstract final class Console {
   /// Creates a progress message for batch operations.
   ///
   /// Example:
@@ -16,8 +16,9 @@ abstract final class Cli {
   /// // 'Fetching records: 50/100 (50%)'
   /// ```
   static String progress(int current, int total, String action) {
-    final percentage = ((current / total) * 100).toStringAsFixed(1);
-    return '$action: $current/$total ($percentage%)';
+    final percentage = (total == 0) ? 0.0 : ((current / total) * 100);
+
+    return '$action: $current/$total (${percentage.toStringAsFixed(1)}%)';
   }
 
   /// Creates an error message with context.
@@ -28,10 +29,11 @@ abstract final class Cli {
   /// // 'Error: Connection failed\nDetails: Unable to reach server'
   /// ```
   static String error(String message, {String? context}) {
-    final buffer = StringBuffer('Error: $message');
+    final buffer = StringBuffer(' $message');
     if (context != null) {
       buffer.write('\nDetails: $context');
     }
+
     return buffer.toString();
   }
 
@@ -43,10 +45,11 @@ abstract final class Cli {
   /// // '✓ Setup completed\n  5 collections configured'
   /// ```
   static String success(String message, {String? details}) {
-    final buffer = StringBuffer('✓ $message');
+    final buffer = StringBuffer('${'✓'.green} $message');
     if (details != null) {
       buffer.write('\n  $details');
     }
+
     return buffer.toString();
   }
 
@@ -74,10 +77,8 @@ abstract final class Cli {
     required List<String> headers,
     required List<List<String>> rows,
   }) {
-    final columnWidths = <int>[];
-
     // Calculate column widths
-    for (var i = 0; i < headers.length; i++) {
+    final columnWidths = List.generate(headers.length, (i) {
       var maxWidth = headers[i].plain.length;
 
       for (final row in rows) {
@@ -89,8 +90,8 @@ abstract final class Cli {
         }
       }
 
-      columnWidths.add(maxWidth);
-    }
+      return maxWidth;
+    });
 
     final buffer = StringBuffer();
 
@@ -107,6 +108,7 @@ abstract final class Cli {
     for (final width in columnWidths) {
       buffer.write('─' * (width + 2));
     }
+
     buffer.writeln();
 
     // Rows
