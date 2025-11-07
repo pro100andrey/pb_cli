@@ -101,5 +101,20 @@ final class FileSchemaRepository implements SchemaRepository {
   }
 
   @override
-  List<CollectionModel> readSchema() => [];
+  List<CollectionModel> readSchema() {
+    if (_schemaFile.notFound) {
+      return [];
+    }
+
+    final jsonString = _schemaFile.readAsString();
+
+    if (jsonDecode(jsonString) case final List list) {
+      final collections = list
+          .map((e) => CollectionModel.fromJson(e as Map<String, dynamic>))
+          .toList(growable: false);
+      return collections;
+    }
+
+    throw const FormatException('Invalid schema file format');
+  }
 }

@@ -7,7 +7,7 @@ class DirectoryNotFoundFailure extends Failure {
         message:
             'Directory not found: ${path.bold.underlined}. '
             'Please ensure the path is correct or use the '
-            '${'setup'.bold.underlined} command to initialize the directory.',
+            '${'setup'.bold} command to initialize the directory.',
       );
 }
 

@@ -7,43 +7,39 @@ import 'package:pocketbase/pocketbase.dart';
 ///
 /// It relies on collection name and content comparison.
 bool checkPBSchema(
-  List<CollectionModel> fromServer,
-  List<CollectionModel> fromJsonFile,
+  List<CollectionModel> sCollections,
+  List<CollectionModel> lCollections,
   Logger logger,
 ) {
-  if (fromServer.length != fromJsonFile.length) {
+  if (sCollections.length != lCollections.length) {
     logger.detail(
       'Difference found: Collection count mismatch '
-      '(${fromServer.length} vs ${fromJsonFile.length})',
+      '(${sCollections.length} vs ${lCollections.length})',
     );
+
     return false;
   }
+
   // Sort both lists by collection name to ensure reliable element-wise
   // comparison
-  fromServer.sort((a, b) => a.name.compareTo(b.name));
-  fromJsonFile.sort((a, b) => a.name.compareTo(b.name));
+  sCollections.sort((a, b) => a.name.compareTo(b.name));
+  lCollections.sort((a, b) => a.name.compareTo(b.name));
 
-  for (var i = 0; i < fromServer.length; i++) {
-    final existingCollection = fromServer[i];
-    final incomingCollection = fromJsonFile[i];
+  for (var i = 0; i < sCollections.length; i++) {
+    final sCollection = sCollections[i];
+    final lCollection = lCollections[i];
     // Sanity check after sorting
-    if (existingCollection.name != incomingCollection.name) {
+    if (sCollection.name != lCollection.name) {
       logger.detail(
         'Difference found: Collection name mismatch at '
-        'index $i (${existingCollection.name} vs ${incomingCollection.name})',
+        'index $i (${sCollection.name} vs ${lCollection.name})',
       );
       return false;
     }
 
     // Compare collection content (rules, type, fields, etc.)
-    if (!_isSameCollectionContent(
-      existingCollection,
-      incomingCollection,
-      logger,
-    )) {
-      logger.detail(
-        'Difference found in collection: ${existingCollection.name}',
-      );
+    if (!_isSameCollectionContent(sCollection, lCollection, logger)) {
+      logger.detail('Difference found in collection: ${sCollection.name}');
       return false;
     }
   }
@@ -54,62 +50,68 @@ bool checkPBSchema(
 /// Compares two CollectionModel instances for content equality,
 /// ignoring internal, volatile fields like 'id', 'created', and 'updated'.
 bool _isSameCollectionContent(
-  CollectionModel a,
-  CollectionModel b,
+  CollectionModel sCollection,
+  CollectionModel lCollection,
   Logger logger,
 ) {
   // Create copies of the maps for normalization and comparison
-  final aMap = a.toJson();
-  final bMap = b.toJson();
+  final sMap = sCollection.toJson();
+  final lMap = lCollection.toJson();
 
   // Remove internal fields
-  aMap
+  sMap
     ..remove('id')
     ..remove('created')
     ..remove('updated');
 
-  bMap
+  lMap
     ..remove('id')
     ..remove('created')
     ..remove('updated');
+
+  _normalizeRuleFields(sMap);
+  _normalizeRuleFields(lMap);
+
+  _normalizeIndexes(sMap);
+  _normalizeIndexes(lMap);
 
   // Normalize fields for comparison (order might differ)
-  final aFields = (aMap['fields'] as List<dynamic>?) ?? [];
-  final bFields = (bMap['fields'] as List<dynamic>?) ?? [];
+  final sFields = (sMap['fields'] as List<dynamic>?) ?? [];
+  final lFields = (lMap['fields'] as List<dynamic>?) ?? [];
 
-  if (aFields.length != bFields.length) {
+  if (sFields.length != lFields.length) {
     logger.detail('Field count mismatch');
     return false;
   }
 
   // Create maps of fields keyed by field name
-  final aFieldsMap = {
-    for (final f in aFields) (f as Map<String, dynamic>)['name']: f,
+  final sFieldsMap = {
+    for (final f in sFields) (f as Map<String, dynamic>)['name']: f,
   };
-  final bFieldsMap = {
-    for (final f in bFields) (f as Map<String, dynamic>)['name']: f,
+  final lFieldsMap = {
+    for (final f in lFields) (f as Map<String, dynamic>)['name']: f,
   };
 
   // Check if both collections have the exact same set of field names
-  if (aFieldsMap.keys.toSet().difference(bFieldsMap.keys.toSet()).isNotEmpty) {
+  if (sFieldsMap.keys.toSet().difference(lFieldsMap.keys.toSet()).isNotEmpty) {
     logger.detail('Field names mismatch');
     return false;
   }
 
   // Remove the field lists from the main maps to compare them separately
-  aMap.remove('fields');
-  bMap.remove('fields');
+  sMap.remove('fields');
+  lMap.remove('fields');
 
   // Compare main collection properties (rules, type, etc.)
-  if (jsonEncode(aMap) != jsonEncode(bMap)) {
+  if (jsonEncode(sMap) != jsonEncode(lMap)) {
     logger.detail('Collection properties mismatch (excluding fields)');
     return false;
   }
 
   // Compare each field individually
-  for (final name in aFieldsMap.keys) {
-    final fieldA = aFieldsMap[name]!;
-    final fieldB = bFieldsMap[name]!;
+  for (final name in sFieldsMap.keys) {
+    final fieldA = sFieldsMap[name]!;
+    final fieldB = lFieldsMap[name]!;
 
     // Remove field IDs, as they are internal and volatile
     fieldA.remove('id');
@@ -123,4 +125,45 @@ bool _isSameCollectionContent(
   }
 
   return true;
+}
+
+/// Normalizes rule fields in the collection map.
+///
+/// Converts null or empty strings ('') for rule fields into removal of the key
+/// from the map. This ensures consistent comparison when a rule is effectively
+/// empty on either the server (null) or in the file (often an empty string).
+void _normalizeRuleFields(Map<String, dynamic> map) {
+  const ruleFields = [
+    'listRule',
+    'viewRule',
+    'createRule',
+    'updateRule',
+    'deleteRule',
+    'authRule',
+    'manageRule',
+  ];
+  for (final field in ruleFields) {
+    // Treat null or empty string as "no rule"
+    if (map[field] == null || map[field] == '') {
+      map.remove(field);
+    }
+  }
+}
+
+/// Normalizes the list of indexes by sorting them.
+///
+/// Ensures that two collections with the same indexes but in different order
+/// are considered equal.
+void _normalizeIndexes(Map<String, dynamic> map) {
+  final indexes = (map['indexes'] as List<dynamic>?)
+      ?.map((e) => e.toString())
+      .toList();
+
+  if (indexes != null && indexes.isNotEmpty) {
+    indexes.sort();
+    map['indexes'] = indexes;
+  } else {
+    // Remove if empty or null to ensure consistent comparison
+    map.remove('indexes');
+  }
 }

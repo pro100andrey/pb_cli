@@ -1,8 +1,10 @@
 import 'package:args/command_runner.dart';
 import 'package:mason_logger/mason_logger.dart';
 
+import '../../extensions/string_style.dart';
 import '../../models/result.dart';
 import '../../utils/path.dart';
+import '../../utils/schema_checker.dart';
 import '../../utils/strings.dart';
 import '../../utils/validation.dart';
 import 'context.dart';
@@ -41,11 +43,7 @@ class PullCommand extends Command {
       return failure.exitCode;
     }
 
-    final ctxResult = await resolveCommandContext(
-      dir: dir,
-      logger: _logger,
-    );
-
+    final ctxResult = await resolveCommandContext(dir: dir, logger: _logger);
     if (ctxResult case Result(:final error?)) {
       _logger.err(error.message);
       return error.exitCode;
@@ -58,8 +56,25 @@ class PullCommand extends Command {
       :credentials,
     ) = ctxResult.value;
 
-    final configRepository = repositories.createConfigRepository();
-    final config = configRepository.readConfig();
+    // final configRepository = repositories.createConfigRepository();
+    // final config = configRepository.readConfig();
+
+    final collectionsResult = await pbClient.getCollections();
+    if (collectionsResult case Result(:final error?)) {
+      _logger.err(error.message);
+      return error.exitCode;
+    }
+
+    final collections = collectionsResult.value;
+    final schemaRepository = repositories.createSchemaRepository();
+    final localCollections = schemaRepository.readSchema();
+
+    final isSame = checkPBSchema(collections, localCollections, _logger);
+
+    if (!isSame) {
+      schemaRepository.writeSchema(collections);
+      _logger.info('Schema updated in directory: ${dir.path.bold.underlined}');
+    }
 
     return ExitCode.success.code;
   }
