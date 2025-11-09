@@ -57,7 +57,7 @@ node_modules/
 .yarn-integrity
 
 # Project specific
-pb_data/
+volumes/
 *.sqlite
 *.db
 
