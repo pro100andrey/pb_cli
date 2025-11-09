@@ -1,5 +1,6 @@
 import 'package:args/command_runner.dart';
 import 'package:mason_logger/mason_logger.dart';
+import 'package:pocketbase/pocketbase.dart';
 
 import '../../extensions/string_style.dart';
 import '../../models/result.dart';
@@ -37,12 +38,13 @@ class PullCommand extends Command {
   @override
   Future<int> run() async {
     final dir = DirectoryPath(argResults![S.dirOptionName]);
-    // Validate directory path
+    // 1. Validate directory path
     if (dir.validate() case final failure?) {
       _logger.err(failure.message);
       return failure.exitCode;
     }
 
+    // 2. Resolve command context
     final ctxResult = await resolveCommandContext(dir: dir, logger: _logger);
     if (ctxResult case Result(:final error?)) {
       _logger.err(error.message);
@@ -56,24 +58,58 @@ class PullCommand extends Command {
       :credentials,
     ) = ctxResult.value;
 
-    // final configRepository = repositories.createConfigRepository();
-    // final config = configRepository.readConfig();
-
+    // 3. Sync collections schema from PocketBase server
+    final progress = _logger.progress('Fetching collections schema');
     final collectionsResult = await pbClient.getCollections();
     if (collectionsResult case Result(:final error?)) {
-      _logger.err(error.message);
+      progress.fail(error.message);
       return error.exitCode;
     }
 
     final collections = collectionsResult.value;
+    progress.complete('Fetched ${collections.length} collections schema');
+
     final schemaRepository = repositories.createSchemaRepository();
     final localCollections = schemaRepository.readSchema();
 
     final isSame = checkPBSchema(collections, localCollections, _logger);
 
-    if (!isSame) {
-      schemaRepository.writeSchema(collections);
-      _logger.info('Schema updated in directory: ${dir.path.bold.underlined}');
+    if (isSame) {
+      _logger.info('Schema file is already up-to-date.');
+    }
+
+    // Always overwrite local schema with the latest from server
+    schemaRepository.writeSchema(collections);
+
+    //4. Sync managed collections data (records, files)
+    final configRepository = repositories.createConfigRepository();
+    final config = configRepository.readConfig();
+
+    final batchSize = int.parse(argResults![S.batchSizeOptionName] as String);
+
+    for (final collectionName in config.managedCollections) {
+      final records = <RecordModel>[];
+
+      final result = await pbClient.getCollectionRecordsBatch(
+        collectionName,
+        batchSize,
+        0,
+      );
+
+      if (result case Result(:final error?)) {
+        _logger.err(
+          'Failed to fetch records for collection '
+          '${collectionName.bold.underlined}: ${error.message}',
+        );
+        return error.exitCode;
+      }
+
+      records.addAll(result.value.items);
+
+      _logger.info(
+        'Fetched ${records.length} records from collection '
+        '${collectionName.bold.underlined}',
+      );
     }
 
     return ExitCode.success.code;

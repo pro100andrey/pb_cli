@@ -79,22 +79,38 @@ bool _isSameCollectionContent(
   final sFields = (sMap['fields'] as List<dynamic>?) ?? [];
   final lFields = (lMap['fields'] as List<dynamic>?) ?? [];
 
-  if (sFields.length != lFields.length) {
-    logger.detail('Field count mismatch');
-    return false;
-  }
-
-  // Create maps of fields keyed by field name
   final sFieldsMap = {
     for (final f in sFields) (f as Map<String, dynamic>)['name']: f,
   };
+
   final lFieldsMap = {
     for (final f in lFields) (f as Map<String, dynamic>)['name']: f,
   };
 
-  // Check if both collections have the exact same set of field names
-  if (sFieldsMap.keys.toSet().difference(lFieldsMap.keys.toSet()).isNotEmpty) {
-    logger.detail('Field names mismatch');
+  final sFieldNames = sFieldsMap.keys.toSet();
+  final lFieldNames = lFieldsMap.keys.toSet();
+
+  final fieldsMissingOnServer = lFieldNames.difference(sFieldNames);
+  final fieldsMissingInFile = sFieldNames.difference(lFieldNames);
+  if (sFieldNames.length != lFieldNames.length ||
+      fieldsMissingOnServer.isNotEmpty ||
+      fieldsMissingInFile.isNotEmpty) {
+    logger.detail('Difference found in ${sCollection.name} fields:');
+
+    if (fieldsMissingInFile.isNotEmpty) {
+      logger.detail(
+        ' > Fields missing in File (added on server): '
+        '${fieldsMissingInFile.join(', ')}',
+      );
+    }
+    
+    if (fieldsMissingOnServer.isNotEmpty) {
+      logger.detail(
+        ' > Fields missing on Server (removed on server): '
+        '${fieldsMissingOnServer.join(', ')}',
+      );
+    }
+
     return false;
   }
 
