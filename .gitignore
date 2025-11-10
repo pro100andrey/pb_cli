@@ -58,6 +58,7 @@ node_modules/
 
 # Project specific
 volumes/
+pb_data/
 *.sqlite
 *.db
 
