@@ -30,7 +30,7 @@ final class PbClient {
   /// Parameters:
   /// - [usernameOrEmail]: The superuser's username or email address
   /// - [password]: The superuser's password
-  Future<CliResult<RecordAuth>> _logInAsSuperuser({
+  CliFuture<RecordAuth> _logInAsSuperuser({
     required String usernameOrEmail,
     required String password,
   }) async => _op(
@@ -106,7 +106,7 @@ final class PbClient {
   ///
   /// Returns a [CliResult] containing the operation's result on success,
   /// or a [Failure] on error.
-  Future<CliResult<T>> _op<T>(Future<T> Function() operation) async {
+  CliFuture<T> _op<T>(Future<T> Function() operation) async {
     try {
       final result = await operation();
       return result.asResult();
@@ -148,7 +148,7 @@ final class PbClient {
 ///
 /// Returns a [CliResult] containing the authenticated [PbClient] on success,
 /// or a [Failure] if the connection or authentication fails.
-Future<CliResult<PbClient>> resolvePbClient({
+CliFuture<PbClient> resolvePbClient({
   required String host,
   required String usernameOrEmail,
   required String password,

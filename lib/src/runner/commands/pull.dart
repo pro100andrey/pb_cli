@@ -1,12 +1,11 @@
 import 'package:args/command_runner.dart';
 import 'package:mason_logger/mason_logger.dart';
-import 'package:pocketbase/pocketbase.dart';
 
-import '../../extensions/string_style.dart';
 import '../../models/result.dart';
 import '../../repositories/config.dart';
 import '../../repositories/schema.dart';
 import '../../repositories/seed.dart';
+import '../../services/collection_data.dart';
 import '../../services/schema_sync.dart';
 import '../../utils/path.dart';
 import '../../utils/strings.dart';
@@ -37,6 +36,11 @@ class PullCommand extends Command {
   final description = S.pullDescription;
 
   final Logger _logger;
+  final _schemaRepository = SchemaRepository();
+  final _configRepository = ConfigRepository();
+  final _seederRepository = SeedRepository();
+  late final _schemaSyncService = SchemaSyncService(logger: _logger);
+  late final _collectionDataService = CollectionDataService(logger: _logger);
 
   @override
   Future<int> run() async {
@@ -61,66 +65,51 @@ class PullCommand extends Command {
     ) = ctxResult.value;
 
     // 3. Sync collections schema from PocketBase server
-    final progress = _logger.progress('Fetching collections schema');
+    final fetchProgress = _logger.progress('Fetching schema from server');
     final collectionsResult = await pbClient.getCollections();
     if (collectionsResult case Result(:final error?)) {
-      progress.fail(error.message);
+      fetchProgress.fail(error.message);
       return error.exitCode;
     }
 
+    fetchProgress.complete('Fetched schema from server successfully.');
+
+    final syncProgress = _logger.progress('Syncing collections schema');
+
     final remoteCollections = collectionsResult.value;
-    progress.complete('Fetched ${remoteCollections.length} collections schema');
-
-    final schemaRepository = SchemaRepository();
-    final localCollections = schemaRepository.read(dataDir: dir);
-    final schemaService = SchemaSyncService(logger: _logger);
-
-    final isSame = await schemaService.syncSchema(
+    final localCollections = _schemaRepository.read(dataDir: dir);
+    final isSame = await _schemaSyncService.syncSchema(
       remoteCollections: remoteCollections,
       localCollections: localCollections,
     );
 
-    if (isSame) {
-      _logger.info('Schema file is already up-to-date.');
-    }
-
     // Always overwrite local schema with the latest from server
-    schemaRepository.write(collections: remoteCollections, dataDir: dir);
+    _schemaRepository.write(collections: remoteCollections, dataDir: dir);
 
-    //4. Sync managed collections data (records, files)
-    final configRepository = ConfigRepository();
-    final config = configRepository.read(dataDir: dir);
-    final seedRepository = SeedRepository();
+    syncProgress.complete(
+      isSame
+          ? 'Collections schema is already up to date.'
+          : 'Collections schema synced successfully.',
+    );
 
+    final config = _configRepository.read(dataDir: dir);
     final batchSize = int.parse(argResults![S.batchSizeOptionName] as String);
 
     for (final collectionName in config.managedCollections) {
-      final records = <RecordModel>[];
-
-      final result = await pbClient.getCollectionRecordsBatch(
-        collectionName,
-        batchSize,
-        0,
+      final records = await _collectionDataService.fetchAllRecords(
+        pbClient: pbClient,
+        collectionName: collectionName,
+        batchSize: batchSize,
       );
 
-      if (result case Result(:final error?)) {
-        _logger.err(
-          'Failed to fetch records for collection '
-          '${collectionName.bold.underlined}: ${error.message}',
-        );
+      if (records case Result(:final error?)) {
+        _logger.err(error.message);
         return error.exitCode;
       }
 
-      records.addAll(result.value.items);
-
-      _logger.info(
-        'Fetched ${records.length} records from collection '
-        '${collectionName.bold.underlined}',
-      );
-
-      seedRepository.write(
-        records: records,
+      _seederRepository.write(
         collectionName: collectionName,
+        records: records.value,
         dataDir: dir,
       );
     }
