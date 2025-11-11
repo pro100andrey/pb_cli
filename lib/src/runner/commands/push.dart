@@ -40,7 +40,7 @@ class PushCommand extends Command {
 
   @override
   Future<int> run() async {
-    final dir = DirectoryPath(argResults!['dir']);
+    final dir = DirectoryPath(argResults![S.dirOptionName]);
     // Validate directory path
     if (dir.notFound) {
       return Failure.exIO;
@@ -60,11 +60,7 @@ class PushCommand extends Command {
       return error.exitCode;
     }
 
-    final (
-      :inputs,
-      :pbClient,
-      :credentials,
-    ) = ctxResult.value;
+    final (:inputs, :pbClient, :credentials) = ctxResult.value;
 
     // final dirArg = argResults!['dir'] as String;
     // final dir = DirectoryPath(dirArg);

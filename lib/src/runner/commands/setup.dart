@@ -29,10 +29,12 @@ class SetupCommand extends Command {
 
   final Logger _logger;
 
+  final _envRepository = EnvRepository();
+  final _configRepository = ConfigRepository();
+
   @override
   Future<int> run() async {
-    final dirPath = argResults![S.dirOptionName] as String;
-    final dir = DirectoryPath(dirPath);
+    final dir = DirectoryPath(argResults![S.dirOptionName]);
 
     // Validate directory path
     if (dir.validateIsDirectory() case final failure?) {
@@ -47,17 +49,7 @@ class SetupCommand extends Command {
       return error.exitCode;
     }
 
-    final (
-      :inputs,
-      :pbClient,
-      :credentials,
-    ) = ctxResult.value;
-
-    final configRepository = ConfigRepository();
-    final config = configRepository.read(dataDir: dir);
-
-    final envRepository = EnvRepository();
-    final dotenv = envRepository.read(dataDir: dir);
+    final (:inputs, :pbClient, :credentials) = ctxResult.value;
 
     // Fetch the current schema from the remote PocketBase instance
     final collectionsResult = await pbClient.getCollections();
@@ -71,6 +63,8 @@ class SetupCommand extends Command {
     final collectionsNames = userCollections.map((e) => e.name).toList();
 
     final setupInput = inputs.createSetupInput();
+    final config = _configRepository.read(dataDir: dir);
+    final dotenv = _envRepository.read(dataDir: dir);
 
     final managedCollections = setupInput.chooseCollections(
       choices: collectionsNames,
@@ -113,7 +107,7 @@ class SetupCommand extends Command {
           pbToken: pbClient.instance.authStore.token,
         );
 
-        envRepository.write(dotenv: updatedDotenv, dataDir: dir);
+        _envRepository.write(dotenv: updatedDotenv, dataDir: dir);
         _logger.info(S.envFileUpdated);
 
       case _:
@@ -125,7 +119,7 @@ class SetupCommand extends Command {
       credentialsSource: source,
     );
 
-    configRepository.write(config: updatedConfig, dataDir: dir);
+    _configRepository.write(config: updatedConfig, dataDir: dir);
 
     _logger
       ..success(S.setupCompleted)

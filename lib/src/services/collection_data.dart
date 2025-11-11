@@ -7,7 +7,9 @@ import '../failure/failure.dart';
 import '../models/result.dart';
 
 class CollectionDataService {
-  const CollectionDataService({required Logger logger}) : _logger = logger;
+  const CollectionDataService({
+    required Logger logger,
+  }) : _logger = logger;
 
   final Logger _logger;
 
@@ -16,16 +18,16 @@ class CollectionDataService {
     required String collectionName,
     required int batchSize,
   }) async {
-    final records = <RecordModel>[];
-
-    var offset = 0;
-    var hasMore = true;
-
     final styledCollectionName = collectionName.bold;
 
     final progress = _logger.progress(
       'Fetching records from $styledCollectionName (Batch Size: $batchSize)',
     );
+
+    var offset = 0;
+    var hasMore = true;
+
+    final records = <RecordModel>[];
 
     while (hasMore) {
       final result = await pbClient.getCollectionRecordsBatch(

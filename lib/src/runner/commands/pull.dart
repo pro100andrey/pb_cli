@@ -1,5 +1,6 @@
 import 'package:args/command_runner.dart';
 import 'package:mason_logger/mason_logger.dart';
+import 'package:pocketbase/pocketbase.dart';
 
 import '../../models/result.dart';
 import '../../repositories/config.dart';
@@ -58,11 +59,7 @@ class PullCommand extends Command {
       return error.exitCode;
     }
 
-    final (
-      :inputs,
-      :pbClient,
-      :credentials,
-    ) = ctxResult.value;
+    final (:inputs, :pbClient, :credentials) = ctxResult.value;
 
     // 3. Sync collections schema from PocketBase server
     final fetchProgress = _logger.progress('Fetching schema from server');
@@ -96,24 +93,58 @@ class PullCommand extends Command {
     final batchSize = int.parse(argResults![S.batchSizeOptionName] as String);
 
     for (final collectionName in config.managedCollections) {
-      final records = await _collectionDataService.fetchAllRecords(
+      final recordsResult = await _collectionDataService.fetchAllRecords(
         pbClient: pbClient,
         collectionName: collectionName,
         batchSize: batchSize,
       );
 
-      if (records case Result(:final error?)) {
+      if (recordsResult case Result(:final error?)) {
         _logger.err(error.message);
         return error.exitCode;
       }
 
+      final records = recordsResult.value;
+
       _seederRepository.write(
         collectionName: collectionName,
-        records: records.value,
+        records: records,
         dataDir: dir,
+      );
+
+      final remoteCollection = remoteCollections.firstWhere(
+        (c) => c.name == collectionName,
+      );
+
+      if (remoteCollection.fields
+              .where((e) => e.isFile && e.maxSelect >= 1)
+              .map((e) => e.name)
+          case final fields) {
+        final withFiles = records.where(
+          (record) => fields.any(
+            (fieldName) => record.getStringValue(fieldName).isNotEmpty,
+          ),
+        );
+
+        _logger.info(
+          'Note: Collection $collectionName contains file fields. '
+          'Make sure to handle file downloads separately.',
+        );
+      }
+
+      _logger.info(
+        'Seed data for collection '
+        '$collectionName updated '
+        '(${records.length} records).',
       );
     }
 
     return ExitCode.success.code;
   }
+}
+
+extension CollectionModelFields on CollectionField {
+  bool get isFile => type == 'file';
+
+  int get maxSelect => get<int>('maxSelect');
 }
