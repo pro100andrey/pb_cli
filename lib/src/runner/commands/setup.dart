@@ -4,6 +4,8 @@ import 'package:mason_logger/mason_logger.dart';
 import '../../failure/common.dart';
 import '../../models/credentials_source.dart';
 import '../../models/result.dart';
+import '../../repositories/config.dart';
+import '../../repositories/env.dart';
 import '../../utils/path.dart';
 import '../../utils/strings.dart';
 import '../../utils/validation.dart';
@@ -46,17 +48,16 @@ class SetupCommand extends Command {
     }
 
     final (
-      :repositories,
       :inputs,
       :pbClient,
       :credentials,
     ) = ctxResult.value;
 
-    final configRepository = repositories.createConfigRepository();
-    final config = configRepository.read();
+    final configRepository = ConfigRepository();
+    final config = configRepository.read(dataDir: dir);
 
-    final envRepository = repositories.createEnvRepository();
-    final dotenv = envRepository.read();
+    final envRepository = EnvRepository();
+    final dotenv = envRepository.read(dataDir: dir);
 
     // Fetch the current schema from the remote PocketBase instance
     final collectionsResult = await pbClient.getCollections();
@@ -105,27 +106,27 @@ class SetupCommand extends Command {
 
     switch (source) {
       case CredentialsSource.dotenv:
-        envRepository.write(
-          dotenv.copyWith(
-            pbHost: credentials.host,
-            pbUsername: credentials.usernameOrEmail,
-            pbPassword: credentials.password,
-            pbToken: pbClient.instance.authStore.token,
-          ),
+        final updatedDotenv = dotenv.copyWith(
+          pbHost: credentials.host,
+          pbUsername: credentials.usernameOrEmail,
+          pbPassword: credentials.password,
+          pbToken: pbClient.instance.authStore.token,
         );
 
+        envRepository.write(dotenv: updatedDotenv, dataDir: dir);
         _logger.info(S.envFileUpdated);
 
       case _:
         _logger.info(S.interactiveCredentialsSelected);
     }
 
-    configRepository.write(
-      config.copyWith(
-        managedCollections: managedCollections,
-        credentialsSource: source,
-      ),
+    final updatedConfig = config.copyWith(
+      managedCollections: managedCollections,
+      credentialsSource: source,
     );
+
+    configRepository.write(config: updatedConfig, dataDir: dir);
+
     _logger
       ..success(S.setupCompleted)
       ..info(S.setupNextSteps);

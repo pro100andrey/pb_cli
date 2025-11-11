@@ -10,7 +10,6 @@ import '../../failure/common.dart';
 import '../../failure/failure.dart';
 import '../../models/result.dart';
 import '../../utils/path.dart';
-import '../../utils/schema_checker.dart';
 import '../../utils/strings.dart';
 import '../../utils/utils.dart';
 import 'context.dart';
@@ -62,7 +61,6 @@ class PushCommand extends Command {
     }
 
     final (
-      :repositories,
       :inputs,
       :pbClient,
       :credentials,
@@ -123,7 +121,7 @@ class PushCommand extends Command {
         .toList(growable: false);
 
     _logger.info('Comparing local schema with remote schema...');
-    final isSame = checkPBSchema(fromServer, fromJsonFile, _logger);
+    const isSame = false;
 
     if (isSame) {
       _logger.info('Schema is up to date!'.green);

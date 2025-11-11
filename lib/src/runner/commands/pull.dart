@@ -4,8 +4,11 @@ import 'package:pocketbase/pocketbase.dart';
 
 import '../../extensions/string_style.dart';
 import '../../models/result.dart';
+import '../../repositories/config.dart';
+import '../../repositories/schema.dart';
+import '../../repositories/seed.dart';
+import '../../services/schema_sync.dart';
 import '../../utils/path.dart';
-import '../../utils/schema_checker.dart';
 import '../../utils/strings.dart';
 import '../../utils/validation.dart';
 import 'context.dart';
@@ -52,7 +55,6 @@ class PullCommand extends Command {
     }
 
     final (
-      :repositories,
       :inputs,
       :pbClient,
       :credentials,
@@ -66,24 +68,29 @@ class PullCommand extends Command {
       return error.exitCode;
     }
 
-    final collections = collectionsResult.value;
-    progress.complete('Fetched ${collections.length} collections schema');
+    final remoteCollections = collectionsResult.value;
+    progress.complete('Fetched ${remoteCollections.length} collections schema');
 
-    final schemaRepository = repositories.createSchemaRepository();
-    final localCollections = schemaRepository.read();
+    final schemaRepository = SchemaRepository();
+    final localCollections = schemaRepository.read(dataDir: dir);
+    final schemaService = SchemaSyncService(logger: _logger);
 
-    final isSame = checkPBSchema(collections, localCollections, _logger);
+    final isSame = await schemaService.syncSchema(
+      remoteCollections: remoteCollections,
+      localCollections: localCollections,
+    );
 
     if (isSame) {
       _logger.info('Schema file is already up-to-date.');
     }
 
     // Always overwrite local schema with the latest from server
-    schemaRepository.write(collections);
+    schemaRepository.write(collections: remoteCollections, dataDir: dir);
 
     //4. Sync managed collections data (records, files)
-    final configRepository = repositories.createConfigRepository();
-    final config = configRepository.read();
+    final configRepository = ConfigRepository();
+    final config = configRepository.read(dataDir: dir);
+    final seedRepository = SeedRepository();
 
     final batchSize = int.parse(argResults![S.batchSizeOptionName] as String);
 
@@ -111,9 +118,10 @@ class PullCommand extends Command {
         '${collectionName.bold.underlined}',
       );
 
-      repositories.createSeedRepository().write(
-        records,
-        collectionName,
+      seedRepository.write(
+        records: records,
+        collectionName: collectionName,
+        dataDir: dir,
       );
     }
 

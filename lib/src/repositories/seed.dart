@@ -5,29 +5,43 @@ import 'package:pocketbase/pocketbase.dart';
 import '../utils/path.dart';
 
 abstract interface class SeedRepository {
-  void write(List<RecordModel> records, String collectionName);
+  factory SeedRepository() => const _FileSeedRepository();
 
-  List<RecordModel> read(String collectionName);
+  void write({
+    required List<RecordModel> records,
+    required String collectionName,
+    required DirectoryPath dataDir,
+  });
+
+  List<RecordModel> read({
+    required String collectionName,
+    required DirectoryPath dataDir,
+  });
 }
 
-final class FileSeedRepository implements SeedRepository {
-  const FileSeedRepository(this._dataDir);
-
-  final DirectoryPath _dataDir;
+final class _FileSeedRepository implements SeedRepository {
+  const _FileSeedRepository();
 
   String fileForCollection(String collectionName) =>
       'pb_seed_$collectionName.json';
 
   @override
-  void write(List<RecordModel> records, String collectionName) {
-    final filePath = _dataDir.joinFile(fileForCollection(collectionName));
+  void write({
+    required List<RecordModel> records,
+    required String collectionName,
+    required DirectoryPath dataDir,
+  }) {
+    final filePath = dataDir.joinFile(fileForCollection(collectionName));
     final json = const JsonEncoder.withIndent('  ').convert(records);
     filePath.writeAsString(json);
   }
 
   @override
-  List<RecordModel> read(String collectionName) {
-    final filePath = _dataDir.joinFile(fileForCollection(collectionName));
+  List<RecordModel> read({
+    required String collectionName,
+    required DirectoryPath dataDir,
+  }) {
+    final filePath = dataDir.joinFile(fileForCollection(collectionName));
     if (filePath.notFound) {
       return [];
     }

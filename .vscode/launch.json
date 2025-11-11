@@ -9,14 +9,7 @@
             "request": "launch",
             "program": "bin/pb_cli.dart",
             "type": "dart",
-            "flutterMode": "debug",
             "console": "terminal",
-            "presentation": {
-                "order": 1,
-                "focus": true,
-                "hidden": false,
-                "group": "Seeder"
-            },
             "args": [
                 "setup",
                 "--verbose",
@@ -24,41 +17,27 @@
             ]
         },
         {
-            "name": "Push",
-            "request": "launch",
-            "program": "bin/pb_cli.dart",
-            "type": "dart",
-            "flutterMode": "debug",
-            "console": "terminal",
-            "presentation": {
-                "order": 1,
-                "focus": true,
-                "hidden": false,
-                "group": "Seeder"
-            },
-            "args": [
-                "push",
-                "--env=.env",
-                "--truncate",
-                "--verbose"
-            ]
-        },
-        {
             "name": "Pull",
             "request": "launch",
             "program": "bin/pb_cli.dart",
             "type": "dart",
-            "flutterMode": "debug",
             "console": "terminal",
-            "presentation": {
-                "order": 1,
-                "focus": true,
-                "hidden": false,
-                "group": "Seeder"
-            },
             "args": [
                 "pull",
                 "--dir=./pb_data",
+                "--verbose"
+            ]
+        },
+        {
+            "name": "Push",
+            "request": "launch",
+            "program": "bin/pb_cli.dart",
+            "type": "dart",
+            "console": "terminal",
+            "args": [
+                "push",
+                "--env=.env",
+                "--truncate",
                 "--verbose"
             ]
         }

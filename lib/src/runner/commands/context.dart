@@ -5,11 +5,12 @@ import '../../failure/failure.dart';
 import '../../inputs/factory.dart';
 import '../../models/credentials.dart';
 import '../../models/result.dart';
-import '../../repositories/factory.dart';
+import '../../repositories/config.dart';
+
+import '../../repositories/env.dart';
 import '../../utils/path.dart';
 
 typedef CommandContext = ({
-  RepositoryFactory repositories,
   InputsFactory inputs,
   PbClient pbClient,
   Credentials credentials,
@@ -19,12 +20,11 @@ Future<Result<CommandContext, Failure>> resolveCommandContext({
   required DirectoryPath dir,
   required Logger logger,
 }) async {
-  final repositories = RepositoryFactory(dir);
-  final configRepository = repositories.createConfigRepository();
-  final envRepository = repositories.createEnvRepository();
+  final configRepository = ConfigRepository();
+  final envRepository = EnvRepository();
 
-  final dotenv = envRepository.read();
-  final config = configRepository.read();
+  final dotenv = envRepository.read(dataDir: dir);
+  final config = configRepository.read(dataDir: dir);
 
   final inputs = InputsFactory(logger);
 
@@ -53,7 +53,6 @@ Future<Result<CommandContext, Failure>> resolveCommandContext({
   }
 
   return Result.success((
-    repositories: repositories,
     inputs: inputs,
     pbClient: pbResult.value,
     credentials: credentials,
