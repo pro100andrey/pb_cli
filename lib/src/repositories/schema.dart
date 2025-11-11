@@ -23,7 +23,7 @@ abstract interface class SchemaRepository {
   /// configuration.
   ///
   /// This method should serialize the collection models and store them in a
-  /// format that can be later retrieved by [readSchema].
+  /// format that can be later retrieved by [read].
   ///
   /// Example:
   /// ```dart
@@ -35,7 +35,7 @@ abstract interface class SchemaRepository {
   /// ```
   ///
   /// Throws an exception if the schema cannot be written to storage.
-  void writeSchema(List<CollectionModel> collections);
+  void write(List<CollectionModel> collections);
 
   /// Reads the schema definitions from storage.
   ///
@@ -45,14 +45,14 @@ abstract interface class SchemaRepository {
   ///
   /// Example:
   /// ```dart
-  /// final collections = schemaRepository.readSchema();
+  /// final collections = schemaRepository.read();
   /// for (final collection in collections) {
   ///   print('Collection: ${collection.name}');
   /// }
   /// ```
   ///
   /// Throws an exception if the schema cannot be read or parsed.
-  List<CollectionModel> readSchema();
+  List<CollectionModel> read();
 }
 
 /// File-based implementation of schema repository.
@@ -95,13 +95,13 @@ final class FileSchemaRepository implements SchemaRepository {
   FilePath get _schemaFile => _dataDir.joinFile(file);
 
   @override
-  void writeSchema(List<CollectionModel> collections) {
+  void write(List<CollectionModel> collections) {
     final json = const JsonEncoder.withIndent('  ').convert(collections);
     _schemaFile.writeAsString(json);
   }
 
   @override
-  List<CollectionModel> readSchema() {
+  List<CollectionModel> read() {
     if (_schemaFile.notFound) {
       return [];
     }

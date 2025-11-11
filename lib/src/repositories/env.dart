@@ -24,13 +24,13 @@ abstract interface class EnvRepository {
   ///
   /// Example:
   /// ```dart
-  /// final dotenv = envRepository.readEnv();
+  /// final dotenv = envRepository.read();
   /// final host = dotenv.pbHost;
   /// final username = dotenv.pbUsername;
   /// ```
   ///
   /// Throws an exception if the environment data cannot be read.
-  Dotenv readEnv();
+  Dotenv read();
 
   /// Writes environment variables to storage.
   ///
@@ -46,11 +46,11 @@ abstract interface class EnvRepository {
   ///   DotenvKey.pbHost: 'http://localhost:8090',
   ///   DotenvKey.pbUsername: 'admin@example.com',
   /// });
-  /// envRepository.writeEnv(dotenv);
+  /// envRepository.write(dotenv);
   /// ```
   ///
   /// Throws an exception if the environment data cannot be written.
-  void writeEnv(Dotenv dotenv);
+  void write(Dotenv dotenv);
 }
 
 /// File-based implementation of environment variable repository.
@@ -102,14 +102,14 @@ final class FileEnvRepository implements EnvRepository {
   FilePath get _envFile => _dataDir.joinFile(file);
 
   @override
-  Dotenv readEnv() {
+  Dotenv read() {
     final data = _readEnv(_envFile);
 
     return Dotenv(data);
   }
 
   @override
-  void writeEnv(Dotenv dotenv) {
+  void write(Dotenv dotenv) {
     _writeEnv(dotenv.data, _envFile);
   }
 }
@@ -143,7 +143,7 @@ void _writeEnv(Map<DotenvKey, String> data, FilePath envFile) {
 /// This function parses a .env file and extracts key-value pairs while
 /// handling various edge cases:
 /// - Empty lines and comments (lines starting with #) are ignored
-/// - Values can contain '=' characters (only the first '=' is used as 
+/// - Values can contain '=' characters (only the first '=' is used as
 /// separator)
 /// - Keys and values are trimmed of whitespace
 /// - Non-existent files are handled gracefully

@@ -70,7 +70,7 @@ class PullCommand extends Command {
     progress.complete('Fetched ${collections.length} collections schema');
 
     final schemaRepository = repositories.createSchemaRepository();
-    final localCollections = schemaRepository.readSchema();
+    final localCollections = schemaRepository.read();
 
     final isSame = checkPBSchema(collections, localCollections, _logger);
 
@@ -79,11 +79,11 @@ class PullCommand extends Command {
     }
 
     // Always overwrite local schema with the latest from server
-    schemaRepository.writeSchema(collections);
+    schemaRepository.write(collections);
 
     //4. Sync managed collections data (records, files)
     final configRepository = repositories.createConfigRepository();
-    final config = configRepository.readConfig();
+    final config = configRepository.read();
 
     final batchSize = int.parse(argResults![S.batchSizeOptionName] as String);
 
@@ -109,6 +109,11 @@ class PullCommand extends Command {
       _logger.info(
         'Fetched ${records.length} records from collection '
         '${collectionName.bold.underlined}',
+      );
+
+      repositories.createSeedRepository().write(
+        records,
+        collectionName,
       );
     }
 

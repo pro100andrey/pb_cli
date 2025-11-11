@@ -31,7 +31,7 @@ abstract interface class ConfigRepository {
   ///
   /// Example:
   /// ```dart
-  /// final config = configRepository.readConfig();
+  /// final config = configRepository.read();
   /// final collections = config.managedCollections;
   /// final source = config.credentialsSource;
   /// ```
@@ -40,7 +40,7 @@ abstract interface class ConfigRepository {
   /// or empty configuration rather than throwing an exception.
   ///
   /// Throws an exception if the configuration cannot be read or parsed.
-  Config readConfig();
+  Config read();
 
   /// Writes the configuration data to the storage.
   ///
@@ -48,7 +48,7 @@ abstract interface class ConfigRepository {
   ///
   /// Implementations should ensure that the configuration is properly
   /// serialized and stored in a way that can be later retrieved by
-  /// [readConfig]. The storage format should be human-readable when possible.
+  /// [read]. The storage format should be human-readable when possible.
   ///
   /// Example:
   /// ```dart
@@ -56,11 +56,11 @@ abstract interface class ConfigRepository {
   ///   managedCollections: ['users', 'posts'],
   ///   credentialsSource: CredentialsSource.dotenv,
   /// );
-  /// configRepository.writeConfig(config);
+  /// configRepository.write(config);
   /// ```
   ///
   /// Throws an exception if the configuration cannot be written to storage.
-  void writeConfig(Config config);
+  void write(Config config);
 }
 
 /// File-based implementation of configuration repository.
@@ -123,7 +123,7 @@ final class FileConfigRepository implements ConfigRepository {
   FilePath get _configFile => _dataDir.joinFile(file);
 
   @override
-  Config readConfig() {
+  Config read() {
     if (_configFile.notFound) {
       return Config.empty();
     }
@@ -135,7 +135,7 @@ final class FileConfigRepository implements ConfigRepository {
   }
 
   @override
-  void writeConfig(Config config) {
+  void write(Config config) {
     final json = const JsonEncoder.withIndent('  ').convert(config.data);
 
     _configFile.writeAsString(json);

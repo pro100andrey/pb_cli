@@ -2,6 +2,7 @@ import '../utils/path.dart';
 import 'config.dart';
 import 'env.dart';
 import 'schema.dart';
+import 'seed.dart';
 
 /// A factory class responsible for creating repository instances.
 ///
@@ -119,4 +120,7 @@ final class RepositoryFactory {
   /// final username = dotenv.pbUsername;
   /// ```
   EnvRepository createEnvRepository() => FileEnvRepository(_dataDir);
+
+  /// Creates a new seed repository instance.
+  SeedRepository createSeedRepository() => FileSeedRepository(_dataDir);
 }

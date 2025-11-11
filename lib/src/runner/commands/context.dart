@@ -23,8 +23,8 @@ Future<Result<CommandContext, Failure>> resolveCommandContext({
   final configRepository = repositories.createConfigRepository();
   final envRepository = repositories.createEnvRepository();
 
-  final dotenv = envRepository.readEnv();
-  final config = configRepository.readConfig();
+  final dotenv = envRepository.read();
+  final config = configRepository.read();
 
   final inputs = InputsFactory(logger);
 

@@ -53,10 +53,10 @@ class SetupCommand extends Command {
     ) = ctxResult.value;
 
     final configRepository = repositories.createConfigRepository();
-    final config = configRepository.readConfig();
+    final config = configRepository.read();
 
     final envRepository = repositories.createEnvRepository();
-    final dotenv = envRepository.readEnv();
+    final dotenv = envRepository.read();
 
     // Fetch the current schema from the remote PocketBase instance
     final collectionsResult = await pbClient.getCollections();
@@ -105,7 +105,7 @@ class SetupCommand extends Command {
 
     switch (source) {
       case CredentialsSource.dotenv:
-        envRepository.writeEnv(
+        envRepository.write(
           dotenv.copyWith(
             pbHost: credentials.host,
             pbUsername: credentials.usernameOrEmail,
@@ -120,7 +120,7 @@ class SetupCommand extends Command {
         _logger.info(S.interactiveCredentialsSelected);
     }
 
-    configRepository.writeConfig(
+    configRepository.write(
       config.copyWith(
         managedCollections: managedCollections,
         credentialsSource: source,
