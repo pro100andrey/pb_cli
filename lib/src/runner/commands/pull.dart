@@ -137,11 +137,11 @@ class PullCommand extends Command {
               );
 
               for (final record in recordsWithFiles) {
-                final file = record.getStringValue(field.name);
+                final fileName = record.getStringValue(field.name);
 
                 final downloadUrl = pbClient.fileUri(
                   record: record,
-                  fileName: file,
+                  fileName: fileName,
                 );
 
                 final response = await http.get(downloadUrl);
@@ -154,16 +154,16 @@ class PullCommand extends Command {
                   continue;
                 }
 
-                final storageFile =
+                final file =
                     dir
                         .join('storage/${remoteCollection.id}/${record.id}')
-                        .joinFile(file)
-                        .create(recursive: true)
+                        .joinFile(fileName)
+                      ..create(recursive: true)
                       ..writeAsBytes(response.bodyBytes);
 
                 downloadProgress.complete(
                   'Downloaded file for record ${record.id}, '
-                  'field ${field.name}: ${storageFile.path}',
+                  'field ${field.name}: ${file.path}',
                 );
               }
 
@@ -174,12 +174,12 @@ class PullCommand extends Command {
                   'field ${field.name}',
                 );
 
-                final files = record.getListValue<String>(field.name);
+                final filesNames = record.getListValue<String>(field.name);
 
-                for (final file in files) {
+                for (final fileName in filesNames) {
                   final downloadUrl = pbClient.fileUri(
                     record: record,
-                    fileName: file,
+                    fileName: fileName,
                   );
 
                   final response = await http.get(downloadUrl);
@@ -191,16 +191,16 @@ class PullCommand extends Command {
                     );
                     continue;
                   }
-                  final storageFile =
+                  final file =
                       dir
                           .join('storage/${remoteCollection.id}/${record.id}')
-                          .joinFile(file)
-                          .create(recursive: true)
+                          .joinFile(fileName)
+                        ..create(recursive: true)
                         ..writeAsBytes(response.bodyBytes);
 
                   downloadProgress.complete(
                     'Downloaded file for record ${record.id}, '
-                    'field ${field.name}: ${storageFile.path}',
+                    'field ${field.name}: ${file.path}',
                   );
                 }
               }

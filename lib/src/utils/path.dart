@@ -135,12 +135,8 @@ extension type DirectoryPath._(PathCache _cache) implements FileEntityPath {
   /// Creates the directory in the file system.
   ///
   /// If [recursive] is true, creates all necessary parent directories.
-  @useResult
-  DirectoryPath create({bool recursive = false}) {
-    _dir.createSync(recursive: recursive);
-
-    return sync;
-  }
+  void create({bool recursive = false}) =>
+      _dir.createSync(recursive: recursive);
 
   /// Joins the given [fileName] to the directory path and
   /// returns a [FilePath] representing the resulting file path.
@@ -181,12 +177,9 @@ extension type FilePath._(PathCache _cache) implements FileEntityPath {
   /// Creates the file in the file system.
   ///
   /// If [recursive] is true, creates all necessary parent directories.
-  @useResult
-  FilePath create({bool recursive = false}) {
-    _file.createSync(recursive: recursive);
 
-    return sync;
-  }
+  void create({bool recursive = false}) =>
+      _file.createSync(recursive: recursive);
 
   /// Reads the file contents as a list of lines synchronously.
   List<String> readAsLines() {
