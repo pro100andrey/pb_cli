@@ -1,4 +1,5 @@
 import 'package:args/command_runner.dart';
+import 'package:http/http.dart' as http;
 import 'package:mason_logger/mason_logger.dart';
 import 'package:pocketbase/pocketbase.dart';
 
@@ -131,6 +132,10 @@ class PullCommand extends Command {
         for (final field in fields) {
           switch (field.maxSelect) {
             case 1:
+              final downloadProgress = _logger.progress(
+                'Downloading files for field ${field.name}',
+              );
+
               for (final record in recordsWithFiles) {
                 final file = record.getStringValue(field.name);
 
@@ -139,14 +144,36 @@ class PullCommand extends Command {
                   fileName: file,
                 );
 
-                _logger.info(
-                  'File URL for record ${record.id}, '
-                  'field ${field.name}: $downloadUrl',
+                final response = await http.get(downloadUrl);
+                if (response.statusCode != 200) {
+                  downloadProgress.fail(
+                    'Failed to download file for record ${record.id}, '
+                    'field ${field.name}: ${response.statusCode} '
+                    '${response.reasonPhrase}',
+                  );
+                  continue;
+                }
+
+                final storageFile =
+                    dir
+                        .join('storage/${remoteCollection.id}/${record.id}')
+                        .joinFile(file)
+                        .create(recursive: true)
+                      ..writeAsBytes(response.bodyBytes);
+
+                downloadProgress.complete(
+                  'Downloaded file for record ${record.id}, '
+                  'field ${field.name}: ${storageFile.path}',
                 );
               }
 
             case > 1:
               for (final record in recordsWithFiles) {
+                final downloadProgress = _logger.progress(
+                  'Downloading files for record ${record.id}, '
+                  'field ${field.name}',
+                );
+
                 final files = record.getListValue<String>(field.name);
 
                 for (final file in files) {
@@ -155,9 +182,25 @@ class PullCommand extends Command {
                     fileName: file,
                   );
 
-                  _logger.info(
-                    'File URL for record ${record.id}, '
-                    'field ${field.name}, file $file: $downloadUrl',
+                  final response = await http.get(downloadUrl);
+                  if (response.statusCode != 200) {
+                    downloadProgress.fail(
+                      'Failed to download file for record ${record.id}, '
+                      'field ${field.name}: ${response.statusCode} '
+                      '${response.reasonPhrase}',
+                    );
+                    continue;
+                  }
+                  final storageFile =
+                      dir
+                          .join('storage/${remoteCollection.id}/${record.id}')
+                          .joinFile(file)
+                          .create(recursive: true)
+                        ..writeAsBytes(response.bodyBytes);
+
+                  downloadProgress.complete(
+                    'Downloaded file for record ${record.id}, '
+                    'field ${field.name}: ${storageFile.path}',
                   );
                 }
               }

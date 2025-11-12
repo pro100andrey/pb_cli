@@ -135,16 +135,30 @@ extension type DirectoryPath._(PathCache _cache) implements FileEntityPath {
   /// Creates the directory in the file system.
   ///
   /// If [recursive] is true, creates all necessary parent directories.
-  void create({bool recursive = false}) {
+  @useResult
+  DirectoryPath create({bool recursive = false}) {
     _dir.createSync(recursive: recursive);
+
+    return sync;
   }
 
   /// Joins the given [fileName] to the directory path and
   /// returns a [FilePath] representing the resulting file path.
+  @useResult
   FilePath joinFile(String fileName) {
     final joinedPath = p.join(path, fileName);
 
     return FilePath(joinedPath);
+  }
+
+  /// Joins the given [parts] to the directory path and
+  /// returns a new [DirectoryPath] representing the resulting path.
+  @useResult
+  DirectoryPath join(String parts) {
+    final components = p.split(parts);
+    final joinedPath = p.joinAll([path, ...components]);
+
+    return DirectoryPath(joinedPath);
   }
 }
 
@@ -167,8 +181,12 @@ extension type FilePath._(PathCache _cache) implements FileEntityPath {
   /// Creates the file in the file system.
   ///
   /// If [recursive] is true, creates all necessary parent directories.
-  void create({bool recursive = false}) =>
-      _file.createSync(recursive: recursive);
+  @useResult
+  FilePath create({bool recursive = false}) {
+    _file.createSync(recursive: recursive);
+
+    return sync;
+  }
 
   /// Reads the file contents as a list of lines synchronously.
   List<String> readAsLines() {
@@ -179,5 +197,10 @@ extension type FilePath._(PathCache _cache) implements FileEntityPath {
   /// Writes the given [content] string to the file synchronously.
   void writeAsString(String content) {
     _file.writeAsStringSync(content);
+  }
+
+  /// Writes the given list of bytes [bytes] to the file synchronously.
+  void writeAsBytes(List<int> bytes) {
+    _file.writeAsBytesSync(bytes);
   }
 }
