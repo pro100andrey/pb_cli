@@ -90,7 +90,9 @@ class PullCommand extends Command {
     );
 
     final config = _configRepository.read(dataDir: dir);
-    final batchSize = int.parse(argResults![S.batchSizeOptionName] as String);
+    final batchSize =
+        int.tryParse(argResults![S.batchSizeOptionName]) ??
+        int.parse(S.pullBatchSizeOptionDefault);
 
     for (final collectionName in config.managedCollections) {
       final recordsResult = await _collectionDataService.fetchAllRecords(
@@ -116,25 +118,59 @@ class PullCommand extends Command {
         (c) => c.name == collectionName,
       );
 
-      if (remoteCollection.fields
-              .where((e) => e.isFile && e.maxSelect >= 1)
-              .map((e) => e.name)
-          case final fields) {
-        final withFiles = records.where(
+      // Get file fields
+      final fields = remoteCollection.fields.where((e) => e.isFile);
+
+      if (fields.isNotEmpty) {
+        final recordsWithFiles = records.where(
           (record) => fields.any(
-            (fieldName) => record.getStringValue(fieldName).isNotEmpty,
+            (field) => record.getStringValue(field.name).isNotEmpty,
           ),
         );
 
-        _logger.info(
-          'Note: Collection $collectionName contains file fields. '
-          'Make sure to handle file downloads separately.',
-        );
+        for (final field in fields) {
+          switch (field.maxSelect) {
+            case 1:
+              for (final record in recordsWithFiles) {
+                final file = record.getStringValue(field.name);
+
+                final downloadUrl = pbClient.fileUri(
+                  record: record,
+                  fileName: file,
+                );
+
+                _logger.info(
+                  'File URL for record ${record.id}, '
+                  'field ${field.name}: $downloadUrl',
+                );
+              }
+
+            case > 1:
+              for (final record in recordsWithFiles) {
+                final files = record.getListValue<String>(field.name);
+
+                for (final file in files) {
+                  final downloadUrl = pbClient.fileUri(
+                    record: record,
+                    fileName: file,
+                  );
+
+                  _logger.info(
+                    'File URL for record ${record.id}, '
+                    'field ${field.name}, file $file: $downloadUrl',
+                  );
+                }
+              }
+            case 0:
+              throw UnimplementedError();
+          }
+        }
+
+        _logger.info('');
       }
 
       _logger.info(
-        'Seed data for collection '
-        '$collectionName updated '
+        'Seed data for collection $collectionName updated '
         '(${records.length} records).',
       );
     }

@@ -61,6 +61,12 @@ final class PbClient {
     ),
   );
 
+  Uri fileUri({required RecordModel record, required String fileName}) {
+    final url = _pb.files.getURL(record, fileName);
+
+    return url;
+  }
+
   /// Deletes all records in a specific collection.
   ///
   /// - [collectionName]: The name of the collection to truncate.

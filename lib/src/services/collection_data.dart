@@ -18,24 +18,34 @@ class CollectionDataService {
     required String collectionName,
     required int batchSize,
   }) async {
+    if (batchSize <= 0 || batchSize > 500) {
+      return Failure(
+        message:
+            'Invalid batch size: $batchSize. It must be between 1 and 500.',
+        exitCode: ExitCode.usage.code,
+      ).asResult();
+    }
+
     final styledCollectionName = collectionName.bold;
 
     final progress = _logger.progress(
-      'Fetching records from $styledCollectionName (Batch Size: $batchSize)',
+      'Fetching records from $styledCollectionName (BS: $batchSize)',
     );
 
     var offset = 0;
-    var hasMore = true;
+    var totalItems = 0;
 
     final records = <RecordModel>[];
 
-    while (hasMore) {
+    while (true) {
+      // Get the records batch
       final result = await pbClient.getCollectionRecordsBatch(
         collectionName,
         batchSize,
         offset,
       );
 
+      // Handle potential errors
       if (result case Result(error: final error?)) {
         progress.fail(
           'Failed to fetch records from collection $styledCollectionName: '
@@ -44,18 +54,37 @@ class CollectionDataService {
         return error.asResult();
       }
 
-      final batch = result.value.items;
+      final resultList = result.value;
+
+      // initialize totalItems on the first fetch
+      if (offset == 0) {
+        totalItems = resultList.totalItems;
+      }
+
+      final batch = resultList.items;
+
+      // Break the loop if no more records are returned
+      if (batch.isEmpty) {
+        break;
+      }
+
       records.addAll(batch);
 
       offset += batch.length;
-      hasMore = batch.length == batchSize;
+      // Break if we've fetched all items based on totalItems count
+      if (records.length >= totalItems) {
+        break;
+      }
 
-      progress.update('Fetched ${records.length} records...');
+      // 4. Update the progress bar
+      final percent = ((records.length / totalItems) * 100).toStringAsFixed(2);
+      progress.update(
+        'Fetched ${records.length} of $totalItems records ($percent%)...',
+      );
     }
 
     progress.complete(
-      'Fetched total of ${records.length} records '
-      'from collection $styledCollectionName.',
+      'Fetched ${records.length} records from $styledCollectionName.',
     );
 
     return records.asResult();
