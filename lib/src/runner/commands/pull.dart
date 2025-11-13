@@ -1,13 +1,12 @@
 import 'package:args/command_runner.dart';
-import 'package:http/http.dart' as http;
 import 'package:mason_logger/mason_logger.dart';
-import 'package:pocketbase/pocketbase.dart';
 
 import '../../models/result.dart';
 import '../../repositories/config.dart';
 import '../../repositories/schema.dart';
 import '../../repositories/seed.dart';
 import '../../services/collection_data.dart';
+import '../../services/files_downloader.dart';
 import '../../services/schema_sync.dart';
 import '../../utils/path.dart';
 import '../../utils/strings.dart';
@@ -43,6 +42,7 @@ class PullCommand extends Command {
   final _seederRepository = SeedRepository();
   late final _schemaSyncService = SchemaSyncService(logger: _logger);
   late final _collectionDataService = CollectionDataService(logger: _logger);
+  late final _filesDownloaderService = FilesDownloaderService(logger: _logger);
 
   @override
   Future<int> run() async {
@@ -119,98 +119,13 @@ class PullCommand extends Command {
         (c) => c.name == collectionName,
       );
 
-      // Get file fields
-      final fields = remoteCollection.fields.where((e) => e.isFile);
-
-      if (fields.isNotEmpty) {
-        final recordsWithFiles = records.where(
-          (record) => fields.any(
-            (field) => record.getStringValue(field.name).isNotEmpty,
-          ),
-        );
-
-        for (final field in fields) {
-          switch (field.maxSelect) {
-            case 1:
-              final downloadProgress = _logger.progress(
-                'Downloading files for field ${field.name}',
-              );
-
-              for (final record in recordsWithFiles) {
-                final fileName = record.getStringValue(field.name);
-
-                final downloadUrl = pbClient.fileUri(
-                  record: record,
-                  fileName: fileName,
-                );
-
-                final response = await http.get(downloadUrl);
-                if (response.statusCode != 200) {
-                  downloadProgress.fail(
-                    'Failed to download file for record ${record.id}, '
-                    'field ${field.name}: ${response.statusCode} '
-                    '${response.reasonPhrase}',
-                  );
-                  continue;
-                }
-
-                final file =
-                    dir
-                        .join('storage/${remoteCollection.id}/${record.id}')
-                        .joinFile(fileName)
-                      ..create(recursive: true)
-                      ..writeAsBytes(response.bodyBytes);
-
-                downloadProgress.complete(
-                  'Downloaded file for record ${record.id}, '
-                  'field ${field.name}: ${file.path}',
-                );
-              }
-
-            case > 1:
-              for (final record in recordsWithFiles) {
-                final downloadProgress = _logger.progress(
-                  'Downloading files for record ${record.id}, '
-                  'field ${field.name}',
-                );
-
-                final filesNames = record.getListValue<String>(field.name);
-
-                for (final fileName in filesNames) {
-                  final downloadUrl = pbClient.fileUri(
-                    record: record,
-                    fileName: fileName,
-                  );
-
-                  final response = await http.get(downloadUrl);
-                  if (response.statusCode != 200) {
-                    downloadProgress.fail(
-                      'Failed to download file for record ${record.id}, '
-                      'field ${field.name}: ${response.statusCode} '
-                      '${response.reasonPhrase}',
-                    );
-                    continue;
-                  }
-                  final file =
-                      dir
-                          .join('storage/${remoteCollection.id}/${record.id}')
-                          .joinFile(fileName)
-                        ..create(recursive: true)
-                        ..writeAsBytes(response.bodyBytes);
-
-                  downloadProgress.complete(
-                    'Downloaded file for record ${record.id}, '
-                    'field ${field.name}: ${file.path}',
-                  );
-                }
-              }
-            case 0:
-              throw UnimplementedError();
-          }
-        }
-
-        _logger.info('');
-      }
+      // Download files for this collection
+      await _filesDownloaderService.downloadCollectionFiles(
+        pbClient: pbClient,
+        collection: remoteCollection,
+        records: records,
+        baseDir: dir,
+      );
 
       _logger.info(
         'Seed data for collection $collectionName updated '
@@ -220,10 +135,4 @@ class PullCommand extends Command {
 
     return ExitCode.success.code;
   }
-}
-
-extension CollectionModelFields on CollectionField {
-  bool get isFile => type == 'file';
-
-  int get maxSelect => get<int>('maxSelect');
 }
