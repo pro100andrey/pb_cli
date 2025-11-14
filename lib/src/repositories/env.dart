@@ -21,7 +21,7 @@ final class _FileEnvRepository implements EnvRepository {
     final file = _file(dataDir);
     final data = _readEnv(file);
 
-    return Dotenv(data);
+    return Dotenv.data(data);
   }
 
   @override

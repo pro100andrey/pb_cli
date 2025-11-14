@@ -21,13 +21,13 @@ final class _FileConfigRepositoryImpl implements ConfigRepository {
   @override
   Config read({required DirectoryPath dataDir}) {
     if (_file(dataDir).notFound) {
-      return Config.empty();
+      return const Config.empty();
     }
 
     final contents = _file(dataDir).readAsString();
     final configMap = jsonDecode(contents);
 
-    return Config(configMap);
+    return Config.data(configMap);
   }
 
   @override

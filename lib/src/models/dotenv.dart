@@ -33,7 +33,11 @@ extension type const DotenvKey._(String value) implements String {
 }
 
 /// Env data structure representing .env key-value pairs.
-extension type const Dotenv(Map<DotenvKey, String> data) {
+extension type const Dotenv._(Map<DotenvKey, String> data) {
+  const Dotenv.empty() : data = const {};
+
+  factory Dotenv.data(Map<DotenvKey, String> data) => Dotenv._(data);
+
   /// Returns the value for the [DotenvKey.pbHost] key.
   String? get pbHost => data[DotenvKey.pbHost];
 
@@ -57,7 +61,7 @@ extension type const Dotenv(Map<DotenvKey, String> data) {
     String? pbUsername,
     String? pbPassword,
     String? pbToken,
-  }) => Dotenv({
+  }) => Dotenv._({
     DotenvKey.pbHost: pbHost ?? this.pbHost!,
     DotenvKey.pbUsername: pbUsername ?? this.pbUsername!,
     DotenvKey.pbPassword: pbPassword ?? this.pbPassword!,

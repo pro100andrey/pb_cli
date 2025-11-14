@@ -9,10 +9,15 @@ import '../../repositories/env.dart';
 import '../../utils/path.dart';
 import '../../utils/strings.dart';
 import '../../utils/validation.dart';
+import '../redux/actions/load_config_action.dart';
+import '../redux/actions/load_env_action.dart';
+import '../redux/actions/resolve_data_dir_action.dart';
+import '../redux/context.dart';
+import '../redux/mixins.dart';
 import 'context.dart';
 
-class SetupCommand extends Command {
-  SetupCommand({required Logger logger}) : _logger = logger {
+class SetupCommand extends Command with WithRedux {
+  SetupCommand({required this.context}) {
     argParser.addOption(
       S.dirOptionName,
       abbr: S.dirOptionAbbr,
@@ -27,24 +32,31 @@ class SetupCommand extends Command {
   @override
   final description = S.setupDescription;
 
-  final Logger _logger;
+  @override
+  final Context context;
 
   final _envRepository = EnvRepository();
   final _configRepository = ConfigRepository();
 
   @override
   Future<int> run() async {
+
+    final dirArg = argResults![S.dirOptionName];
+    dispatchSync(ResolveDataDirAction(dir: dirArg));
+    dispatchSync(LoadEnvAction());
+    dispatchSync(LoadConfigAction());
+
     final dir = DirectoryPath(argResults![S.dirOptionName]);
 
     // Validate directory path
     if (dir.validateIsDirectory() case final failure?) {
-      _logger.err(failure.message);
+      logger.err(failure.message);
       return failure.exitCode;
     }
 
-    _logger.info(S.setupDirectoryStart(dir.path));
+    logger.info(S.setupDirectoryStart(dir.path));
 
-    final ctxResult = await resolveCommandContext(dir: dir, logger: _logger);
+    final ctxResult = await resolveCommandContext(dir: dir, logger: logger);
     if (ctxResult case Result(:final error?)) {
       return error.exitCode;
     }
@@ -54,7 +66,7 @@ class SetupCommand extends Command {
     // Fetch the current schema from the remote PocketBase instance
     final collectionsResult = await pbClient.getCollections();
     if (collectionsResult case Result(:final error?)) {
-      _logger.err(error.fetchCollectionsSchema);
+      logger.err(error.fetchCollectionsSchema);
       return error.exitCode;
     }
 
@@ -72,7 +84,7 @@ class SetupCommand extends Command {
     );
 
     if (managedCollections.isEmpty) {
-      _logger.warn(S.noCollectionsSelected);
+      logger.warn(S.noCollectionsSelected);
     }
 
     final source = CredentialsSource.fromTitle(
@@ -89,13 +101,13 @@ class SetupCommand extends Command {
         .isNotEmpty;
 
     if (!sourceChanged && !managedCollectionsChanged) {
-      _logger.info(S.setupAlreadyUpToDate);
+      logger.info(S.setupAlreadyUpToDate);
       return ExitCode.success.code;
     }
 
     if (dir.notFound) {
       dir.create();
-      _logger.info(S.directoryCreated(dir.path));
+      logger.info(S.directoryCreated(dir.path));
     }
 
     switch (source) {
@@ -108,10 +120,10 @@ class SetupCommand extends Command {
         );
 
         _envRepository.write(dotenv: updatedDotenv, dataDir: dir);
-        _logger.info(S.envFileUpdated);
+        logger.info(S.envFileUpdated);
 
       case _:
-        _logger.info(S.interactiveCredentialsSelected);
+        logger.info(S.interactiveCredentialsSelected);
     }
 
     final updatedConfig = config.copyWith(
@@ -121,7 +133,7 @@ class SetupCommand extends Command {
 
     _configRepository.write(config: updatedConfig, dataDir: dir);
 
-    _logger
+    logger
       ..success(S.setupCompleted)
       ..info(S.setupNextSteps);
 

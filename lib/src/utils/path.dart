@@ -97,6 +97,9 @@ extension type DirectoryPath._(PathCache _cache) implements FileEntityPath {
   /// Creates a new [DirectoryPath] for the given [path].
   factory DirectoryPath(String path) => DirectoryPath._(_getPathCache(path));
 
+  factory DirectoryPath.current() =>
+      DirectoryPath._(_getPathCache(Directory.current.path));
+
   /// Gets the underlying [Directory] object.
   Directory get _dir => Directory(path);
 

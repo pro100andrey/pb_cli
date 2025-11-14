@@ -76,7 +76,7 @@ CliResult<Credentials> resolveCredentials({
   }
 
   // Fall back to interactive prompting
-  final hostResponse = input.promptHost();
+  final hostResponse = input.promptHost(defaultValue: 'http://localhost:8090');
 
   // Prompt for username/email
   final usernameResponse = input.promptUsername(defaultValue: 'admin');

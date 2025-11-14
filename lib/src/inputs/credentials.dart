@@ -77,18 +77,12 @@ final class ConsoleCredentialsInput implements CredentialsInput {
 
   @override
   String promptHost({String? defaultValue}) => _logger
-      .prompt(
-        'Enter PocketBase host URL:',
-        defaultValue: defaultValue ?? 'http://localhost:8090',
-      )
+      .prompt('Enter PocketBase host URL:', defaultValue: defaultValue)
       .trim();
 
   @override
   String promptUsername({String? defaultValue}) => _logger
-      .prompt(
-        'Enter superuser username/email:',
-        defaultValue: defaultValue,
-      )
+      .prompt('Enter superuser username/email:', defaultValue: defaultValue)
       .trim();
 
   @override

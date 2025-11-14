@@ -5,11 +5,13 @@ import '../utils/strings.dart';
 import 'commands/pull.dart';
 import 'commands/push.dart';
 import 'commands/setup.dart';
+import 'redux/context.dart';
 
 Future<int> run(List<String> args) async {
   final logger = Logger();
 
   try {
+    final context = Context(logger: logger);
     final runner = CommandRunner(S.appName, S.appDescription)
       ..argParser.addFlag(
         S.verboseFlagName,
@@ -18,7 +20,7 @@ Future<int> run(List<String> args) async {
         negatable: false,
         callback: (value) => logger.level = value ? Level.verbose : Level.info,
       )
-      ..addCommand(SetupCommand(logger: logger))
+      ..addCommand(SetupCommand(context: context))
       ..addCommand(PushCommand(logger: logger))
       ..addCommand(PullCommand(logger: logger));
     final runResult = await runner.run(args);
