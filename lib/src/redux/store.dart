@@ -3,7 +3,6 @@ import 'dart:collection';
 
 import 'package:collection/collection.dart';
 
-import 'dependencies.dart';
 import 'global_wrap_error.dart';
 import 'observers.dart';
 import 'store_exception.dart';
@@ -38,10 +37,10 @@ final class Store<St> {
        _changeController = StreamController<St>.broadcast(sync: syncStream),
        _stateTimestamp = DateTime.now().toUtc(),
        _errors = Queue<UserException>(),
-       _dependencies = Dependencies(),
        _actionsInProgress = HashSet<ReduxAction<St>>.identity(),
        _actionsWeCanCheckFailed = HashSet<Type>.identity(),
        _failedActions = HashMap<Type, ReduxAction<St>>(),
+       _props = {},
        _dispatchCount = 0,
        _reduceCount = 0,
        _maxErrorsQueued = 10;
@@ -54,10 +53,10 @@ final class Store<St> {
   final ErrorObserver<St>? _errorObserver;
   final int _maxErrorsQueued;
   final Queue<UserException> _errors;
-  final Dependencies _dependencies;
   final HashSet<ReduxAction<St>> _actionsInProgress;
   final HashMap<Type, ReduxAction<St>> _failedActions;
   final HashSet<Type> _actionsWeCanCheckFailed;
+  final Map<(Type, Object?), Object> _props;
 
   St _state;
   DateTime _stateTimestamp;
@@ -68,7 +67,6 @@ final class Store<St> {
   int get dispatchCount => _dispatchCount;
   int get reduceCount => _reduceCount;
   St get state => _state;
-  Dependencies get dependencies => _dependencies;
 
   Stream<St> get onChange => _changeController.stream;
 
@@ -84,6 +82,76 @@ final class Store<St> {
         bool Function(Set<ReduxAction<St>>, ReduxAction<St>?),
         Completer<(Set<ReduxAction<St>>, ReduxAction<St>?)>
       >{};
+
+  void setProp<T extends Object>(T value, {Object? key}) {
+    final id = (T, key);
+
+    if (_props.containsKey(id)) {
+      throw Exception('Provider already registered for $T (key: $key)');
+    }
+
+    _props[id] = value;
+  }
+
+  T prop<T extends Object>({String? key}) {
+    final id = (T, key);
+
+    if (_props.containsKey(id)) {
+      return _props[id]! as T;
+    }
+
+    throw Exception('No provider registered for $T (key: $key)');
+  }
+
+  void disposeProp(Object? value, Object? keyToDispose) {
+    disposeProps(({key, value}) => key == keyToDispose && value == value);
+  }
+
+  void disposeProps([bool Function({Object? value, Object? key})? predicate]) {
+    final keysToRemove = [];
+
+    for (final MapEntry(key: key, value: value) in _props.entries) {
+      final removeIt = predicate?.call(key: key, value: value) ?? true;
+
+      if (removeIt) {
+        final ifTimerFutureStream = _closeTimerFutureStream(value);
+
+        // Removes the key if the predicate was provided and returned true,
+        // or it was not provided but the value is Timer/Future/Stream.
+        if ((predicate != null) || ifTimerFutureStream) {
+          keysToRemove.add(key);
+        }
+      }
+    }
+
+    // After the iteration, remove all keys at the same time.
+
+    keysToRemove.forEach(_props.remove);
+  }
+
+  /// If [obj] is a timer, future or stream related, it will be
+  /// closed/cancelled/ignored,  and `true` will be returned. For other object
+  /// types, the method returns `false`.
+  bool _closeTimerFutureStream(Object? obj) {
+    switch (obj) {
+      case Timer():
+        obj.cancel();
+      case Future():
+        obj.ignore();
+      case StreamSubscription():
+        // ignore: discarded_futures
+        obj.cancel();
+      case StreamConsumer():
+        // ignore: discarded_futures
+        obj.close();
+      case Sink():
+        obj.close();
+      case _:
+        return false;
+    }
+
+    return true;
+  }
 
   ActionStatus dispatchSync(ReduxAction<St> action, {bool notify = true}) {
     if (!action.isSync()) {

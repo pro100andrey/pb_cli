@@ -3,17 +3,12 @@ import 'package:mason_logger/mason_logger.dart';
 
 import '../../redux/store.dart';
 import 'app_state.dart';
-import 'context.dart';
 
-mixin WithRedux on Command {
-  /// The application context.
-  Context get context;
+mixin WithStore on Command {
+  Store<AppState> get store;
 
   /// The logger.
-  Logger get logger => context.logger;
-
-  /// The Redux store.
-  Store<AppState> get store => context.store;
+  Logger get logger => store.prop();
 
   /// The current application state.
   AppState get state => store.state;

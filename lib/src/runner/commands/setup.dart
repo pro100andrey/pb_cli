@@ -4,20 +4,22 @@ import 'package:mason_logger/mason_logger.dart';
 import '../../failure/common.dart';
 import '../../models/credentials_source.dart';
 import '../../models/result.dart';
+import '../../redux/store.dart';
 import '../../repositories/config.dart';
 import '../../repositories/env.dart';
 import '../../utils/path.dart';
 import '../../utils/strings.dart';
 import '../../utils/validation.dart';
+import '../redux/actions/action.dart';
 import '../redux/actions/load_config_action.dart';
 import '../redux/actions/load_env_action.dart';
 import '../redux/actions/resolve_data_dir_action.dart';
-import '../redux/context.dart';
+
 import '../redux/mixins.dart';
 import 'context.dart';
 
-class SetupCommand extends Command with WithRedux {
-  SetupCommand({required this.context}) {
+class SetupCommand extends Command with WithStore {
+  SetupCommand({required this.store}) {
     argParser.addOption(
       S.dirOptionName,
       abbr: S.dirOptionAbbr,
@@ -33,7 +35,7 @@ class SetupCommand extends Command with WithRedux {
   final description = S.setupDescription;
 
   @override
-  final Context context;
+  final Store<AppState> store;
 
   final _envRepository = EnvRepository();
   final _configRepository = ConfigRepository();

@@ -1,17 +1,26 @@
 import 'package:args/command_runner.dart';
 import 'package:mason_logger/mason_logger.dart';
 
+import '../redux/store.dart';
 import '../utils/strings.dart';
 import 'commands/pull.dart';
 import 'commands/push.dart';
 import 'commands/setup.dart';
-import 'redux/context.dart';
+import 'redux/actions/action.dart';
+import 'redux/observers.dart';
 
 Future<int> run(List<String> args) async {
   final logger = Logger();
 
   try {
-    final context = Context(logger: logger);
+    final store = Store<AppState>(
+      initialState: AppState.initial(),
+      syncStream: true,
+      actionObservers: [
+        ReduxActionLogger(logger: logger),
+      ],
+    )..setProp(logger);
+
     final runner = CommandRunner(S.appName, S.appDescription)
       ..argParser.addFlag(
         S.verboseFlagName,
@@ -20,7 +29,7 @@ Future<int> run(List<String> args) async {
         negatable: false,
         callback: (value) => logger.level = value ? Level.verbose : Level.info,
       )
-      ..addCommand(SetupCommand(context: context))
+      ..addCommand(SetupCommand(store: store))
       ..addCommand(PushCommand(logger: logger))
       ..addCommand(PullCommand(logger: logger));
     final runResult = await runner.run(args);
