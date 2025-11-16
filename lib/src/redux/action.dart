@@ -1,55 +1,104 @@
 part of 'store.dart';
 
+/// Base class for all Redux actions.
+///
+/// An action represents an intent to change the state. It encapsulates the
+/// logic for state transformations through the [reduce] method.
+///
+/// Actions can be synchronous or asynchronous, and provide access to the store,
+/// current state, and various dispatch methods.
+///
+/// Type parameter [St] represents the state type.
 abstract class ReduxAction<St> {
   late Store<St> _store;
 
+  /// The store that this action is associated with.
   Store<St> get store => _store;
+
+  /// The current state of the store.
   St get state => _store.state;
 
   late St _initialState;
+
+  /// The state at the time this action was dispatched.
   St get initialState => _initialState;
 
   var _status = const ActionStatus();
+
+  /// The current status of this action (waiting, failed, etc.).
   ActionStatus get status => _status;
 
   bool _completedFuture = false;
 
+  /// Sets the store for this action.
+  ///
+  /// This is called internally by the store when the action is dispatched.
   void setStore(Store<St> store) {
     _store = store;
     _initialState = _store.state;
   }
 
+  /// The reducer function that transforms the state.
+  ///
+  /// This method should return the new state, or null if the state should not
+  /// change. It can be synchronous or asynchronous.
   FutureOr<St?> reduce();
 
+  /// Called before the action is dispatched.
+  ///
+  /// If this method returns true, the action will not be dispatched and
+  /// [AbortDispatchException] will be thrown.
   bool abortDispatch() => false;
 
+  /// Wraps the reduce function with additional logic.
+  ///
+  /// Override this method to add middleware-like behavior around the reducer,
+  /// such as logging, error handling, or state validation.
   FutureOr<St?> wrapReduce(Reducer<St> reduce) => null;
 
+  /// Wraps errors thrown during action execution.
+  ///
+  /// Override this to transform or handle errors in a custom way.
+  /// The default implementation returns the error unchanged.
   Object? wrapError(Object error, StackTrace stackTrace) => error;
 
+  /// Dispatches an action and waits for it to complete.
   DispatchAndWait<St> get dispatchAndWait => _store.dispatchAndWait;
 
+  /// Dispatches an action without waiting for it to complete.
   Dispatch<St> get dispatch => _store.dispatch;
 
+  /// Dispatches a synchronous action.
   DispatchSync<St> get dispatchSync => _store.dispatchSync;
 
+  /// Dispatches multiple actions.
+  ///
+  /// Returns a list of the dispatched actions.
   List<ReduxAction<St>> Function(List<ReduxAction<St>> actions, {bool notify})
   get dispatchAll => _store.dispatchAll;
 
+  /// Dispatches multiple actions and waits for all of them to complete.
   Future<List<ReduxAction<St>>> Function(
     List<ReduxAction<St>> actions, {
     bool notify,
   })
   get dispatchAndWaitAll => _store.dispatchAndWaitAll;
 
+  /// Returns true if [wrapReduce] is overridden with an async implementation.
   bool ifWrapReduceOverriddenAsync() =>
       wrapReduce is Future<St?> Function(Reducer<St>);
 
+  /// Returns true if [wrapReduce] is overridden with a sync implementation.
   bool ifWrapReduceOverriddenSync() => wrapReduce is St? Function(Reducer<St>);
 
+  /// Returns true if [wrapReduce] is overridden.
   bool ifWrapReduceOverridden() =>
       ifWrapReduceOverriddenAsync() || ifWrapReduceOverriddenSync();
 
+  /// Returns true if this action is synchronous.
+  ///
+  /// An action is synchronous if both [reduce] and [wrapReduce] are
+  /// synchronous.
   bool isSync() {
     final reduceMethodIsSync = reduce is St? Function();
     if (!reduceMethodIsSync) {
@@ -62,9 +111,17 @@ abstract class ReduxAction<St> {
     return !ifWrapReduceOverriddenAsync();
   }
 
+  /// Returns true if the given action(s) are currently being executed.
+  ///
+  /// [actionOrTypeOrList] can be an action instance, a Type, or a list of
+  /// Types.
   bool isWaiting(Object actionOrTypeOrList) =>
       _store.isWaiting(actionOrTypeOrList);
 
+  /// Returns true if the given action(s) have failed.
+  ///
+  /// [actionOrTypeOrList] can be an action instance, a Type, or a list of
+  /// Types.
   bool isFailed(Object actionOrTypeOrList) =>
       _store.isFailed(actionOrTypeOrList);
 
@@ -167,7 +224,10 @@ abstract class ReduxAction<St> {
     });
   }
 
-  /// Returns the runtimeType, without the generic part.
+  /// Returns the runtime type as a string, without the generic part.
+  ///
+  /// For example, if the runtime type is `MyAction<int>`, this returns
+  /// `"MyAction"`.
   String runtimeTypeString() {
     final text = runtimeType.toString();
     final pos = text.indexOf('<');
@@ -178,6 +238,11 @@ abstract class ReduxAction<St> {
   String toString() => 'Action ${runtimeTypeString()}';
 }
 
+/// Exception thrown when an action's [ReduxAction.abortDispatch] method returns
+///  true.
+///
+/// This exception is used to signal that an action should not be dispatched
+/// and is handled internally by the store.
 class AbortDispatchException implements Exception {
   @override
   bool operator ==(Object other) =>

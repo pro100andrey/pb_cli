@@ -11,21 +11,50 @@ import 'wrap_reduce.dart';
 
 part 'action.dart';
 
+/// A function type that represents a reducer, which can return either a state
+/// synchronously or asynchronously.
 typedef Reducer<St> = FutureOr<St?> Function();
 
+/// A function type for dispatching actions that can complete synchronously or
+/// asynchronously.
+///
+/// Returns an [ActionStatus] that indicates the result of the dispatch.
 typedef Dispatch<St> =
     FutureOr<ActionStatus> Function(
       ReduxAction<St> action, {
       bool notify,
     });
 
+/// A function type for dispatching actions and waiting for them to complete.
+///
+/// Always returns a [Future] that resolves to an [ActionStatus].
 typedef DispatchAndWait<St> =
     Future<ActionStatus> Function(ReduxAction<St> action, {bool notify});
 
+/// A function type for dispatching synchronous actions only.
+///
+/// Returns an [ActionStatus] immediately.
 typedef DispatchSync<St> =
     ActionStatus Function(ReduxAction<St> action, {bool notify});
 
+/// The Redux store that manages application state.
+///
+/// The store is the central hub that holds the application state and provides
+/// methods to dispatch actions, observe state changes, and manage errors.
+///
+/// Type parameter [St] represents the state type.
 final class Store<St> {
+  /// Creates a new store with the given initial state and optional 
+  /// configuration.
+  ///
+  /// Parameters:
+  /// - [initialState]: The initial state of the store.
+  /// - [syncStream]: If true, state changes are broadcast synchronously.
+  /// - [actionObservers]: List of observers to monitor action lifecycle.
+  /// - [stateObservers]: List of observers to monitor state changes.
+  /// - [wrapReduce]: Global reducer wrapper for all actions.
+  /// - [globalWrapError]: Global error wrapper for all actions.
+  /// - [errorObserver]: Observer for error handling.
   Store({
     required St initialState,
     bool syncStream = false,
@@ -69,13 +98,24 @@ final class Store<St> {
   int _dispatchCount;
   int _reduceCount;
 
+  /// The timestamp when the state was last updated.
   DateTime get stateTimestamp => _stateTimestamp;
+
+  /// The total number of actions that have been dispatched.
   int get dispatchCount => _dispatchCount;
+
+  /// The total number of times reducers have been executed.
   int get reduceCount => _reduceCount;
+
+  /// The current state of the store.
   St get state => _state;
 
+  /// A stream that emits the state whenever it changes.
   Stream<St> get onChange => _changeController.stream;
 
+  /// The default timeout in milliseconds for [waitCondition] and similar 
+  /// methods.
+  /// Defaults to 10 minutes (600,000 ms). Set to -1 to disable timeout.
   static int defaultTimeoutMillis = 60 * 1000 * 10;
 
   final _stateConditionCompleters =
@@ -89,6 +129,17 @@ final class Store<St> {
         Completer<(Set<ReduxAction<St>>, ReduxAction<St>?)>
       >{};
 
+  /// Registers a property value that can be retrieved later by type.
+  ///
+  /// This is useful for dependency injection or sharing services across 
+  /// actions.
+  /// Throws an exception if a property of the same type and key is already
+  /// registered.
+  ///
+  /// Parameters:
+  /// - [value]: The value to register.
+  /// - [key]: Optional key to distinguish between multiple instances of the
+  ///   same type.
   void setProp<T extends Object>(T value, {Object? key}) {
     final id = (T, key);
 
@@ -99,6 +150,12 @@ final class Store<St> {
     _props[id] = value;
   }
 
+  /// Retrieves a previously registered property by type.
+  ///
+  /// Throws an exception if no property of the specified type and key is found.
+  ///
+  /// Parameters:
+  /// - [key]: Optional key to retrieve a specific instance.
   T prop<T extends Object>({String? key}) {
     final id = (T, key);
 
@@ -109,10 +166,21 @@ final class Store<St> {
     throw Exception('No provider registered for $T (key: $key)');
   }
 
+  /// Disposes a specific property by value and key.
+  ///
+  /// If the property is a [Timer], [Future], or [Stream], it will be properly
+  /// cancelled/closed.
   void disposeProp(Object? value, Object? keyToDispose) {
     disposeProps(({key, value}) => key == keyToDispose && value == value);
   }
 
+  /// Disposes properties based on a predicate.
+  ///
+  /// If no predicate is provided, disposes all properties that are [Timer],
+  /// [Future], or [Stream] instances by cancelling/closing them.
+  ///
+  /// Parameters:
+  /// - [predicate]: Optional function to determine which properties to dispose.
   void disposeProps([bool Function({Object? value, Object? key})? predicate]) {
     final keysToRemove = [];
 
@@ -131,12 +199,11 @@ final class Store<St> {
     }
 
     // After the iteration, remove all keys at the same time.
-
     keysToRemove.forEach(_props.remove);
   }
 
   /// If [obj] is a timer, future or stream related, it will be
-  /// closed/cancelled/ignored,  and `true` will be returned. For other object
+  /// closed/cancelled/ignored, and `true` will be returned. For other object
   /// types, the method returns `false`.
   bool _closeTimerFutureStream(Object? obj) {
     switch (obj) {
@@ -159,6 +226,14 @@ final class Store<St> {
     return true;
   }
 
+  /// Dispatches a synchronous action.
+  ///
+  /// Throws [StoreException] if the action is not synchronous.
+  ///
+  /// Parameters:
+  /// - [action]: The action to dispatch.
+  /// - [notify]: If true, notifies listeners of state changes. Defaults to 
+  /// true.
   ActionStatus dispatchSync(ReduxAction<St> action, {bool notify = true}) {
     if (!action.isSync()) {
       throw StoreException(
@@ -170,11 +245,27 @@ final class Store<St> {
     return _dispatch(action, notify: notify) as ActionStatus;
   }
 
+  /// Dispatches an action.
+  ///
+  /// Returns immediately for synchronous actions, or a [Future] for async 
+  /// actions.
+  ///
+  /// Parameters:
+  /// - [action]: The action to dispatch.
+  /// - [notify]: If true, notifies listeners of state changes. Defaults to 
+  /// true.
   FutureOr<ActionStatus> dispatch(
     ReduxAction<St> action, {
     bool notify = true,
   }) => _dispatch(action, notify: notify);
 
+  /// Dispatches an action and returns a [Future] that completes when the action
+  /// finishes.
+  ///
+  /// Parameters:
+  /// - [action]: The action to dispatch.
+  /// - [notify]: If true, notifies listeners of state changes. Defaults to 
+  /// true.
   Future<ActionStatus> dispatchAndWait(
     ReduxAction<St> action, {
     bool notify = true,
@@ -211,6 +302,14 @@ final class Store<St> {
     return _processAction(action, notify: notify);
   }
 
+  /// Dispatches an action and waits for both the action and all subsequently
+  /// dispatched actions to complete.
+  ///
+  /// Parameters:
+  /// - [action]: The action to dispatch.
+  /// - [notify]: If true, notifies listeners of state changes. Defaults to 
+  /// true.
+  /// - [timeoutMillis]: Optional timeout in milliseconds.
   Future<ActionStatus> dispatchAndWaitAllActions(
     ReduxAction<St> action, {
     bool notify = true,
@@ -225,6 +324,12 @@ final class Store<St> {
     return actionStatus;
   }
 
+  /// Dispatches multiple actions and waits for all of them to complete.
+  ///
+  /// Parameters:
+  /// - [actions]: List of actions to dispatch.
+  /// - [notify]: If true, notifies listeners of state changes. Defaults to 
+  /// true.
   Future<List<ReduxAction<St>>> dispatchAndWaitAll(
     List<ReduxAction<St>> actions, {
     bool notify = true,
@@ -239,6 +344,12 @@ final class Store<St> {
     return actions;
   }
 
+  /// Dispatches multiple actions without waiting for them to complete.
+  ///
+  /// Parameters:
+  /// - [actions]: List of actions to dispatch.
+  /// - [notify]: If true, notifies listeners of state changes. Defaults to 
+  /// true.
   List<ReduxAction<St>> dispatchAll(
     List<ReduxAction<St>> actions, {
     bool notify = true,
@@ -250,6 +361,17 @@ final class Store<St> {
     return actions;
   }
 
+  /// Waits for all specified actions to complete.
+  ///
+  /// If [actions] is null or empty, waits for all currently executing actions.
+  /// Throws [StoreException] if no actions are in progress and
+  /// [completeImmediately] is false.
+  ///
+  /// Parameters:
+  /// - [actions]: Optional list of specific actions to wait for.
+  /// - [completeImmediately]: If true, completes immediately when no actions
+  ///   are in progress. Defaults to false.
+  /// - [timeoutMillis]: Optional timeout in milliseconds.
   Future<void> waitAllActions(
     List<ReduxAction<St>>? actions, {
     bool completeImmediately = false,
@@ -280,6 +402,12 @@ final class Store<St> {
     }
   }
 
+  /// Returns true if the given action(s) are currently being executed.
+  ///
+  /// [actionOrActionTypeOrList] can be:
+  /// - A [ReduxAction] instance
+  /// - A [Type] representing an action class
+  /// - An [Iterable] of actions or types
   bool isWaiting(Object actionOrActionTypeOrList) {
     //
     // 1) If a type was passed:
@@ -362,9 +490,19 @@ final class Store<St> {
     }
   }
 
+  /// Returns true if the given action(s) have failed.
+  ///
+  /// [actionOrActionTypeOrList] can be an action type or a list of types.
   bool isFailed(Object actionOrActionTypeOrList) =>
       exceptionFor(actionOrActionTypeOrList) != null;
 
+  /// Returns the [UserException] of the action type that failed.
+  ///
+  /// [actionTypeOrList] can be a [Type] or an [Iterable] of types.
+  /// Returns null if the action hasn't failed or if the error is not a
+  /// [UserException].
+  ///
+  /// Note: This method uses the EXACT type. Subtypes are not considered.
   UserException? exceptionFor(Object actionTypeOrList) {
     //
     // 1) If a type was passed:
@@ -413,6 +551,14 @@ final class Store<St> {
     }
   }
 
+  /// Removes the given action type(s) from the list of failed actions.
+  ///
+  /// Note that dispatching an action already removes that action type from the
+  /// exceptions list automatically.
+  ///
+  /// [actionTypeOrList] can be a [Type] or an [Iterable] of types.
+  ///
+  /// Note: This method uses the EXACT type. Subtypes are not considered.
   void clearExceptionFor(Object actionTypeOrList) {
     //
     // 1) If a type was passed:
@@ -456,6 +602,18 @@ final class Store<St> {
     }
   }
 
+  /// Returns a future that completes when the given state [condition] becomes
+  /// true.
+  ///
+  /// If the condition is already true, the future completes immediately (if
+  /// [completeImmediately] is true) or throws [StoreException].
+  ///
+  /// Parameters:
+  /// - [condition]: A function that tests the state.
+  /// - [completeImmediately]: If true, completes immediately when condition
+  ///   is already true. Defaults to true.
+  /// - [timeoutMillis]: Optional timeout. Defaults to [defaultTimeoutMillis].
+  ///   Set to -1 to disable timeout.
   Future<ReduxAction<St>?> waitCondition(
     bool Function(St) condition, {
     bool completeImmediately = true,
@@ -745,6 +903,17 @@ final class Store<St> {
     keysToRemove.forEach(_actionConditionCompleters.remove);
   }
 
+  /// Returns a future that completes when the given action [condition] becomes
+  /// true.
+  ///
+  /// Parameters:
+  /// - [condition]: Function that tests actions in progress and the trigger
+  ///   action.
+  /// - [completeImmediately]: If true, completes immediately when condition is
+  ///   already true.
+  /// - [completedErrorMessage]: Error message if condition is already true and
+  ///   [completeImmediately] is false.
+  /// - [timeoutMillis]: Optional timeout in milliseconds.
   Future<(Set<ReduxAction<St>>, ReduxAction<St>?)> waitActionCondition(
     bool Function(Set<ReduxAction<St>> actions, ReduxAction<St>? triggerAction)
     condition, {
@@ -998,7 +1167,12 @@ final class Store<St> {
   }
 }
 
+/// Represents the status of an action's execution.
+///
+/// Tracks whether an action has been dispatched, completed, aborted, and any
+/// errors that occurred during execution.
 final class ActionStatus {
+  /// Creates an [ActionStatus] with the given properties.
   const ActionStatus({
     this.isDispatched = false,
     this.hasFinishedMethodReduce = false,
@@ -1007,16 +1181,33 @@ final class ActionStatus {
     this.wrappedError,
   });
 
+  /// True if the action has been dispatched.
   final bool isDispatched;
+
+  /// True if the reducer method has finished executing.
   final bool hasFinishedMethodReduce;
+
+  /// True if the action was aborted before execution.
   final bool isDispatchAborted;
+
+  /// The original error that was thrown, if any.
   final Object? originalError;
+
+  /// The error after being wrapped by error handlers, if any.
   final Object? wrappedError;
 
+  /// True if the action completed successfully without errors.
   bool get isCompletedOk => isCompleted && (originalError == null);
+
+  /// True if the action completed with an error.
   bool get isCompletedFailed => isCompleted && (originalError != null);
+
+  /// True if the action has finished executing (either successfully or with 
+  /// error)
+  /// or was aborted.
   bool get isCompleted => hasFinishedMethodReduce || isDispatchAborted;
 
+  /// Creates a copy of this status with updated properties.
   ActionStatus copy({
     bool? isDispatched,
     bool? hasFinishedMethodReduce,
