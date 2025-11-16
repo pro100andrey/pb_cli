@@ -30,7 +30,4 @@ class LoadEnvAction extends AppAction {
 
     return state.copyWith(dotenv: dotenv);
   }
-
-  @override
-  String toString() => 'LoadEnvAction(file: $_fileName)';
 }

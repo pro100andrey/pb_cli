@@ -1,5 +1,3 @@
-import 'package:path/path.dart' as p;
-
 import '../../../utils/path.dart';
 import '../../../utils/validation.dart';
 import 'action.dart';
@@ -20,7 +18,4 @@ final class ResolveDataDirAction extends AppAction {
 
     return state.copyWith(dataDir: dirPath);
   }
-
-  @override
-  String toString() => 'ResolveDataDirAction(dir: ${p.canonicalize(dir)})';
 }

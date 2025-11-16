@@ -1,9 +1,9 @@
 import 'package:args/command_runner.dart';
 import 'package:mason_logger/mason_logger.dart';
 
-import 'context.dart';
 import '../../redux/store.dart';
 import 'app_state.dart';
+import 'context.dart';
 
 mixin WithRedux on Command {
   /// The application context.

@@ -20,6 +20,4 @@ class LoadConfigAction extends AppAction {
     return state.copyWith(config: config);
   }
 
-  @override
-  String toString() => 'LoadConfigAction(file: $_fileName)';
 }

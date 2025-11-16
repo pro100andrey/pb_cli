@@ -2,8 +2,8 @@ part of 'store.dart';
 
 abstract class ReduxAction<St> {
   late Store<St> _store;
-  Store<St> get store => _store;
 
+  Store<St> get store => _store;
   St get state => _store.state;
 
   late St _initialState;
