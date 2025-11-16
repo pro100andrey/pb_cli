@@ -13,6 +13,12 @@ part 'action.dart';
 
 typedef Reducer<St> = FutureOr<St?> Function();
 
+typedef Dispatch<St> =
+    FutureOr<ActionStatus> Function(
+      ReduxAction<St> action, {
+      bool notify,
+    });
+
 typedef DispatchAndWait<St> =
     Future<ActionStatus> Function(ReduxAction<St> action, {bool notify});
 
@@ -164,6 +170,11 @@ final class Store<St> {
     return _dispatch(action, notify: notify) as ActionStatus;
   }
 
+  FutureOr<ActionStatus> dispatch(
+    ReduxAction<St> action, {
+    bool notify = true,
+  }) => _dispatch(action, notify: notify);
+
   Future<ActionStatus> dispatchAndWait(
     ReduxAction<St> action, {
     bool notify = true,
@@ -198,6 +209,45 @@ final class Store<St> {
     }
 
     return _processAction(action, notify: notify);
+  }
+
+  Future<ActionStatus> dispatchAndWaitAllActions(
+    ReduxAction<St> action, {
+    bool notify = true,
+    int? timeoutMillis,
+  }) async {
+    final actionStatus = await dispatchAndWait(action, notify: notify);
+    await waitAllActions(
+      [],
+      completeImmediately: true,
+      timeoutMillis: timeoutMillis,
+    );
+    return actionStatus;
+  }
+
+  Future<List<ReduxAction<St>>> dispatchAndWaitAll(
+    List<ReduxAction<St>> actions, {
+    bool notify = true,
+  }) async {
+    final futures = <Future<ActionStatus>>[];
+
+    for (final action in actions) {
+      futures.add(dispatchAndWait(action, notify: notify));
+    }
+    await Future.wait(futures);
+
+    return actions;
+  }
+
+  List<ReduxAction<St>> dispatchAll(
+    List<ReduxAction<St>> actions, {
+    bool notify = true,
+  }) {
+    for (final action in actions) {
+      // ignore: discarded_futures
+      _dispatch(action, notify: notify);
+    }
+    return actions;
   }
 
   Future<void> waitAllActions(
