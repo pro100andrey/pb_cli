@@ -1035,7 +1035,7 @@ final class Store<St> {
 
     // Memorizes errors of type UserException (in the error queue).
     // These errors are usually shown to the user in a modal dialog, and are
-    //not logged.
+    // not logged.
     if (errorOrNull is UserException) {
       if (errorOrNull.ifOpenDialog) {
         _addError(errorOrNull);
