@@ -1,7 +1,7 @@
-import 'package:args/command_runner.dart';
 import 'package:mason_logger/mason_logger.dart';
 
 import '../../models/result.dart';
+import '../../redux/store.dart';
 import '../../repositories/config.dart';
 import '../../repositories/schema.dart';
 import '../../repositories/seed.dart';
@@ -11,10 +11,11 @@ import '../../services/schema_sync.dart';
 import '../../utils/path.dart';
 import '../../utils/strings.dart';
 import '../../utils/validation.dart';
-import 'context.dart';
+import '../redux/actions/action.dart';
+import 'base_command.dart';
 
-class PullCommand extends Command {
-  PullCommand({required Logger logger}) : _logger = logger {
+class PullCommand extends BaseCommand {
+  PullCommand({required this.store}) : _logger = store.prop<Logger>() {
     argParser
       ..addOption(
         S.dirOptionName,
@@ -36,6 +37,9 @@ class PullCommand extends Command {
   @override
   final description = S.pullDescription;
 
+  @override
+  final Store<AppState> store;
+
   final Logger _logger;
   final _schemaRepository = SchemaRepository();
   final _configRepository = ConfigRepository();
@@ -53,14 +57,9 @@ class PullCommand extends Command {
       return failure.exitCode;
     }
 
-    // 2. Resolve command context
-    final ctxResult = await resolveCommandContext(dir: dir, logger: _logger);
-    if (ctxResult case Result(:final error?)) {
-      _logger.err(error.message);
-      return error.exitCode;
-    }
-
-    final (:inputs, :pbClient, :credentials) = ctxResult.value;
+   final dirArg = argResults![S.dirOptionName];
+    resolveDataDir(dirArg);
+    final pbClient = await resolvePBConnection();
 
     // 3. Sync collections schema from PocketBase server
     final fetchProgress = _logger.progress('Fetching schema from server');

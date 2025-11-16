@@ -55,16 +55,4 @@ extension type const Dotenv._(Map<DotenvKey, String> data) {
       pbUsername != null &&
       pbPassword != null &&
       pbToken != null;
-
-  Dotenv copyWith({
-    String? pbHost,
-    String? pbUsername,
-    String? pbPassword,
-    String? pbToken,
-  }) => Dotenv._({
-    DotenvKey.pbHost: pbHost ?? this.pbHost!,
-    DotenvKey.pbUsername: pbUsername ?? this.pbUsername!,
-    DotenvKey.pbPassword: pbPassword ?? this.pbPassword!,
-    DotenvKey.pbToken: pbToken ?? this.pbToken!,
-  });
 }

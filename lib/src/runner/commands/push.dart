@@ -1,6 +1,5 @@
 import 'dart:convert';
 
-import 'package:args/command_runner.dart';
 import 'package:mason_logger/mason_logger.dart';
 import 'package:pocketbase/pocketbase.dart';
 
@@ -9,13 +8,15 @@ import '../../extensions/string_style.dart';
 import '../../failure/common.dart';
 import '../../failure/failure.dart';
 import '../../models/result.dart';
+import '../../redux/store.dart';
 import '../../utils/path.dart';
 import '../../utils/strings.dart';
 import '../../utils/utils.dart';
-import 'context.dart';
+import '../redux/actions/action.dart';
+import 'base_command.dart';
 
-class PushCommand extends Command {
-  PushCommand({required Logger logger}) : _logger = logger {
+class PushCommand extends BaseCommand {
+  PushCommand({required this.store}) {
     argParser
       ..addOption(
         S.batchSizeOptionName,
@@ -36,7 +37,8 @@ class PushCommand extends Command {
   @override
   final description = S.pushDescription;
 
-  final Logger _logger;
+  @override
+  final Store<AppState> store;
 
   @override
   Future<int> run() async {
@@ -50,17 +52,10 @@ class PushCommand extends Command {
       return Failure.exIO;
     }
 
-    final ctxResult = await resolveCommandContext(
-      dir: dir,
-      logger: _logger,
-    );
+    final dirArg = argResults![S.dirOptionName];
+    resolveDataDir(dirArg);
 
-    if (ctxResult case Result(:final error?)) {
-      _logger.err(error.message);
-      return error.exitCode;
-    }
-
-    final (:inputs, :pbClient, :credentials) = ctxResult.value;
+    final pbClient = await resolvePBConnection();
 
     // final dirArg = argResults!['dir'] as String;
     // final dir = DirectoryPath(dirArg);
@@ -71,13 +66,13 @@ class PushCommand extends Command {
 
     var batchSize = int.tryParse(argResults!['batch-size'] as String) ?? 20;
     if (batchSize <= 0 || batchSize > 50) {
-      _logger.warn('Batch size must be between 1 and 50. Using default of 20.');
+      logger.warn('Batch size must be between 1 and 50. Using default of 20.');
       batchSize = 20;
     }
 
     final truncateArg = argResults!['truncate'] as bool;
     if (truncateArg) {
-      _logger.detail(
+      logger.detail(
         'Truncate option enabled: Skipping confirmation prompt.',
       );
     }
@@ -85,7 +80,7 @@ class PushCommand extends Command {
     final truncate =
         truncateArg ||
         (terminalIsAttached() &&
-            _logger.confirm('Truncate collections before seeding?'));
+            logger.confirm('Truncate collections before seeding?'));
 
     await _seedCollections(
       pb: pbClient,
@@ -103,7 +98,7 @@ class PushCommand extends Command {
     final collectionsResult = await pb.getCollections();
 
     if (collectionsResult case Result(:final error?)) {
-      _logger.err(error.fetchCollectionsSchema);
+      logger.err(error.fetchCollectionsSchema);
       return;
     }
 
@@ -116,11 +111,11 @@ class PushCommand extends Command {
         .map((e) => CollectionModel.fromJson(e as Map<String, dynamic>))
         .toList(growable: false);
 
-    _logger.info('Comparing local schema with remote schema...');
+    logger.info('Comparing local schema with remote schema...');
     const isSame = false;
 
     if (isSame) {
-      _logger.info('Schema is up to date!'.green);
+      logger.info('Schema is up to date!'.green);
       return;
     }
 
@@ -130,7 +125,7 @@ class PushCommand extends Command {
     // call. await pb.collections.import(collections, deleteMissing: true);
     await pb.importCollections(fromJsonFile);
 
-    _logger.info('Schema imported/updated successfully!'.green);
+    logger.info('Schema imported/updated successfully!'.green);
   }
 
   Future<void> _seedCollections({
@@ -144,7 +139,7 @@ class PushCommand extends Command {
     if (!truncate) {}
 
     if (!truncate && emptyMap.entries.any((e) => !e.value)) {
-      _logger.info(
+      logger.info(
         'Not all collections are empty. Use --truncate option to force '
         'seeding.',
       );
@@ -157,7 +152,7 @@ class PushCommand extends Command {
       final shouldProcess = truncate || (emptyMap[entry.value] ?? false);
 
       if (!shouldProcess) {
-        _logger.info(
+        logger.info(
           'Skipping seeding for ${entry.value} as it is not empty.',
         );
         continue;
@@ -169,7 +164,7 @@ class PushCommand extends Command {
         final shouldContinue = truncateResult.fold(
           (v) => true,
           (error) {
-            _logger.err(
+            logger.err(
               'Failed to truncate $collectionName: $error. Seeding aborted.',
             );
             return false;
@@ -180,10 +175,10 @@ class PushCommand extends Command {
           continue;
         }
 
-        _logger.info('Truncated collection: $collectionName');
+        logger.info('Truncated collection: $collectionName');
       }
 
-      final progress = _logger.progress('Reading $collectionName data...');
+      final progress = logger.progress('Reading $collectionName data...');
       const contents = ''; //jsonFilePath.readAsString();
       // Ensure we are decoding to a List of dynamic maps
       final itemsToSeed = (jsonDecode(contents) as List)

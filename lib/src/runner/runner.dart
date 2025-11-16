@@ -30,8 +30,8 @@ Future<int> run(List<String> args) async {
         callback: (value) => logger.level = value ? Level.verbose : Level.info,
       )
       ..addCommand(SetupCommand(store: store))
-      ..addCommand(PushCommand(logger: logger))
-      ..addCommand(PullCommand(logger: logger));
+      ..addCommand(PushCommand(store: store))
+      ..addCommand(PullCommand(store: store));
     final runResult = await runner.run(args);
 
     if (runResult case int()) {

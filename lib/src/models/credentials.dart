@@ -58,7 +58,7 @@ final class Credentials {
 ///
 /// Returns a [CliResult] containing either the resolved [Credentials] or
 /// a [Failure] if the credentials could not be obtained.
-CliResult<Credentials> resolveCredentials({
+Credentials resolveCredentials({
   required Dotenv dotenv,
   required Config config,
   required CredentialsInput input,
@@ -72,7 +72,7 @@ CliResult<Credentials> resolveCredentials({
       token: dotenv.pbToken,
     );
 
-    return credentials.asResult();
+    return credentials;
   }
 
   // Fall back to interactive prompting
@@ -91,5 +91,5 @@ CliResult<Credentials> resolveCredentials({
     token: null,
   );
 
-  return credentials.asResult();
+  return credentials;
 }
