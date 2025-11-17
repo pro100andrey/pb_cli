@@ -1,5 +1,5 @@
-import '../../../utils/path.dart';
-import '../../../utils/validation.dart';
+import '../../utils/path.dart';
+import '../../utils/validation.dart';
 import 'action.dart';
 
 final class ResolveDataDirAction extends AppAction {
@@ -13,9 +13,12 @@ final class ResolveDataDirAction extends AppAction {
 
     final failure = dirPath.validateIsDirectory();
     if (failure != null) {
+      logger.err(failure.message);
       throw Exception(failure.message);
     }
 
-    return state.copyWith(dataDir: dirPath);
+    logger.detail('Work dir: ${dirPath.canonicalized}');
+
+    return state.copyWith(workDir: dirPath);
   }
 }

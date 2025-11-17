@@ -1,5 +1,5 @@
-import '../../../models/dotenv.dart';
-import '../../../utils/path.dart';
+import '../../models/dotenv.dart';
+import '../../utils/path.dart';
 import 'action.dart';
 
 const String _fileName = '.env';
@@ -26,24 +26,39 @@ final class SaveEnvAction extends AppAction {
       DotenvKey.pbToken: ?token,
     };
 
-    final file = state.dataDir.joinFile(_fileName);
+    final file = select.workDir.joinFile(_fileName);
     _writeEnv(envData, file);
 
     final updatedEnvData = _readEnv(file);
     final dotenv = Dotenv.data(updatedEnvData);
 
-    return state.copyWith(dotenv: dotenv);
+    return state.copyWith.env(
+      pbHost: dotenv.pbHost,
+      pbUsername: dotenv.pbUsername,
+      pbPassword: dotenv.pbPassword,
+      pbToken: dotenv.pbToken,
+    );
   }
 }
 
 class LoadEnvAction extends AppAction {
   @override
   AppState reduce() {
-    final file = state.dataDir.joinFile(_fileName);
+    final file = select.workDir.joinFile(_fileName);
     final envData = _readEnv(file);
     final dotenv = Dotenv.data(envData);
 
-    return state.copyWith(dotenv: dotenv);
+    logger.detail(
+      'Loaded .env file from: ${file.canonicalized} '
+      'hasData=${dotenv.hasData}',
+    );
+
+    return state.copyWith.env(
+      pbHost: dotenv.pbHost,
+      pbUsername: dotenv.pbUsername,
+      pbPassword: dotenv.pbPassword,
+      pbToken: dotenv.pbToken,
+    );
   }
 }
 

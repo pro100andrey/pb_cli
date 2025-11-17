@@ -31,6 +31,7 @@ extension type const ConfigKey._(String value) implements String {
     managedCollections,
     credentialsSource,
   };
+  
 }
 
 /// Configuration data structure representing CLI settings.
@@ -39,7 +40,7 @@ extension type const ConfigKey._(String value) implements String {
 /// values. It handles serialization and deserialization of configuration data
 /// while providing convenient getters and setters for each configuration
 /// option.
-extension type Config._(Map<ConfigKey, Object?> data) {
+extension type Config._(Map<ConfigKey, Object?> data) implements Map {
   /// Creates an empty configuration with no settings.
   const Config.empty() : data = const {};
 
@@ -83,13 +84,4 @@ extension type Config._(Map<ConfigKey, Object?> data) {
       ),
     };
   }
-
-  Config copyWith({
-    List<String>? managedCollections,
-    CredentialsSource? credentialsSource,
-  }) => Config._({
-    ConfigKey.managedCollections: managedCollections ?? this.managedCollections,
-    ConfigKey.credentialsSource:
-        credentialsSource?.key ?? this.credentialsSource.key,
-  });
 }

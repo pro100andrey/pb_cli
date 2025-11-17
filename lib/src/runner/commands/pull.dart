@@ -11,7 +11,7 @@ import '../../services/schema_sync.dart';
 import '../../utils/path.dart';
 import '../../utils/strings.dart';
 import '../../utils/validation.dart';
-import '../redux/actions/action.dart';
+import '../../state/actions/action.dart';
 import 'base_command.dart';
 
 class PullCommand extends BaseCommand {

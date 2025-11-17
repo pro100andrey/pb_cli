@@ -9,9 +9,11 @@ import '../../redux/store.dart';
 import '../../utils/path.dart';
 import '../../utils/strings.dart';
 import '../../utils/validation.dart';
-import '../redux/actions/action.dart';
-import '../redux/actions/config_actions.dart';
-import '../redux/actions/env_actions.dart';
+import '../../state/actions/action.dart';
+import '../../state/actions/config_actions.dart';
+import '../../state/actions/create_pb_connection.dart';
+import '../../state/actions/env_actions.dart';
+import '../../state/actions/resolve_data_dir_action.dart';
 import 'base_command.dart';
 
 class SetupCommand extends BaseCommand {
@@ -36,7 +38,12 @@ class SetupCommand extends BaseCommand {
   @override
   Future<int> run() async {
     final dirArg = argResults![S.dirOptionName];
-    resolveDataDir(dirArg);
+
+    dispatchSync(ResolveDataDirAction(dir: dirArg), notify: false);
+    dispatchSync(LoadEnvAction(), notify: false);
+    dispatchSync(LoadConfigAction(), notify: false);
+
+    await dispatchAndWait(CreatePBConnection(), notify: false);
 
     final inputs = InputsFactory(logger);
     final pbClient = await resolvePBConnection();
@@ -66,7 +73,7 @@ class SetupCommand extends BaseCommand {
 
     final managedCollections = setupInput.chooseCollections(
       choices: collectionsNames,
-      defaultValues: select.config.managedCollections,
+      defaultValues: select.managedCollections,
     );
 
     if (managedCollections.isEmpty) {
@@ -76,14 +83,14 @@ class SetupCommand extends BaseCommand {
     final source = CredentialsSource.fromTitle(
       setupInput.chooseCredentialsSource(
         choices: CredentialsSource.titles,
-        defaultValue: select.config.credentialsSource.title,
+        defaultValue: select.credentialsSource.title,
       ),
     );
 
-    final sourceChanged = source != select.config.credentialsSource;
+    final sourceChanged = source != select.credentialsSource;
     final managedCollectionsChanged = managedCollections
         .toSet()
-        .difference(select.config.managedCollections.toSet())
+        .difference(select.managedCollections.toSet())
         .isNotEmpty;
 
     if (!sourceChanged && !managedCollectionsChanged) {

@@ -5,16 +5,17 @@ import '../../client/pb_client.dart';
 import '../../inputs/factory.dart';
 import '../../models/credentials.dart';
 import '../../redux/store.dart';
-import '../redux/actions/action.dart';
-import '../redux/actions/config_actions.dart';
-import '../redux/actions/env_actions.dart';
-import '../redux/actions/resolve_data_dir_action.dart';
+import '../../state/actions/action.dart';
 
-abstract class BaseCommand extends Command {
-  Store<AppState> get store;
-
-  /// The logger.
+mixin WithStore {
   Logger get logger => store.prop();
+
+  PbClient get pbClient => store.prop();
+
+  /// Selectors for accessing state properties.
+  Selectors get select => Selectors(store.state);
+
+  Store<AppState> get store;
 
   /// Dispatch an action and wait for its completion.
   DispatchAndWait<AppState> get dispatchAndWait => store.dispatchAndWait;
@@ -27,27 +28,15 @@ abstract class BaseCommand extends Command {
     bool notify,
   })
   get dispatchAll => store.dispatchAll;
+}
 
-  /// Selectors for accessing state properties.
-  Selectors get select => Selectors(store.state);
-
-  void resolveDataDir(String dir) {
-    dispatchAll(
-      [
-        ResolveDataDirAction(dir: dir),
-        LoadEnvAction(),
-        LoadConfigAction(),
-      ],
-      notify: false,
-    );
-  }
+abstract class BaseCommand extends Command with WithStore {
+  void resolveDataDir(String dir) {}
 
   Future<PbClient> resolvePBConnection() async {
     final inputs = InputsFactory(logger);
 
     final credentials = resolveCredentials(
-      dotenv: select.dotenv,
-      config: select.config,
       input: inputs.createCredentialsInput(),
     );
 

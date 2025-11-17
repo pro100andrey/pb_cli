@@ -2,9 +2,9 @@ import 'dart:collection';
 
 import 'package:mason_logger/mason_logger.dart';
 
-import '../../extensions/string_style.dart';
-import '../../redux/observers.dart';
-import '../../redux/store.dart';
+import '../extensions/string_style.dart';
+import '../redux/observers.dart';
+import '../redux/store.dart';
 import 'app_state.dart';
 
 class ReduxActionLogger extends ActionObserver<AppState> {
@@ -20,7 +20,7 @@ class ReduxActionLogger extends ActionObserver<AppState> {
     int dispatchCount, {
     bool ini = false,
   }) {
-    final actionName = 'Action ${action.runtimeTypeString().bold.yellow}';
+    final actionName = 'Action ${action.runtimeTypeString().lightBlue}';
     final dispatchCountStr = dispatchCount.toString().bold.lightMagenta;
     final iniStr = (ini ? 'S' : 'E');
     final message = '$actionName D: $dispatchCountStr - $iniStr';

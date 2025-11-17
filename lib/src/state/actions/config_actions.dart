@@ -1,24 +1,27 @@
 import 'dart:convert';
 
-import '../../../models/config.dart';
-import '../../../models/credentials_source.dart';
+import '../../models/config.dart';
+import '../../models/credentials_source.dart';
 import 'action.dart';
 
 const String _fileName = 'config.json';
 
 class LoadConfigAction extends AppAction {
   @override
-  AppState reduce() {
-    final file = select.dataDir.joinFile(_fileName);
+  AppState? reduce() {
+    final file = select.workDir.joinFile(_fileName);
     if (file.notFound) {
-      return state.copyWith(config: const Config.empty());
+      return null;
     }
 
     final contents = file.readAsString();
     final configMap = jsonDecode(contents);
     final config = Config.data(configMap);
 
-    return state.copyWith(config: config);
+    return state.copyWith.config(
+      credentialsSource: config.credentialsSource,
+      managedCollections: config.managedCollections,
+    );
   }
 }
 
@@ -38,12 +41,15 @@ class SaveConfigAction extends AppAction {
       ConfigKey.credentialsSource: credentialsSource?.key,
     };
 
-    final file = select.dataDir.joinFile(_fileName);
+    final file = select.workDir.joinFile(_fileName);
     final config = Config.data(data);
-    final json = const JsonEncoder.withIndent('  ').convert(config.data);
+    final json = const JsonEncoder.withIndent('  ').convert(data);
 
     file.writeAsString(json);
 
-    return state.copyWith(config: config);
+    return state.copyWith.config(
+      managedCollections: config.managedCollections,
+      credentialsSource: config.credentialsSource,
+    );
   }
 }

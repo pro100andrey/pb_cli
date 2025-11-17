@@ -47,7 +47,7 @@ PathCache _getPathCache(String path) {
 
 /// Base extension type for file system entity paths that provides
 /// cached access to common path operations and properties.
-extension type FileEntityPath._(PathCache _cache) {
+extension type const FileEntityPath._(PathCache _cache) {
   /// The original path string.
   String get path => _cache.path;
 
@@ -93,7 +93,8 @@ extension type FileEntityPath._(PathCache _cache) {
 
 /// Extension type for directory paths that provides directory-specific
 /// operations while implementing [FileEntityPath].
-extension type DirectoryPath._(PathCache _cache) implements FileEntityPath {
+extension type const DirectoryPath._(PathCache _cache)
+    implements FileEntityPath {
   /// Creates a new [DirectoryPath] for the given [path].
   factory DirectoryPath(String path) => DirectoryPath._(_getPathCache(path));
 

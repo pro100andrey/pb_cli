@@ -6,8 +6,8 @@ import '../utils/strings.dart';
 import 'commands/pull.dart';
 import 'commands/push.dart';
 import 'commands/setup.dart';
-import 'redux/actions/action.dart';
-import 'redux/observers.dart';
+import '../state/actions/action.dart';
+import '../state/observers.dart';
 
 Future<int> run(List<String> args) async {
   final logger = Logger();

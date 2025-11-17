@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io' as io;
 
 import 'package:mason_logger/mason_logger.dart';
 import 'package:pocketbase/pocketbase.dart';
@@ -11,8 +12,7 @@ import '../../models/result.dart';
 import '../../redux/store.dart';
 import '../../utils/path.dart';
 import '../../utils/strings.dart';
-import '../../utils/utils.dart';
-import '../redux/actions/action.dart';
+import '../../state/actions/action.dart';
 import 'base_command.dart';
 
 class PushCommand extends BaseCommand {
@@ -76,11 +76,12 @@ class PushCommand extends BaseCommand {
         'Truncate option enabled: Skipping confirmation prompt.',
       );
     }
+    final hasTerminal =
+        io.IOOverrides.current?.stdout.hasTerminal ?? io.stdout.hasTerminal;
 
     final truncate =
         truncateArg ||
-        (terminalIsAttached() &&
-            logger.confirm('Truncate collections before seeding?'));
+        (hasTerminal && logger.confirm('Truncate collections before seeding?'));
 
     await _seedCollections(
       pb: pbClient,

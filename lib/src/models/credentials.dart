@@ -59,12 +59,14 @@ final class Credentials {
 /// Returns a [CliResult] containing either the resolved [Credentials] or
 /// a [Failure] if the credentials could not be obtained.
 Credentials resolveCredentials({
-  required Dotenv dotenv,
-  required Config config,
+  // required Dotenv dotenv,
+  // required Config config,
   required CredentialsInput input,
 }) {
+  const dotenv = Dotenv.empty();
+  const config = Config.empty();
   // Try to use dotenv credentials if available and configured
-  if (dotenv.isComplete && config.credentialsSource.isDotenv) {
+  if (dotenv.hasData && config.credentialsSource.isDotenv) {
     final credentials = Credentials(
       host: dotenv.pbHost!,
       usernameOrEmail: dotenv.pbUsername!,
