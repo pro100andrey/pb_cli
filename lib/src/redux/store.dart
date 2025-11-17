@@ -1027,9 +1027,7 @@ final class Store<St> {
       }
     }
 
-    action._status = action._status.copy(
-      wrappedError: errorOrNull,
-    );
+    action._status = action._status.copy(wrappedError: errorOrNull);
 
     // Memorizes the action that failed. We'll remove it when it's dispatched
     // again.
