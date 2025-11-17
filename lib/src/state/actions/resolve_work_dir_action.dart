@@ -19,12 +19,13 @@ final class ResolveWorkDirAction extends AppAction {
       throw Exception(failure.message);
     }
 
-    logger.section(
+    logger.sectionMapped(
       level: .verbose,
       title: 'Working directory:',
-      items: [
-        workDir.canonicalized.lightYellow,
-      ],
+      items: {
+        'Provided': path.lightYellow,
+        'Canonicalized': workDir.canonicalized.lightYellow,
+      },
     );
 
     return state.copyWith(workDir: workDir);
