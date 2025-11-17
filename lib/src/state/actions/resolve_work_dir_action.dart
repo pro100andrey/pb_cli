@@ -1,5 +1,4 @@
 import '../../extensions/logger.dart';
-import '../../extensions/string_style.dart';
 import '../../utils/path.dart';
 import '../../utils/validation.dart';
 import 'action.dart';
@@ -23,8 +22,8 @@ final class ResolveWorkDirAction extends AppAction {
       level: .verbose,
       title: 'Working directory:',
       items: {
-        'Provided': path.lightYellow,
-        'Canonicalized': workDir.canonicalized.lightYellow,
+        'Provided': path,
+        'Canonicalized': workDir.canonicalized,
       },
     );
 

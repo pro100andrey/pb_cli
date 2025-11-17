@@ -16,6 +16,10 @@ extension LoggerInfoSectionExt on Logger {
     int titlePadding = 2,
     int padding = 4,
   }) {
+    if (this.level.index > level.index) {
+      return;
+    }
+
     final maxKeyLength = items.keys.fold(
       0,
       (max, key) => max > key.length ? max : key.length,
