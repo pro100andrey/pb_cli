@@ -36,7 +36,7 @@ class SetupCommand extends BaseCommand {
     dispatchSync(ReadEnvAction());
     dispatchSync(ReadConfigAction());
 
-    await dispatchAndWait(StorePocketBaseAction(), notify: false);
+     dispatchSync(StorePocketBaseAction(), notify: false);
 
     // final inputs = InputsFactory(logger);
     // final pbClient = await resolvePBConnection();

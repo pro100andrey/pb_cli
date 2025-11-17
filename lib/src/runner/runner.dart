@@ -3,6 +3,7 @@ import 'package:mason_logger/mason_logger.dart';
 
 import '../redux/store.dart';
 import '../state/actions/action.dart';
+import '../state/actions/store_logger_action.dart';
 import '../state/observers.dart';
 import '../utils/strings.dart';
 import 'commands/pull.dart';
@@ -13,14 +14,16 @@ Future<int> run(List<String> args) async {
   final logger = Logger();
 
   try {
+    // Initialize the Redux store
     final store = Store<AppState>(
       initialState: AppState.initial(),
       syncStream: true,
       actionObservers: [
         ReduxActionLogger(logger: logger),
       ],
-    )..setProp(logger);
+    );
 
+    // Setup the command runner
     final runner = CommandRunner(S.appName, S.appDescription)
       ..argParser.addFlag(
         S.verboseFlagName,
@@ -32,7 +35,15 @@ Future<int> run(List<String> args) async {
       ..addCommand(SetupCommand(store: store))
       ..addCommand(PushCommand(store: store))
       ..addCommand(PullCommand(store: store));
-    final runResult = await runner.run(args);
+
+    // Parse and run the command
+    final result = runner.parse(args);
+
+    // Store the logger in the Redux store for global access
+    store.dispatchSync(StoreLoggerAction(logger: logger), notify: false);
+
+    // Run the command
+    final runResult = await Future.sync(() => runner.runCommand(result));
 
     if (runResult case int()) {
       return runResult;

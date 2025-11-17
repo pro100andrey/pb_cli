@@ -15,7 +15,7 @@ import '../../utils/validation.dart';
 import 'base_command.dart';
 
 class PullCommand extends BaseCommand {
-  PullCommand({required this.store}) : _logger = store.prop<Logger>() {
+  PullCommand({required this.store}){
     argParser
       ..addOption(
         S.dirOptionName,
@@ -40,20 +40,19 @@ class PullCommand extends BaseCommand {
   @override
   final Store<AppState> store;
 
-  final Logger _logger;
   final _schemaRepository = SchemaRepository();
   final _configRepository = ConfigRepository();
   final _seederRepository = SeedRepository();
-  late final _schemaSyncService = SchemaSyncService(logger: _logger);
-  late final _collectionDataService = CollectionDataService(logger: _logger);
-  late final _filesDownloaderService = FilesDownloaderService(logger: _logger);
+  late final _schemaSyncService = SchemaSyncService(logger: logger);
+  late final _collectionDataService = CollectionDataService(logger: logger);
+  late final _filesDownloaderService = FilesDownloaderService(logger: logger);
 
   @override
   Future<int> run() async {
     final dir = DirectoryPath(argResults![S.dirOptionName]);
     // 1. Validate directory path
     if (dir.validate() case final failure?) {
-      _logger.err(failure.message);
+      logger.err(failure.message);
       return failure.exitCode;
     }
 
@@ -62,7 +61,7 @@ class PullCommand extends BaseCommand {
     final pbClient = await resolvePBConnection();
 
     // 3. Sync collections schema from PocketBase server
-    final fetchProgress = _logger.progress('Fetching schema from server');
+    final fetchProgress = logger.progress('Fetching schema from server');
     final collectionsResult = await pbClient.getCollections();
     if (collectionsResult case Result(:final error?)) {
       fetchProgress.fail(error.message);
@@ -71,7 +70,7 @@ class PullCommand extends BaseCommand {
 
     fetchProgress.complete('Fetched schema from server successfully.');
 
-    final syncProgress = _logger.progress('Syncing collections schema');
+    final syncProgress = logger.progress('Syncing collections schema');
 
     final remoteCollections = collectionsResult.value;
     final localCollections = _schemaRepository.read(dataDir: dir);
@@ -102,7 +101,7 @@ class PullCommand extends BaseCommand {
       );
 
       if (recordsResult case Result(:final error?)) {
-        _logger.err(error.message);
+        logger.err(error.message);
         return error.exitCode;
       }
 
@@ -126,7 +125,7 @@ class PullCommand extends BaseCommand {
         baseDir: dir,
       );
 
-      _logger.info(
+      logger.info(
         'Seed data for collection $collectionName updated '
         '(${records.length} records).',
       );
