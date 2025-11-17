@@ -14,7 +14,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$EnvState {
 
- String? get pbHost; String? get pbUsername; String? get pbPassword; String? get pbToken;
+ String? get host; String? get usernameOrEmail; String? get password; String? get token;
 /// Create a copy of EnvState
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -25,16 +25,16 @@ $EnvStateCopyWith<EnvState> get copyWith => _$EnvStateCopyWithImpl<EnvState>(thi
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is EnvState&&(identical(other.pbHost, pbHost) || other.pbHost == pbHost)&&(identical(other.pbUsername, pbUsername) || other.pbUsername == pbUsername)&&(identical(other.pbPassword, pbPassword) || other.pbPassword == pbPassword)&&(identical(other.pbToken, pbToken) || other.pbToken == pbToken));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is EnvState&&(identical(other.host, host) || other.host == host)&&(identical(other.usernameOrEmail, usernameOrEmail) || other.usernameOrEmail == usernameOrEmail)&&(identical(other.password, password) || other.password == password)&&(identical(other.token, token) || other.token == token));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,pbHost,pbUsername,pbPassword,pbToken);
+int get hashCode => Object.hash(runtimeType,host,usernameOrEmail,password,token);
 
 @override
 String toString() {
-  return 'EnvState(pbHost: $pbHost, pbUsername: $pbUsername, pbPassword: $pbPassword, pbToken: $pbToken)';
+  return 'EnvState(host: $host, usernameOrEmail: $usernameOrEmail, password: $password, token: $token)';
 }
 
 
@@ -45,7 +45,7 @@ abstract mixin class $EnvStateCopyWith<$Res>  {
   factory $EnvStateCopyWith(EnvState value, $Res Function(EnvState) _then) = _$EnvStateCopyWithImpl;
 @useResult
 $Res call({
- String? pbHost, String? pbUsername, String? pbPassword, String? pbToken
+ String? host, String? usernameOrEmail, String? password, String? token
 });
 
 
@@ -62,12 +62,12 @@ class _$EnvStateCopyWithImpl<$Res>
 
 /// Create a copy of EnvState
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? pbHost = freezed,Object? pbUsername = freezed,Object? pbPassword = freezed,Object? pbToken = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? host = freezed,Object? usernameOrEmail = freezed,Object? password = freezed,Object? token = freezed,}) {
   return _then(_self.copyWith(
-pbHost: freezed == pbHost ? _self.pbHost : pbHost // ignore: cast_nullable_to_non_nullable
-as String?,pbUsername: freezed == pbUsername ? _self.pbUsername : pbUsername // ignore: cast_nullable_to_non_nullable
-as String?,pbPassword: freezed == pbPassword ? _self.pbPassword : pbPassword // ignore: cast_nullable_to_non_nullable
-as String?,pbToken: freezed == pbToken ? _self.pbToken : pbToken // ignore: cast_nullable_to_non_nullable
+host: freezed == host ? _self.host : host // ignore: cast_nullable_to_non_nullable
+as String?,usernameOrEmail: freezed == usernameOrEmail ? _self.usernameOrEmail : usernameOrEmail // ignore: cast_nullable_to_non_nullable
+as String?,password: freezed == password ? _self.password : password // ignore: cast_nullable_to_non_nullable
+as String?,token: freezed == token ? _self.token : token // ignore: cast_nullable_to_non_nullable
 as String?,
   ));
 }
@@ -80,13 +80,13 @@ as String?,
 
 
 class _EnvState implements EnvState {
-  const _EnvState({this.pbHost, this.pbUsername, this.pbPassword, this.pbToken});
+  const _EnvState({this.host, this.usernameOrEmail, this.password, this.token});
   
 
-@override final  String? pbHost;
-@override final  String? pbUsername;
-@override final  String? pbPassword;
-@override final  String? pbToken;
+@override final  String? host;
+@override final  String? usernameOrEmail;
+@override final  String? password;
+@override final  String? token;
 
 /// Create a copy of EnvState
 /// with the given fields replaced by the non-null parameter values.
@@ -98,16 +98,16 @@ _$EnvStateCopyWith<_EnvState> get copyWith => __$EnvStateCopyWithImpl<_EnvState>
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _EnvState&&(identical(other.pbHost, pbHost) || other.pbHost == pbHost)&&(identical(other.pbUsername, pbUsername) || other.pbUsername == pbUsername)&&(identical(other.pbPassword, pbPassword) || other.pbPassword == pbPassword)&&(identical(other.pbToken, pbToken) || other.pbToken == pbToken));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _EnvState&&(identical(other.host, host) || other.host == host)&&(identical(other.usernameOrEmail, usernameOrEmail) || other.usernameOrEmail == usernameOrEmail)&&(identical(other.password, password) || other.password == password)&&(identical(other.token, token) || other.token == token));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,pbHost,pbUsername,pbPassword,pbToken);
+int get hashCode => Object.hash(runtimeType,host,usernameOrEmail,password,token);
 
 @override
 String toString() {
-  return 'EnvState(pbHost: $pbHost, pbUsername: $pbUsername, pbPassword: $pbPassword, pbToken: $pbToken)';
+  return 'EnvState(host: $host, usernameOrEmail: $usernameOrEmail, password: $password, token: $token)';
 }
 
 
@@ -118,7 +118,7 @@ abstract mixin class _$EnvStateCopyWith<$Res> implements $EnvStateCopyWith<$Res>
   factory _$EnvStateCopyWith(_EnvState value, $Res Function(_EnvState) _then) = __$EnvStateCopyWithImpl;
 @override @useResult
 $Res call({
- String? pbHost, String? pbUsername, String? pbPassword, String? pbToken
+ String? host, String? usernameOrEmail, String? password, String? token
 });
 
 
@@ -135,12 +135,12 @@ class __$EnvStateCopyWithImpl<$Res>
 
 /// Create a copy of EnvState
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? pbHost = freezed,Object? pbUsername = freezed,Object? pbPassword = freezed,Object? pbToken = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? host = freezed,Object? usernameOrEmail = freezed,Object? password = freezed,Object? token = freezed,}) {
   return _then(_EnvState(
-pbHost: freezed == pbHost ? _self.pbHost : pbHost // ignore: cast_nullable_to_non_nullable
-as String?,pbUsername: freezed == pbUsername ? _self.pbUsername : pbUsername // ignore: cast_nullable_to_non_nullable
-as String?,pbPassword: freezed == pbPassword ? _self.pbPassword : pbPassword // ignore: cast_nullable_to_non_nullable
-as String?,pbToken: freezed == pbToken ? _self.pbToken : pbToken // ignore: cast_nullable_to_non_nullable
+host: freezed == host ? _self.host : host // ignore: cast_nullable_to_non_nullable
+as String?,usernameOrEmail: freezed == usernameOrEmail ? _self.usernameOrEmail : usernameOrEmail // ignore: cast_nullable_to_non_nullable
+as String?,password: freezed == password ? _self.password : password // ignore: cast_nullable_to_non_nullable
+as String?,token: freezed == token ? _self.token : token // ignore: cast_nullable_to_non_nullable
 as String?,
   ));
 }

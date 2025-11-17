@@ -19,15 +19,15 @@ final class EnvService {
 
   void write({
     required FilePath outputFile,
-    required String host,
-    required String usernameOrEmail,
-    required String password,
-    required String? token,
+    String? host,
+    String? usernameOrEmail,
+    String? password,
+    String? token,
   }) {
     final data = <DotenvKey, String>{
-      DotenvKey.pbHost: host,
-      DotenvKey.pbUsername: usernameOrEmail,
-      DotenvKey.pbPassword: password,
+      DotenvKey.pbHost: ?host,
+      DotenvKey.pbUsername: ?usernameOrEmail,
+      DotenvKey.pbPassword: ?password,
       DotenvKey.pbToken: ?token,
     };
 

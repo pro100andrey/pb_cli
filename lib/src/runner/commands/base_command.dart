@@ -11,8 +11,6 @@ import '../../state/selectors.dart';
 mixin WithStore {
   Logger get logger => store.prop();
 
-  PbClient get pbClient => store.prop();
-
   /// Selectors for accessing state properties.
   Selectors get select => Selectors(store.state);
 

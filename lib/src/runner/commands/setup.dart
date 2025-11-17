@@ -1,6 +1,8 @@
 import 'package:mason_logger/mason_logger.dart';
 
 import '../../redux/store.dart';
+import '../../state/ session/actions/log_in_action.dart';
+import '../../state/ session/actions/resolve_credentials.dart';
 import '../../state/actions/action.dart';
 import '../../state/actions/resolve_work_dir_action.dart';
 import '../../state/actions/store_pocket_base_action.dart';
@@ -33,10 +35,12 @@ class SetupCommand extends BaseCommand {
     final dirArg = argResults![S.dirOptionName];
 
     dispatchSync(ResolveWorkDirAction(path: dirArg));
-    dispatchSync(ReadEnvAction());
     dispatchSync(ReadConfigAction());
+    dispatchSync(ReadEnvAction());
+    dispatchSync(ResolveCredentialsAction());
+    dispatchSync(StorePocketBaseAction(), notify: false);
 
-     dispatchSync(StorePocketBaseAction(), notify: false);
+    await dispatchAndWait(LogInAction());
 
     // final inputs = InputsFactory(logger);
     // final pbClient = await resolvePBConnection();

@@ -13,18 +13,18 @@ extension type Selectors(AppState state) {
   CredentialsSource get credentialsSource =>
       state.config.credentialsSource ?? CredentialsSource.prompt;
 
-  String? get pbHost => state.env.pbHost;
+  String? get host => state.env.host;
 
-  String? get pbUsername => state.env.pbUsername;
+  String? get usernameOrEmail => state.env.usernameOrEmail;
 
-  String? get pbPassword => state.env.pbPassword;
+  String? get password => state.env.password;
 
-  String? get pbToken => state.env.pbToken;
+  String? get token => state.env.token;
 
-  bool get hasToken => pbToken != null && pbToken!.isNotEmpty;
+  bool get hasToken => token != null && token!.isNotEmpty;
 
   bool get tokenIsValid {
-    final parts = pbToken?.split('.') ?? [];
+    final parts = token?.split('.') ?? [];
     if (parts.length != 3) {
       return false;
     }

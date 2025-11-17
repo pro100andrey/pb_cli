@@ -19,18 +19,18 @@ class ReadEnvAction extends AppAction {
       level: .verbose,
       title: 'Environment Variables:',
       items: {
-        'PB_HOST': host ?? '<not set>',
-        'PB_USERNAME': usernameOrEmail ?? '<not set>',
-        'PB_PASSWORD': password != null ? '<hidden>' : '<not set>',
-        'PB_TOKEN': token ?? '<not set>',
+        DotenvKey.pbHost: host ?? '<not set>',
+        DotenvKey.pbUsername: usernameOrEmail ?? '<not set>',
+        DotenvKey.pbPassword: password != null ? '<hidden>' : '<not set>',
+        DotenvKey.pbToken: token ?? '<not set>',
       },
     );
 
     return state.copyWith.env(
-      pbHost: result.host,
-      pbUsername: result.usernameOrEmail,
-      pbPassword: result.password,
-      pbToken: result.token,
+      host: host,
+      usernameOrEmail: usernameOrEmail,
+      password: password,
+      token: token,
     );
   }
 }

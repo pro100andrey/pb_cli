@@ -5,9 +5,9 @@ part 'env_state.freezed.dart';
 @freezed
 abstract class EnvState with _$EnvState {
   const factory EnvState({
-    String? pbHost,
-    String? pbUsername,
-    String? pbPassword,
-    String? pbToken,
+    String? host,
+    String? usernameOrEmail,
+    String? password,
+    String? token,
   }) = _EnvState;
 }

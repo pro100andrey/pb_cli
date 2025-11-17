@@ -24,6 +24,7 @@ final class ResolveWorkDirAction extends AppAction {
       items: {
         'Provided': path,
         'Canonicalized': workDir.canonicalized,
+        'Exists': workDir.notFound ? 'No' : 'Yes',
       },
     );
 
