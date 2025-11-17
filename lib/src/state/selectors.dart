@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import ' session/session_state.dart';
 import '../models/credentials_source.dart';
 import '../utils/path.dart';
 import 'actions/action.dart';
@@ -13,11 +14,8 @@ extension type Selectors(AppState state) {
   CredentialsSource get credentialsSource =>
       state.config.credentialsSource ?? CredentialsSource.prompt;
 
-  String? get host => state.env.host;
+  SessionState get session => state.session;
 
-  String? get usernameOrEmail => state.env.usernameOrEmail;
-
-  String? get password => state.env.password;
 
   String? get token => state.env.token;
 
