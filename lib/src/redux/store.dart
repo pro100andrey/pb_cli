@@ -1027,7 +1027,9 @@ final class Store<St> {
       }
     }
 
-    action._status = action._status.copy(wrappedError: errorOrNull);
+    action._status = action._status.copy(
+      wrappedError: errorOrNull,
+    );
 
     // Memorizes the action that failed. We'll remove it when it's dispatched
     // again.
@@ -1203,9 +1205,9 @@ final class ActionStatus {
   bool get isCompletedFailed => isCompleted && (originalError != null);
 
   /// True if the action has finished executing (either successfully or with
-  /// error)
-  /// or was aborted.
-  bool get isCompleted => hasFinishedMethodReduce || isDispatchAborted;
+  /// error) or was aborted.
+  bool get isCompleted =>
+      hasFinishedMethodReduce || originalError != null || isDispatchAborted;
 
   /// Creates a copy of this status with updated properties.
   ActionStatus copy({

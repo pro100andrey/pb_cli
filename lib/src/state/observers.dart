@@ -20,9 +20,11 @@ class ReduxActionLogger extends ActionObserver<AppState> {
     int dispatchCount, {
     bool ini = false,
   }) {
-    final an = action.runtimeTypeString();
+    final type = action.runtimeTypeString();
+    final an = action.status.isCompletedFailed ? type.red.bold : type;
     final dc = dispatchCount.toString();
     final st = action.isSync ? '∥'.gray : '∥'.lightMagenta;
+
     final i = ini ? '→'.gray : '←'.lightGreen;
 
     if (ini) {

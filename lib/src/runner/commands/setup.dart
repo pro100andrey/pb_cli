@@ -38,7 +38,7 @@ class SetupCommand extends BaseCommand {
     dispatchSync(ReadConfigAction());
     dispatchSync(ReadEnvAction());
     dispatchSync(ResolveCredentialsAction());
-    dispatchSync(StorePocketBaseAction(), notify: false);
+    dispatchSync(StorePocketBaseAction());
 
     await dispatchAndWait(LogInAction());
 

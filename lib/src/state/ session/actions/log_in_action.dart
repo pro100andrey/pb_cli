@@ -1,6 +1,9 @@
 import 'dart:async';
 
+import 'package:pocketbase/pocketbase.dart';
+
 import '../../../extensions/logger.dart';
+import '../../../redux/user_exception.dart';
 import '../../actions/action.dart';
 import '../../env/actions/write_env_action.dart';
 import '../session_state.dart';
@@ -20,7 +23,7 @@ final class LogInAction extends AppAction {
     final result = await pb
         .collection('_superusers')
         .authWithPassword(userSession.usernameOrEmail, userSession.password);
-        
+
     dispatchSync(WriteEnvAction(token: pb.authStore.token));
 
     logger.sectionMapped(
@@ -33,5 +36,14 @@ final class LogInAction extends AppAction {
     );
 
     return null;
+  }
+
+  @override
+  Object? wrapError(Object error, StackTrace stackTrace) {
+    if (error case ClientException()) {
+      return UserException(error.toString(), reason: 'Failed to log in.');
+    }
+
+    return super.wrapError(error, stackTrace);
   }
 }
