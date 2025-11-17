@@ -6,14 +6,16 @@ import '../../models/credentials.dart';
 import '../../models/credentials_source.dart';
 import '../../models/result.dart';
 import '../../redux/store.dart';
+import '../../state/actions/action.dart';
+import '../../state/actions/create_pb_connection.dart';
+import '../../state/actions/resolve_data_dir_action.dart';
+import '../../state/config/actions/read_config_action.dart';
+import '../../state/config/actions/write_config_action.dart';
+import '../../state/env/actions/read_env_action.dart';
+import '../../state/env/actions/write_env_action.dart';
 import '../../utils/path.dart';
 import '../../utils/strings.dart';
 import '../../utils/validation.dart';
-import '../../state/actions/action.dart';
-import '../../state/actions/config_actions.dart';
-import '../../state/actions/create_pb_connection.dart';
-import '../../state/actions/env_actions.dart';
-import '../../state/actions/resolve_data_dir_action.dart';
 import 'base_command.dart';
 
 class SetupCommand extends BaseCommand {
@@ -40,8 +42,8 @@ class SetupCommand extends BaseCommand {
     final dirArg = argResults![S.dirOptionName];
 
     dispatchSync(ResolveDataDirAction(dir: dirArg), notify: false);
-    dispatchSync(LoadEnvAction(), notify: false);
-    dispatchSync(LoadConfigAction(), notify: false);
+    dispatchSync(ReadEnvAction(), notify: false);
+    dispatchSync(ReadConfigAction(), notify: false);
 
     await dispatchAndWait(CreatePBConnection(), notify: false);
 
@@ -108,7 +110,7 @@ class SetupCommand extends BaseCommand {
     switch (source) {
       case CredentialsSource.dotenv:
         dispatchSync(
-          SaveEnvAction(
+          WriteEnvAction(
             host: credentials.host,
             usernameOrEmail: credentials.usernameOrEmail,
             password: credentials.password,
@@ -122,7 +124,7 @@ class SetupCommand extends BaseCommand {
     }
 
     dispatchSync(
-      SaveConfigAction(
+      WriteConfigAction(
         managedCollections: managedCollections,
         credentialsSource: source,
       ),
