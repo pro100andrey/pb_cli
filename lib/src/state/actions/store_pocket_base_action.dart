@@ -12,10 +12,12 @@ final class StorePocketBaseAction extends AppAction {
 
     // Save PocketBase instance to the store
     store.setProp<PocketBase>(pocketBase);
-
-    if (select.tokenIsValid) {
+    
+    if (select.hasToken && select.tokenIsValid) {
       pocketBase.authStore.save(select.pbToken!, null);
       logger.info('Using existing authentication token.');
+    } else {
+      logger.info('No valid authentication token found.');
     }
 
     return null;

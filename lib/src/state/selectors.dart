@@ -21,6 +21,8 @@ extension type Selectors(AppState state) {
 
   String? get pbToken => state.env.pbToken;
 
+  bool get hasToken => pbToken != null && pbToken!.isNotEmpty;
+
   bool get tokenIsValid {
     final parts = pbToken?.split('.') ?? [];
     if (parts.length != 3) {
