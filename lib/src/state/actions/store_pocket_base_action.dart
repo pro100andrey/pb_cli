@@ -4,17 +4,18 @@ import 'package:pocketbase/pocketbase.dart';
 
 import 'action.dart';
 
-final class CreatePBConnection extends AppAction {
+final class StorePocketBaseAction extends AppAction {
   @override
   Future<AppState?> reduce() async {
+    final host = select.pbHost!;
+    final pocketBase = PocketBase(host);
 
-    final auth = AuthStore();
+    // Save PocketBase instance to the store
+    store.setProp<PocketBase>(pocketBase);
 
-    final token = select.pbToken;
-
-    if (token != null && token.isNotEmpty) {
-      auth.save(token, null);
-     
+    if (select.tokenIsValid) {
+      pocketBase.authStore.save(select.pbToken!, null);
+      logger.info('Using existing authentication token.');
     }
 
     return null;

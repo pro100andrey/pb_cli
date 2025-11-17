@@ -9,12 +9,17 @@ typedef ReadConfigResult = ({
 });
 
 final class ConfigService {
-
   static const fileName = 'config.json';
 
-  ReadConfigResult? read({required FilePath inputFile}) {
+  static const _defaultReadConfigResult = (
+    managedCollections: <String>[],
+    credentialsSource: CredentialsSource.prompt,
+  );
+
+  
+  ReadConfigResult read({required FilePath inputFile}) {
     if (inputFile.notFound) {
-      return null;
+      return _defaultReadConfigResult;
     }
 
     final configMap = _read(file: inputFile);

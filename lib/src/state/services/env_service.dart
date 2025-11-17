@@ -1,15 +1,21 @@
 import '../../utils/path.dart';
 
 typedef ReadEnvResult = ({
-  String host,
-  String usernameOrEmail,
-  String password,
+  String? host,
+  String? usernameOrEmail,
+  String? password,
   String? token,
 });
 
 final class EnvService {
-
   static const String fileName = '.env';
+
+  static const _emptyEnvResult = (
+    host: null,
+    usernameOrEmail: null,
+    password: null,
+    token: null,
+  );
 
   void write({
     required FilePath outputFile,
@@ -28,15 +34,15 @@ final class EnvService {
     _write(data, outputFile);
   }
 
-  ReadEnvResult? read({required FilePath inputFile}) {
+  ReadEnvResult read({required FilePath inputFile}) {
     if (inputFile.notFound) {
-      return null;
+      return _emptyEnvResult;
     }
 
     final envData = _read(file: inputFile);
 
     if (envData.isEmpty) {
-      return null;
+      return _emptyEnvResult;
     }
 
     return (

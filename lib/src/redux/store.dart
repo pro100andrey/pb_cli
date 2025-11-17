@@ -44,7 +44,7 @@ typedef DispatchSync<St> =
 ///
 /// Type parameter [St] represents the state type.
 final class Store<St> {
-  /// Creates a new store with the given initial state and optional 
+  /// Creates a new store with the given initial state and optional
   /// configuration.
   ///
   /// Parameters:
@@ -113,7 +113,7 @@ final class Store<St> {
   /// A stream that emits the state whenever it changes.
   Stream<St> get onChange => _changeController.stream;
 
-  /// The default timeout in milliseconds for [waitCondition] and similar 
+  /// The default timeout in milliseconds for [waitCondition] and similar
   /// methods.
   /// Defaults to 10 minutes (600,000 ms). Set to -1 to disable timeout.
   static int defaultTimeoutMillis = 60 * 1000 * 10;
@@ -131,7 +131,7 @@ final class Store<St> {
 
   /// Registers a property value that can be retrieved later by type.
   ///
-  /// This is useful for dependency injection or sharing services across 
+  /// This is useful for dependency injection or sharing services across
   /// actions.
   /// Throws an exception if a property of the same type and key is already
   /// registered.
@@ -232,10 +232,10 @@ final class Store<St> {
   ///
   /// Parameters:
   /// - [action]: The action to dispatch.
-  /// - [notify]: If true, notifies listeners of state changes. Defaults to 
+  /// - [notify]: If true, notifies listeners of state changes. Defaults to
   /// true.
   ActionStatus dispatchSync(ReduxAction<St> action, {bool notify = true}) {
-    if (!action.isSync()) {
+    if (!action.isSync) {
       throw StoreException(
         "Can't dispatchSync(${action.runtimeType}) because "
         '${action.runtimeType} is async.',
@@ -247,12 +247,12 @@ final class Store<St> {
 
   /// Dispatches an action.
   ///
-  /// Returns immediately for synchronous actions, or a [Future] for async 
+  /// Returns immediately for synchronous actions, or a [Future] for async
   /// actions.
   ///
   /// Parameters:
   /// - [action]: The action to dispatch.
-  /// - [notify]: If true, notifies listeners of state changes. Defaults to 
+  /// - [notify]: If true, notifies listeners of state changes. Defaults to
   /// true.
   FutureOr<ActionStatus> dispatch(
     ReduxAction<St> action, {
@@ -264,7 +264,7 @@ final class Store<St> {
   ///
   /// Parameters:
   /// - [action]: The action to dispatch.
-  /// - [notify]: If true, notifies listeners of state changes. Defaults to 
+  /// - [notify]: If true, notifies listeners of state changes. Defaults to
   /// true.
   Future<ActionStatus> dispatchAndWait(
     ReduxAction<St> action, {
@@ -307,7 +307,7 @@ final class Store<St> {
   ///
   /// Parameters:
   /// - [action]: The action to dispatch.
-  /// - [notify]: If true, notifies listeners of state changes. Defaults to 
+  /// - [notify]: If true, notifies listeners of state changes. Defaults to
   /// true.
   /// - [timeoutMillis]: Optional timeout in milliseconds.
   Future<ActionStatus> dispatchAndWaitAllActions(
@@ -328,7 +328,7 @@ final class Store<St> {
   ///
   /// Parameters:
   /// - [actions]: List of actions to dispatch.
-  /// - [notify]: If true, notifies listeners of state changes. Defaults to 
+  /// - [notify]: If true, notifies listeners of state changes. Defaults to
   /// true.
   Future<List<ReduxAction<St>>> dispatchAndWaitAll(
     List<ReduxAction<St>> actions, {
@@ -348,7 +348,7 @@ final class Store<St> {
   ///
   /// Parameters:
   /// - [actions]: List of actions to dispatch.
-  /// - [notify]: If true, notifies listeners of state changes. Defaults to 
+  /// - [notify]: If true, notifies listeners of state changes. Defaults to
   /// true.
   List<ReduxAction<St>> dispatchAll(
     List<ReduxAction<St>> actions, {
@@ -661,7 +661,7 @@ final class Store<St> {
   }) {
     _calculateIsWaitingIsFailed(action);
 
-    if (action.isSync()) {
+    if (action.isSync) {
       return _processActionSync(action, notify: notify);
     } else {
       return _processActionAsync(action, notify: notify);
@@ -1202,7 +1202,7 @@ final class ActionStatus {
   /// True if the action completed with an error.
   bool get isCompletedFailed => isCompleted && (originalError != null);
 
-  /// True if the action has finished executing (either successfully or with 
+  /// True if the action has finished executing (either successfully or with
   /// error)
   /// or was aborted.
   bool get isCompleted => hasFinishedMethodReduce || isDispatchAborted;

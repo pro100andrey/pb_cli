@@ -99,7 +99,7 @@ abstract class ReduxAction<St> {
   ///
   /// An action is synchronous if both [reduce] and [wrapReduce] are
   /// synchronous.
-  bool isSync() {
+  bool get isSync {
     final reduceMethodIsSync = reduce is St? Function();
     if (!reduceMethodIsSync) {
       return false;

@@ -2,12 +2,12 @@ import 'package:args/command_runner.dart';
 import 'package:mason_logger/mason_logger.dart';
 
 import '../redux/store.dart';
+import '../state/actions/action.dart';
+import '../state/observers.dart';
 import '../utils/strings.dart';
 import 'commands/pull.dart';
 import 'commands/push.dart';
 import 'commands/setup.dart';
-import '../state/actions/action.dart';
-import '../state/observers.dart';
 
 Future<int> run(List<String> args) async {
   final logger = Logger();

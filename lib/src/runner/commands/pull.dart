@@ -8,10 +8,10 @@ import '../../repositories/seed.dart';
 import '../../services/collection_data.dart';
 import '../../services/files_downloader.dart';
 import '../../services/schema_sync.dart';
+import '../../state/actions/action.dart';
 import '../../utils/path.dart';
 import '../../utils/strings.dart';
 import '../../utils/validation.dart';
-import '../../state/actions/action.dart';
 import 'base_command.dart';
 
 class PullCommand extends BaseCommand {
@@ -57,7 +57,7 @@ class PullCommand extends BaseCommand {
       return failure.exitCode;
     }
 
-   final dirArg = argResults![S.dirOptionName];
+    final dirArg = argResults![S.dirOptionName];
     resolveDataDir(dirArg);
     final pbClient = await resolvePBConnection();
 

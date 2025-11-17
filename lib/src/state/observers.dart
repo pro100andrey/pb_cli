@@ -20,30 +20,28 @@ class ReduxActionLogger extends ActionObserver<AppState> {
     int dispatchCount, {
     bool ini = false,
   }) {
-    final actionName = 'Action ${action.runtimeTypeString().lightBlue}';
-    final dispatchCountStr = dispatchCount.toString().bold.lightMagenta;
-    final iniStr = (ini ? 'S' : 'E');
-    final message = '$actionName D: $dispatchCountStr - $iniStr';
-    
+    final an = action.runtimeTypeString();
+    final dc = dispatchCount.toString();
+    final st = action.isSync ? '∥'.gray : '∥'.lightMagenta;
+    final i = ini ? '→'.gray : '←'.lightGreen;
+
     if (ini) {
       assert(
         !_stopwatches.containsKey(action),
-        'Stopwatch already exists for $actionName',
+        'Stopwatch already exists for $an',
       );
 
       _stopwatches[action] = Stopwatch()..start();
-
-      _logger.detail(message);
+      _logger.detail('$i $an $st D:$dc');
     } else {
       assert(
         _stopwatches.containsKey(action),
-        'Stopwatch does not exist for $actionName',
+        'Stopwatch does not exist for $an',
       );
 
       final watch = _stopwatches.remove(action)!..stop();
-      final elapsedStr = watch.toElapsedString();
-
-      _logger.detail('$message ($elapsedStr)');
+      final e = watch.toElapsedString();
+      _logger.detail('$i $an $st D:$dc $e');
     }
   }
 }
@@ -55,11 +53,12 @@ extension StopWatchExtension on Stopwatch {
     final inSeconds = inMilliseconds ~/ 1000;
 
     if (inMicroseconds < 1000) {
-      return '$inMicroseconds μs'.dim;
+      // ignore: unnecessary_brace_in_string_interps
+      return '${inMicroseconds}μs'.dim;
     } else if (inMilliseconds < 1000) {
-      return '$inMilliseconds ms';
-    } else if (inSeconds < 5) {
-      return '${(inMilliseconds / 1000).toStringAsFixed(2)} s'.yellow;
+      return '${inMilliseconds}ms';
+    } else if (inSeconds < 60) {
+      return '${(inMilliseconds / 1000).toStringAsFixed(2)}s'.yellow;
     } else {
       final minutes = inSeconds ~/ 60;
       final seconds = inSeconds % 60;

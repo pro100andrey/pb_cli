@@ -270,7 +270,7 @@ extension StringCliExtensions on String {
   }) {
     final lines = split('\n');
     final maxLength = lines
-        .map((l) => l.length)
+        .map((l) => l.plain.length)
         .reduce((a, b) => a > b ? a : b);
 
     final width = maxLength + (padding * 2);

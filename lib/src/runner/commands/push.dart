@@ -10,9 +10,9 @@ import '../../failure/common.dart';
 import '../../failure/failure.dart';
 import '../../models/result.dart';
 import '../../redux/store.dart';
+import '../../state/actions/action.dart';
 import '../../utils/path.dart';
 import '../../utils/strings.dart';
-import '../../state/actions/action.dart';
 import 'base_command.dart';
 
 class PushCommand extends BaseCommand {

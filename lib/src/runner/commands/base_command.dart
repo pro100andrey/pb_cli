@@ -6,6 +6,7 @@ import '../../inputs/factory.dart';
 import '../../models/credentials.dart';
 import '../../redux/store.dart';
 import '../../state/actions/action.dart';
+import '../../state/selectors.dart';
 
 mixin WithStore {
   Logger get logger => store.prop();
