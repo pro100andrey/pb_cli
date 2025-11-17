@@ -9,7 +9,7 @@ extension LoggerInfoSectionExt on Logger {
   /// [title] is the title of the section.
   /// [items] is a map of key-value pairs to display.
   ///
-  void sectionTable({
+  void sectionMapped({
     required String title,
     required Map<String, String> items,
     Level level = Level.info,

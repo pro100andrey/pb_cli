@@ -15,7 +15,7 @@ class ReadEnvAction extends AppAction {
       :token,
     ) = result;
 
-    logger.sectionTable(
+    logger.sectionMapped(
       level: .verbose,
       title: 'Environment Variables:',
       items: {

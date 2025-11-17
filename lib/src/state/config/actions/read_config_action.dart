@@ -13,7 +13,7 @@ final class ReadConfigAction extends AppAction {
       :credentialsSource,
     ) = result;
 
-    logger.sectionTable(
+    logger.sectionMapped(
       level: .verbose,
       title: 'Configuration:',
       items: {
