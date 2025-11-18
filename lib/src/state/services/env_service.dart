@@ -1,23 +1,11 @@
 import '../../utils/path.dart';
 
-typedef ReadEnvResult = ({
-  String? host,
-  String? usernameOrEmail,
-  String? password,
-  String? token,
-});
-
 final class EnvService {
+
+  const EnvService._();
   static const String fileName = '.env';
 
-  static const _emptyEnvResult = (
-    host: null,
-    usernameOrEmail: null,
-    password: null,
-    token: null,
-  );
-
-  void write({
+  static void write({
     required FilePath outputFile,
     String? host,
     String? usernameOrEmail,
@@ -34,26 +22,21 @@ final class EnvService {
     _write(data, outputFile);
   }
 
-  ReadEnvResult read({required FilePath inputFile}) {
+  static Map<DotenvKey, String?> read({required FilePath inputFile}) {
     if (inputFile.notFound) {
-      return _emptyEnvResult;
+      return {};
     }
 
     final envData = _read(file: inputFile);
 
     if (envData.isEmpty) {
-      return _emptyEnvResult;
+      return {};
     }
 
-    return (
-      host: envData[DotenvKey.pbHost]!,
-      usernameOrEmail: envData[DotenvKey.pbUsername]!,
-      password: envData[DotenvKey.pbPassword]!,
-      token: envData[DotenvKey.pbToken],
-    );
+    return envData;
   }
 
-  void _write(Map<DotenvKey, String> data, FilePath file) {
+  static void _write(Map<DotenvKey, String> data, FilePath file) {
     // 1. Read existing .env data with merge priority to new data
     final envData = _read(file: file)..addAll(data);
     // 2. Write back to .env file
@@ -64,7 +47,7 @@ final class EnvService {
     file.writeAsString(buffer.toString());
   }
 
-  Map<DotenvKey, String> _read({required FilePath file}) {
+  static Map<DotenvKey, String> _read({required FilePath file}) {
     final envData = <DotenvKey, String>{};
 
     if (!file.notFound) {

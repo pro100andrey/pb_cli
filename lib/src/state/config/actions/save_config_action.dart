@@ -1,19 +1,13 @@
-import '../../../models/credentials_source.dart';
 import '../../actions/action.dart';
 import '../../services/config_service.dart';
 
-final class WriteConfigAction extends AppAction {
-  WriteConfigAction({
-    required this.managedCollections,
-    required this.credentialsSource,
-  });
-
-  final List<String> managedCollections;
-  final CredentialsSource credentialsSource;
-
+final class SaveConfigAction extends AppAction {
   @override
   AppState reduce() {
     final file = select.workDir.joinFile(ConfigService.fileName);
+
+    final managedCollections = select.managedCollections;
+    final credentialsSource = select.credentialsSource;
 
     ConfigService().write(
       outputFile: file,

@@ -4,8 +4,8 @@ import '../../redux/store.dart';
 import '../../state/actions/resolve_work_dir_action.dart';
 import '../../state/actions/store_pocket_base_action.dart';
 import '../../state/app_state.dart';
-import '../../state/config/actions/read_config_action.dart';
-import '../../state/env/actions/read_env_action.dart';
+import '../../state/config/actions/load_config_action.dart';
+import '../../state/env/actions/load_env_action.dart';
 import '../../state/schema/actions/fetch_schema_action.dart';
 import '../../state/schema/actions/select_managed_collections_action.dart';
 import '../../state/session/actions/log_in_action.dart';
@@ -38,8 +38,8 @@ class SetupCommand extends BaseCommand {
     final dirArg = argResults![S.dirOptionName];
 
     dispatchSync(ResolveWorkDirAction(path: dirArg));
-    dispatchSync(ReadConfigAction());
-    dispatchSync(ReadEnvAction());
+    dispatchSync(LoadConfigAction());
+    dispatchSync(LoadEnvAction());
     dispatchSync(ResolveCredentialsAction());
     dispatchSync(StorePocketBaseAction());
 
@@ -48,7 +48,6 @@ class SetupCommand extends BaseCommand {
 
     dispatchSync(SelectManagedCollectionsAction());
     dispatchSync(SelectCredentialsSourceAction());
-
 
     // final inputs = InputsFactory(logger);
     // final pbClient = await resolvePBConnection();

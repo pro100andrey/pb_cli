@@ -11,9 +11,7 @@ final class SelectCredentialsSourceAction extends AppAction {
     );
 
     final source = CredentialsSource.fromTitle(selected);
-
     final sourceChanged = source != select.credentialsSource;
-
     if (!sourceChanged) {
       logger.info('Credentials source is already up to date.');
       return null;

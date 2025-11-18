@@ -11,14 +11,27 @@ import 'session/session_state.dart';
 extension type Selectors(AppState state) {
   DirectoryPath get workDir => state.workDir!;
 
+  // Config selectors
+
+  /// Selected managed collections from the config.
+  /// Defaults to an empty list if none are set.
   List<String> get managedCollections => state.config.managedCollections ?? [];
 
+  /// Selected credentials source from the config.
+  /// Defaults to [CredentialsSource.prompt] if none is set.
   CredentialsSource get credentialsSource =>
       state.config.credentialsSource ?? CredentialsSource.prompt;
 
+  // Session selectors
   SessionState get session => state.session;
 
   String? get token => state.env.token;
+
+  String? get host => state.env.host;
+
+  String? get usernameOrEmail => state.env.usernameOrEmail;
+
+  String? get password => state.env.password;
 
   bool get hasToken => token != null && token!.isNotEmpty;
 
@@ -39,6 +52,8 @@ extension type Selectors(AppState state) {
 
     return exp > (DateTime.now().millisecondsSinceEpoch / 1000);
   }
+
+  // Schema selectors
 
   List<CollectionModel> get collections => state.schema.collections ?? [];
 

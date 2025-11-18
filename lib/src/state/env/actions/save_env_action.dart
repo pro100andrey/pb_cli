@@ -2,24 +2,16 @@ import '../../../extensions/logger.dart';
 import '../../actions/action.dart';
 import '../../services/env_service.dart';
 
-final class WriteEnvAction extends AppAction {
-  WriteEnvAction({
-    this.host,
-    this.usernameOrEmail,
-    this.password,
-    this.token,
-  });
-
-  final String? host;
-  final String? usernameOrEmail;
-  final String? password;
-  final String? token;
-
+final class SaveEnvAction extends AppAction {
   @override
   AppState reduce() {
     final file = select.workDir.joinFile(EnvService.fileName);
+    final host = select.host;
+    final usernameOrEmail = select.usernameOrEmail;
+    final password = select.password;
+    final token = select.token;
 
-    EnvService().write(
+    EnvService.write(
       outputFile: file,
       host: host,
       usernameOrEmail: usernameOrEmail,
