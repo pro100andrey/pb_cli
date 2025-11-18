@@ -14,7 +14,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$AppState {
 
- DirectoryPath? get workDir; EnvState get env; ConfigState get config; SessionState get session;
+ DirectoryPath? get workDir; EnvState get env; ConfigState get config; SessionState get session; SchemaState get schema;
 /// Create a copy of AppState
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -25,16 +25,16 @@ $AppStateCopyWith<AppState> get copyWith => _$AppStateCopyWithImpl<AppState>(thi
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is AppState&&(identical(other.workDir, workDir) || other.workDir == workDir)&&(identical(other.env, env) || other.env == env)&&(identical(other.config, config) || other.config == config)&&(identical(other.session, session) || other.session == session));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is AppState&&(identical(other.workDir, workDir) || other.workDir == workDir)&&(identical(other.env, env) || other.env == env)&&(identical(other.config, config) || other.config == config)&&(identical(other.session, session) || other.session == session)&&(identical(other.schema, schema) || other.schema == schema));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,workDir,env,config,session);
+int get hashCode => Object.hash(runtimeType,workDir,env,config,session,schema);
 
 @override
 String toString() {
-  return 'AppState(workDir: $workDir, env: $env, config: $config, session: $session)';
+  return 'AppState(workDir: $workDir, env: $env, config: $config, session: $session, schema: $schema)';
 }
 
 
@@ -45,11 +45,11 @@ abstract mixin class $AppStateCopyWith<$Res>  {
   factory $AppStateCopyWith(AppState value, $Res Function(AppState) _then) = _$AppStateCopyWithImpl;
 @useResult
 $Res call({
- DirectoryPath? workDir, EnvState env, ConfigState config, SessionState session
+ DirectoryPath? workDir, EnvState env, ConfigState config, SessionState session, SchemaState schema
 });
 
 
-$EnvStateCopyWith<$Res> get env;$ConfigStateCopyWith<$Res> get config;$SessionStateCopyWith<$Res> get session;
+$EnvStateCopyWith<$Res> get env;$ConfigStateCopyWith<$Res> get config;$SessionStateCopyWith<$Res> get session;$SchemaStateCopyWith<$Res> get schema;
 
 }
 /// @nodoc
@@ -62,13 +62,14 @@ class _$AppStateCopyWithImpl<$Res>
 
 /// Create a copy of AppState
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? workDir = freezed,Object? env = null,Object? config = null,Object? session = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? workDir = freezed,Object? env = null,Object? config = null,Object? session = null,Object? schema = null,}) {
   return _then(_self.copyWith(
 workDir: freezed == workDir ? _self.workDir : workDir // ignore: cast_nullable_to_non_nullable
 as DirectoryPath?,env: null == env ? _self.env : env // ignore: cast_nullable_to_non_nullable
 as EnvState,config: null == config ? _self.config : config // ignore: cast_nullable_to_non_nullable
 as ConfigState,session: null == session ? _self.session : session // ignore: cast_nullable_to_non_nullable
-as SessionState,
+as SessionState,schema: null == schema ? _self.schema : schema // ignore: cast_nullable_to_non_nullable
+as SchemaState,
   ));
 }
 /// Create a copy of AppState
@@ -98,6 +99,15 @@ $SessionStateCopyWith<$Res> get session {
   return $SessionStateCopyWith<$Res>(_self.session, (value) {
     return _then(_self.copyWith(session: value));
   });
+}/// Create a copy of AppState
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$SchemaStateCopyWith<$Res> get schema {
+  
+  return $SchemaStateCopyWith<$Res>(_self.schema, (value) {
+    return _then(_self.copyWith(schema: value));
+  });
 }
 }
 
@@ -107,13 +117,14 @@ $SessionStateCopyWith<$Res> get session {
 
 
 class _AppState implements AppState {
-  const _AppState({required this.workDir, required this.env, required this.config, required this.session});
+  const _AppState({required this.workDir, required this.env, required this.config, required this.session, required this.schema});
   
 
 @override final  DirectoryPath? workDir;
 @override final  EnvState env;
 @override final  ConfigState config;
 @override final  SessionState session;
+@override final  SchemaState schema;
 
 /// Create a copy of AppState
 /// with the given fields replaced by the non-null parameter values.
@@ -125,16 +136,16 @@ _$AppStateCopyWith<_AppState> get copyWith => __$AppStateCopyWithImpl<_AppState>
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _AppState&&(identical(other.workDir, workDir) || other.workDir == workDir)&&(identical(other.env, env) || other.env == env)&&(identical(other.config, config) || other.config == config)&&(identical(other.session, session) || other.session == session));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _AppState&&(identical(other.workDir, workDir) || other.workDir == workDir)&&(identical(other.env, env) || other.env == env)&&(identical(other.config, config) || other.config == config)&&(identical(other.session, session) || other.session == session)&&(identical(other.schema, schema) || other.schema == schema));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,workDir,env,config,session);
+int get hashCode => Object.hash(runtimeType,workDir,env,config,session,schema);
 
 @override
 String toString() {
-  return 'AppState(workDir: $workDir, env: $env, config: $config, session: $session)';
+  return 'AppState(workDir: $workDir, env: $env, config: $config, session: $session, schema: $schema)';
 }
 
 
@@ -145,11 +156,11 @@ abstract mixin class _$AppStateCopyWith<$Res> implements $AppStateCopyWith<$Res>
   factory _$AppStateCopyWith(_AppState value, $Res Function(_AppState) _then) = __$AppStateCopyWithImpl;
 @override @useResult
 $Res call({
- DirectoryPath? workDir, EnvState env, ConfigState config, SessionState session
+ DirectoryPath? workDir, EnvState env, ConfigState config, SessionState session, SchemaState schema
 });
 
 
-@override $EnvStateCopyWith<$Res> get env;@override $ConfigStateCopyWith<$Res> get config;@override $SessionStateCopyWith<$Res> get session;
+@override $EnvStateCopyWith<$Res> get env;@override $ConfigStateCopyWith<$Res> get config;@override $SessionStateCopyWith<$Res> get session;@override $SchemaStateCopyWith<$Res> get schema;
 
 }
 /// @nodoc
@@ -162,13 +173,14 @@ class __$AppStateCopyWithImpl<$Res>
 
 /// Create a copy of AppState
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? workDir = freezed,Object? env = null,Object? config = null,Object? session = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? workDir = freezed,Object? env = null,Object? config = null,Object? session = null,Object? schema = null,}) {
   return _then(_AppState(
 workDir: freezed == workDir ? _self.workDir : workDir // ignore: cast_nullable_to_non_nullable
 as DirectoryPath?,env: null == env ? _self.env : env // ignore: cast_nullable_to_non_nullable
 as EnvState,config: null == config ? _self.config : config // ignore: cast_nullable_to_non_nullable
 as ConfigState,session: null == session ? _self.session : session // ignore: cast_nullable_to_non_nullable
-as SessionState,
+as SessionState,schema: null == schema ? _self.schema : schema // ignore: cast_nullable_to_non_nullable
+as SchemaState,
   ));
 }
 
@@ -198,6 +210,15 @@ $SessionStateCopyWith<$Res> get session {
   
   return $SessionStateCopyWith<$Res>(_self.session, (value) {
     return _then(_self.copyWith(session: value));
+  });
+}/// Create a copy of AppState
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$SchemaStateCopyWith<$Res> get schema {
+  
+  return $SchemaStateCopyWith<$Res>(_self.schema, (value) {
+    return _then(_self.copyWith(schema: value));
   });
 }
 }

@@ -1,12 +1,7 @@
 import 'dart:async';
 
-import 'package:pocketbase/pocketbase.dart';
-
 import '../../../extensions/logger.dart';
-import '../../../failure/failure.dart';
-import '../../../redux/user_exception.dart';
 import '../../actions/action.dart';
-import '../../env/actions/write_env_action.dart';
 import '../session_state.dart';
 
 final class LogInAction extends AppAction {
@@ -25,7 +20,7 @@ final class LogInAction extends AppAction {
         .collection('_superusers')
         .authWithPassword(userSession.usernameOrEmail, userSession.password);
 
-    dispatchSync(WriteEnvAction(token: pb.authStore.token));
+    // dispatchSync(WriteEnvAction(token: pb.authStore.token));
 
     logger.sectionMapped(
       level: .verbose,
@@ -37,19 +32,5 @@ final class LogInAction extends AppAction {
     );
 
     return null;
-  }
-
-  @override
-  Object? wrapError(Object error, StackTrace stackTrace) {
-    if (error case ClientException()) {
-      return UserException(
-        error.response['message'] ?? 'An error occurred during login.',
-        code: error.statusCode,
-        reason: error.url.toString(),
-        exitCode: Failure.exSoftware
-      );
-    }
-
-    return super.wrapError(error, stackTrace);
   }
 }

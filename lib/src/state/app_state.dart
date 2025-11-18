@@ -1,9 +1,10 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
-import 'session/session_state.dart';
 import '../utils/path.dart';
 import 'config/config_state.dart';
 import 'env/env_state.dart';
+import 'schema/schema_state.dart';
+import 'session/session_state.dart';
 
 part 'app_state.freezed.dart';
 
@@ -14,12 +15,14 @@ abstract class AppState with _$AppState {
     required EnvState env,
     required ConfigState config,
     required SessionState session,
+    required SchemaState schema,
   }) = _AppState;
 
   factory AppState.initial() => const AppState(
     env: EnvState(),
     config: ConfigState(),
     session: SessionUnresolved(),
+    schema: SchemaState(),
     workDir: null,
   );
 }
