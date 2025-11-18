@@ -2,7 +2,6 @@ import 'dart:async';
 
 import '../../../extensions/logger.dart';
 import '../../actions/action.dart';
-import '../session_state.dart';
 
 final class LogInAction extends AppAction {
   @override
@@ -14,11 +13,11 @@ final class LogInAction extends AppAction {
       return null;
     }
 
-    final userSession = select.session as SessionUser;
+    final session = select.session;
 
     final result = await pb
         .collection('_superusers')
-        .authWithPassword(userSession.usernameOrEmail, userSession.password);
+        .authWithPassword(session.usernameOrEmail!, session.password!);
 
     // dispatchSync(WriteEnvAction(token: pb.authStore.token));
 
@@ -31,6 +30,6 @@ final class LogInAction extends AppAction {
       },
     );
 
-    return null;
+    return state.copyWith.session(token: result.token);
   }
 }

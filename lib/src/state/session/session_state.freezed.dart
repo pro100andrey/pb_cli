@@ -14,107 +14,38 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$SessionState {
 
-
-
-
-
-@override
-bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is SessionState);
-}
-
-
-@override
-int get hashCode => runtimeType.hashCode;
-
-@override
-String toString() {
-  return 'SessionState()';
-}
-
-
-}
-
-/// @nodoc
-class $SessionStateCopyWith<$Res>  {
-$SessionStateCopyWith(SessionState _, $Res Function(SessionState) __);
-}
-
-
-
-/// @nodoc
-
-
-class SessionUnresolved implements SessionState {
-  const SessionUnresolved();
-  
-
-
-
-
-
-
-@override
-bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is SessionUnresolved);
-}
-
-
-@override
-int get hashCode => runtimeType.hashCode;
-
-@override
-String toString() {
-  return 'SessionState.unresolved()';
-}
-
-
-}
-
-
-
-
-/// @nodoc
-
-
-class SessionToken implements SessionState {
-  const SessionToken({required this.host, required this.token});
-  
-
- final  String host;
- final  String token;
-
+ String? get host; String? get usernameOrEmail; String? get password; String? get token;
 /// Create a copy of SessionState
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
 @pragma('vm:prefer-inline')
-$SessionTokenCopyWith<SessionToken> get copyWith => _$SessionTokenCopyWithImpl<SessionToken>(this, _$identity);
+$SessionStateCopyWith<SessionState> get copyWith => _$SessionStateCopyWithImpl<SessionState>(this as SessionState, _$identity);
 
 
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is SessionToken&&(identical(other.host, host) || other.host == host)&&(identical(other.token, token) || other.token == token));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is SessionState&&(identical(other.host, host) || other.host == host)&&(identical(other.usernameOrEmail, usernameOrEmail) || other.usernameOrEmail == usernameOrEmail)&&(identical(other.password, password) || other.password == password)&&(identical(other.token, token) || other.token == token));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,host,token);
+int get hashCode => Object.hash(runtimeType,host,usernameOrEmail,password,token);
 
 @override
 String toString() {
-  return 'SessionState.token(host: $host, token: $token)';
+  return 'SessionState(host: $host, usernameOrEmail: $usernameOrEmail, password: $password, token: $token)';
 }
 
 
 }
 
 /// @nodoc
-abstract mixin class $SessionTokenCopyWith<$Res> implements $SessionStateCopyWith<$Res> {
-  factory $SessionTokenCopyWith(SessionToken value, $Res Function(SessionToken) _then) = _$SessionTokenCopyWithImpl;
+abstract mixin class $SessionStateCopyWith<$Res>  {
+  factory $SessionStateCopyWith(SessionState value, $Res Function(SessionState) _then) = _$SessionStateCopyWithImpl;
 @useResult
 $Res call({
- String host, String token
+ String? host, String? usernameOrEmail, String? password, String? token
 });
 
 
@@ -122,68 +53,72 @@ $Res call({
 
 }
 /// @nodoc
-class _$SessionTokenCopyWithImpl<$Res>
-    implements $SessionTokenCopyWith<$Res> {
-  _$SessionTokenCopyWithImpl(this._self, this._then);
+class _$SessionStateCopyWithImpl<$Res>
+    implements $SessionStateCopyWith<$Res> {
+  _$SessionStateCopyWithImpl(this._self, this._then);
 
-  final SessionToken _self;
-  final $Res Function(SessionToken) _then;
+  final SessionState _self;
+  final $Res Function(SessionState) _then;
 
 /// Create a copy of SessionState
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') $Res call({Object? host = null,Object? token = null,}) {
-  return _then(SessionToken(
-host: null == host ? _self.host : host // ignore: cast_nullable_to_non_nullable
-as String,token: null == token ? _self.token : token // ignore: cast_nullable_to_non_nullable
-as String,
+@pragma('vm:prefer-inline') @override $Res call({Object? host = freezed,Object? usernameOrEmail = freezed,Object? password = freezed,Object? token = freezed,}) {
+  return _then(_self.copyWith(
+host: freezed == host ? _self.host : host // ignore: cast_nullable_to_non_nullable
+as String?,usernameOrEmail: freezed == usernameOrEmail ? _self.usernameOrEmail : usernameOrEmail // ignore: cast_nullable_to_non_nullable
+as String?,password: freezed == password ? _self.password : password // ignore: cast_nullable_to_non_nullable
+as String?,token: freezed == token ? _self.token : token // ignore: cast_nullable_to_non_nullable
+as String?,
   ));
 }
 
-
 }
+
+
 
 /// @nodoc
 
 
-class SessionUser implements SessionState {
-  const SessionUser({required this.host, required this.usernameOrEmail, required this.password});
+class _SessionState implements SessionState {
+  const _SessionState({this.host, this.usernameOrEmail, this.password, this.token});
   
 
- final  String host;
- final  String usernameOrEmail;
- final  String password;
+@override final  String? host;
+@override final  String? usernameOrEmail;
+@override final  String? password;
+@override final  String? token;
 
 /// Create a copy of SessionState
 /// with the given fields replaced by the non-null parameter values.
-@JsonKey(includeFromJson: false, includeToJson: false)
+@override @JsonKey(includeFromJson: false, includeToJson: false)
 @pragma('vm:prefer-inline')
-$SessionUserCopyWith<SessionUser> get copyWith => _$SessionUserCopyWithImpl<SessionUser>(this, _$identity);
+_$SessionStateCopyWith<_SessionState> get copyWith => __$SessionStateCopyWithImpl<_SessionState>(this, _$identity);
 
 
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is SessionUser&&(identical(other.host, host) || other.host == host)&&(identical(other.usernameOrEmail, usernameOrEmail) || other.usernameOrEmail == usernameOrEmail)&&(identical(other.password, password) || other.password == password));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _SessionState&&(identical(other.host, host) || other.host == host)&&(identical(other.usernameOrEmail, usernameOrEmail) || other.usernameOrEmail == usernameOrEmail)&&(identical(other.password, password) || other.password == password)&&(identical(other.token, token) || other.token == token));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,host,usernameOrEmail,password);
+int get hashCode => Object.hash(runtimeType,host,usernameOrEmail,password,token);
 
 @override
 String toString() {
-  return 'SessionState.user(host: $host, usernameOrEmail: $usernameOrEmail, password: $password)';
+  return 'SessionState(host: $host, usernameOrEmail: $usernameOrEmail, password: $password, token: $token)';
 }
 
 
 }
 
 /// @nodoc
-abstract mixin class $SessionUserCopyWith<$Res> implements $SessionStateCopyWith<$Res> {
-  factory $SessionUserCopyWith(SessionUser value, $Res Function(SessionUser) _then) = _$SessionUserCopyWithImpl;
-@useResult
+abstract mixin class _$SessionStateCopyWith<$Res> implements $SessionStateCopyWith<$Res> {
+  factory _$SessionStateCopyWith(_SessionState value, $Res Function(_SessionState) _then) = __$SessionStateCopyWithImpl;
+@override @useResult
 $Res call({
- String host, String usernameOrEmail, String password
+ String? host, String? usernameOrEmail, String? password, String? token
 });
 
 
@@ -191,21 +126,22 @@ $Res call({
 
 }
 /// @nodoc
-class _$SessionUserCopyWithImpl<$Res>
-    implements $SessionUserCopyWith<$Res> {
-  _$SessionUserCopyWithImpl(this._self, this._then);
+class __$SessionStateCopyWithImpl<$Res>
+    implements _$SessionStateCopyWith<$Res> {
+  __$SessionStateCopyWithImpl(this._self, this._then);
 
-  final SessionUser _self;
-  final $Res Function(SessionUser) _then;
+  final _SessionState _self;
+  final $Res Function(_SessionState) _then;
 
 /// Create a copy of SessionState
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') $Res call({Object? host = null,Object? usernameOrEmail = null,Object? password = null,}) {
-  return _then(SessionUser(
-host: null == host ? _self.host : host // ignore: cast_nullable_to_non_nullable
-as String,usernameOrEmail: null == usernameOrEmail ? _self.usernameOrEmail : usernameOrEmail // ignore: cast_nullable_to_non_nullable
-as String,password: null == password ? _self.password : password // ignore: cast_nullable_to_non_nullable
-as String,
+@override @pragma('vm:prefer-inline') $Res call({Object? host = freezed,Object? usernameOrEmail = freezed,Object? password = freezed,Object? token = freezed,}) {
+  return _then(_SessionState(
+host: freezed == host ? _self.host : host // ignore: cast_nullable_to_non_nullable
+as String?,usernameOrEmail: freezed == usernameOrEmail ? _self.usernameOrEmail : usernameOrEmail // ignore: cast_nullable_to_non_nullable
+as String?,password: freezed == password ? _self.password : password // ignore: cast_nullable_to_non_nullable
+as String?,token: freezed == token ? _self.token : token // ignore: cast_nullable_to_non_nullable
+as String?,
   ));
 }
 

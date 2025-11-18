@@ -21,7 +21,7 @@ abstract class AppState with _$AppState {
   factory AppState.initial() => const AppState(
     env: EnvState(),
     config: ConfigState(),
-    session: SessionUnresolved(),
+    session: SessionState(),
     schema: SchemaState(),
     workDir: null,
   );

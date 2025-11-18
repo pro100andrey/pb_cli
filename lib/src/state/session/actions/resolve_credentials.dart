@@ -1,5 +1,4 @@
 import '../../actions/action.dart';
-import '../session_state.dart';
 
 final class ResolveCredentialsAction extends AppAction {
   @override
@@ -21,12 +20,10 @@ final class ResolveCredentialsAction extends AppAction {
       defaultValue: 'password',
     );
 
-    final session = SessionUser(
+    return state.copyWith.session(
       host: host,
       usernameOrEmail: usernameOrEmail,
       password: password,
     );
-
-    return state.copyWith(session: session);
   }
 }

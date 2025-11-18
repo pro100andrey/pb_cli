@@ -10,6 +10,7 @@ import '../../state/schema/actions/fetch_schema_action.dart';
 import '../../state/schema/actions/select_managed_collections_action.dart';
 import '../../state/session/actions/log_in_action.dart';
 import '../../state/session/actions/resolve_credentials.dart';
+import '../../state/session/actions/select_credentials_source_action.dart';
 import '../../utils/strings.dart';
 import 'base_command.dart';
 
@@ -46,6 +47,8 @@ class SetupCommand extends BaseCommand {
     await dispatchAndWait(FetchSchemaAction());
 
     dispatchSync(SelectManagedCollectionsAction());
+    dispatchSync(SelectCredentialsSourceAction());
+
 
     // final inputs = InputsFactory(logger);
     // final pbClient = await resolvePBConnection();
