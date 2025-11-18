@@ -1,6 +1,6 @@
 import 'package:pocketbase/pocketbase.dart';
 
-import '../ session/session_state.dart';
+import '../session/session_state.dart';
 import 'action.dart';
 
 final class StorePocketBaseAction extends AppAction {

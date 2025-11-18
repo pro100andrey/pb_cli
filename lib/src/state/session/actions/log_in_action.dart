@@ -41,7 +41,10 @@ final class LogInAction extends AppAction {
   @override
   Object? wrapError(Object error, StackTrace stackTrace) {
     if (error case ClientException()) {
-      return UserException(error.toString(), reason: 'Failed to log in.');
+      return UserException(
+        error.response['message'] ?? 'An error occurred during login.',
+        code: error.statusCode,
+      );
     }
 
     return super.wrapError(error, stackTrace);

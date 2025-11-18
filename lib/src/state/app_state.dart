@@ -1,6 +1,6 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
-import ' session/session_state.dart';
+import 'session/session_state.dart';
 import '../utils/path.dart';
 import 'config/config_state.dart';
 import 'env/env_state.dart';

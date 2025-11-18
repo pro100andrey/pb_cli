@@ -19,8 +19,10 @@ Future<int> run(List<String> args) async {
       initialState: AppState.initial(),
       syncStream: true,
       actionObservers: [
-        ReduxActionLogger(logger: logger),
+        AppActionLogger(logger: logger),
       ],
+      errorObserver: AppErrorObserver(logger: logger),
+      globalWrapError: AppGlobalWrapError(),
     );
 
     // Setup the command runner

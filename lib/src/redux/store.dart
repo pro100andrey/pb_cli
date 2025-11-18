@@ -3,7 +3,6 @@ import 'dart:collection';
 
 import 'package:collection/collection.dart';
 
-import 'global_wrap_error.dart';
 import 'observers.dart';
 import 'store_exception.dart';
 import 'user_exception.dart';

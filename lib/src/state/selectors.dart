@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import ' session/session_state.dart';
+import 'session/session_state.dart';
 import '../models/credentials_source.dart';
 import '../utils/path.dart';
 import 'actions/action.dart';

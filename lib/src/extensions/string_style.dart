@@ -261,12 +261,7 @@ extension StringCliExtensions on String {
   /// ```
   String box({
     int padding = 1,
-    String topLeft = '┌',
-    String topRight = '┐',
-    String bottomLeft = '└',
-    String bottomRight = '┘',
-    String horizontal = '─',
-    String vertical = '│',
+    BoxBorderStyle style = .unicode,
   }) {
     final lines = split('\n');
     final maxLength = lines
@@ -276,17 +271,76 @@ extension StringCliExtensions on String {
     final width = maxLength + (padding * 2);
 
     final buffer = StringBuffer()
-      ..writeln('$topLeft${horizontal * width}$topRight');
+      ..writeln('${style.tl}${style.h * width}${style.tr}');
 
     for (final line in lines) {
       final paddedLine = line.padRight(maxLength);
       buffer.writeln(
-        '$vertical${' ' * padding}$paddedLine${' ' * padding}$vertical',
+        '${style.v}'
+        '${' ' * padding}$paddedLine${' ' * padding}'
+        '${style.v}',
       );
     }
 
-    buffer.write('$bottomLeft${horizontal * width}$bottomRight');
-
+    buffer.write('${style.bl}${style.h * width}${style.br}');
     return buffer.toString();
+  }
+}
+
+enum BoxBorderStyle { ascii, unicode }
+
+extension BoxBorderStyleExt on BoxBorderStyle {
+  String get tl {
+    switch (this) {
+      case .ascii:
+        return '+';
+      case .unicode:
+        return '┌';
+    }
+  }
+
+  String get tr {
+    switch (this) {
+      case .ascii:
+        return '+';
+      case .unicode:
+        return '┐';
+    }
+  }
+
+  String get bl {
+    switch (this) {
+      case .ascii:
+        return '+';
+      case .unicode:
+        return '└';
+    }
+  }
+
+  String get br {
+    switch (this) {
+      case .ascii:
+        return '+';
+      case .unicode:
+        return '┘';
+    }
+  }
+
+  String get h {
+    switch (this) {
+      case .ascii:
+        return '-';
+      case .unicode:
+        return '─';
+    }
+  }
+
+  String get v {
+    switch (this) {
+      case .ascii:
+        return '|';
+      case .unicode:
+        return '│';
+    }
   }
 }

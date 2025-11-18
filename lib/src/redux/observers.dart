@@ -32,3 +32,11 @@ abstract class StateObserver<St> {
     int dispatchCount,
   );
 }
+
+abstract class GlobalWrapError<St> {
+  Object? wrap(
+    Object error,
+    StackTrace stackTrace,
+    ReduxAction<St> action,
+  );
+}

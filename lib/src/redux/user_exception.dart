@@ -12,19 +12,6 @@ class UserException implements Exception {
 
   final String? reason;
 
-  static String Function() defaultJoinString = () => "\n\n${"Reason:"} ";
-
-  static String Function(String? first, String? second) joinCauses =
-      (first, second) {
-        if (first == null || first.isEmpty) {
-          return second ?? '';
-        }
-        if (second == null || second.isEmpty) {
-          return first;
-        }
-        return '$first${defaultJoinString()}$second';
-      };
-
   /// Returns a new instance with some fields replaced by new values.
   /// This is compatible with Serverpod.
   UserException copyWith({
@@ -38,7 +25,15 @@ class UserException implements Exception {
   );
 
   @override
-  String toString() => 'UserException';
+  String toString() {
+    final fields = {
+      'message': ?message,
+      'code': ?code,
+      'reason': ?reason,
+    }.entries.map((e) => ' - ${e.key}: ${e.value}');
+
+    return 'UserException\n${fields.join('\n')}';
+  }
 
   @override
   bool operator ==(Object other) =>
@@ -48,7 +43,7 @@ class UserException implements Exception {
           message == other.message &&
           code == other.code &&
           reason == other.reason;
-          
+
   @override
   int get hashCode => message.hashCode ^ code.hashCode ^ reason.hashCode;
 }

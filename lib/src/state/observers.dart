@@ -1,14 +1,16 @@
 import 'dart:collection';
 
 import 'package:mason_logger/mason_logger.dart';
+import 'package:stack_trace/stack_trace.dart';
 
 import '../extensions/string_style.dart';
 import '../redux/observers.dart';
 import '../redux/store.dart';
+import '../redux/user_exception.dart';
 import 'app_state.dart';
 
-class ReduxActionLogger extends ActionObserver<AppState> {
-  ReduxActionLogger({required Logger logger}) : _logger = logger;
+class AppActionLogger extends ActionObserver<AppState> {
+  AppActionLogger({required Logger logger}) : _logger = logger;
 
   final Logger _logger;
 
@@ -66,5 +68,39 @@ extension StopWatchExtension on Stopwatch {
       final seconds = inSeconds % 60;
       return '${minutes}m ${seconds}s'.red.bold;
     }
+  }
+}
+
+class AppErrorObserver implements ErrorObserver<AppState> {
+  AppErrorObserver({required Logger logger}) : _logger = logger;
+
+  final Logger _logger;
+
+  @override
+  bool observe(
+    Object error,
+    StackTrace stackTrace,
+    ReduxAction<AppState> action,
+    Store store,
+  ) {
+    final trace = Trace.from(stackTrace);
+
+    _logger
+      ..err('Error during ${action.runtimeTypeString()}')
+      ..detail(error.toString().box())
+      ..detail(trace.toString());
+
+    return false;
+  }
+}
+
+class AppGlobalWrapError extends GlobalWrapError<AppState> {
+  @override
+  Object? wrap(Object error, StackTrace stackTrace, ReduxAction action) {
+    if (error is UserException) {
+      return error;
+    }
+
+    return UserException(null, reason: error.toString());
   }
 }

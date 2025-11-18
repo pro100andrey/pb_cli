@@ -18,6 +18,7 @@ dependencies:
   meta: ^1.17.0
   path: ^1.9.1
   pocketbase: ^0.23.0
+  stack_trace: ^1.12.1
 
 dev_dependencies:
   build_runner: ^2.10.3
