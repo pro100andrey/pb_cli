@@ -15,7 +15,7 @@ import '../../utils/validation.dart';
 import 'base_command.dart';
 
 class PullCommand extends BaseCommand {
-  PullCommand({required this.store}){
+  PullCommand({required this.store}) {
     argParser
       ..addOption(
         S.dirOptionName,

@@ -16,6 +16,4 @@ sealed class SessionState with _$SessionState {
     required String usernameOrEmail,
     required String password,
   }) = SessionUser;
-
-
 }

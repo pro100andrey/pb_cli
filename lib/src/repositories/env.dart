@@ -14,7 +14,7 @@ final class _FileEnvRepository implements EnvRepository {
 
   static const file = '.env';
 
-   FilePath _file(DirectoryPath dataDir) => dataDir.joinFile(file);
+  FilePath _file(DirectoryPath dataDir) => dataDir.joinFile(file);
 
   @override
   Dotenv read({required DirectoryPath dataDir}) {

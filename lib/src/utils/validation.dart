@@ -29,7 +29,7 @@ extension DirectoryPathValidation on DirectoryPath {
 
   /// Validates that the path points to a directory (not a file).
   ///
-  /// Returns a [NotADirectoryFailure] if the path exists but is not a 
+  /// Returns a [NotADirectoryFailure] if the path exists but is not a
   /// directory,
   /// otherwise returns `null` indicating the validation passed.
   ///
@@ -58,7 +58,7 @@ extension DirectoryPathValidation on DirectoryPath {
   /// 1. The directory exists
   /// 2. The path points to a directory (not a file)
   ///
-  /// Returns the first [Failure] encountered, or `null` if all validations 
+  /// Returns the first [Failure] encountered, or `null` if all validations
   /// pass.
   ///
   /// Example:

@@ -7,7 +7,8 @@ enum CredentialsSource {
   dotenv,
 
   /// Request credentials from user through interactive input
-  prompt;
+  prompt
+  ;
 
   bool get isDotenv => this == CredentialsSource.dotenv;
   bool get isPrompt => this == CredentialsSource.prompt;

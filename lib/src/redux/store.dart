@@ -1076,7 +1076,6 @@ final class Store<St> {
     });
   }
 
-
   void _finalize(
     ReduxAction<St> action,
     Object? error,

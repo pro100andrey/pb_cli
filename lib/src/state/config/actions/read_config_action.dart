@@ -17,10 +17,13 @@ final class ReadConfigAction extends AppAction {
       level: .verbose,
       title: 'Configuration:',
       items: {
-        'Managed Collections': managedCollections.isNotEmpty
-            ? managedCollections.join(', ')
-            : '<none>',
-        'Credentials Source': credentialsSource.key,
+        'Managed Collections':
+            managedCollections == null || managedCollections.isEmpty
+            ? '<none>'
+            : managedCollections.join(', '),
+        'Credentials Source': credentialsSource == null
+            ? '<not set>'
+            : credentialsSource.key,
       },
     );
 

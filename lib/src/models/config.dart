@@ -31,7 +31,6 @@ extension type const ConfigKey._(String value) implements String {
     managedCollections,
     credentialsSource,
   };
-  
 }
 
 /// Configuration data structure representing CLI settings.

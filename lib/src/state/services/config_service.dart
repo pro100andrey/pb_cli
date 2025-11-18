@@ -4,19 +4,18 @@ import '../../models/credentials_source.dart';
 import '../../utils/path.dart';
 
 typedef ReadConfigResult = ({
-  List<String> managedCollections,
-  CredentialsSource credentialsSource,
+  List<String>? managedCollections,
+  CredentialsSource? credentialsSource,
 });
 
 final class ConfigService {
   static const fileName = 'config.json';
 
   static const _defaultReadConfigResult = (
-    managedCollections: <String>[],
-    credentialsSource: CredentialsSource.prompt,
+    managedCollections: null,
+    credentialsSource: null,
   );
 
-  
   ReadConfigResult read({required FilePath inputFile}) {
     if (inputFile.notFound) {
       return _defaultReadConfigResult;
@@ -26,7 +25,7 @@ final class ConfigService {
 
     final collections = configMap[ConfigKey.managedCollections];
     final managedCollections = switch (collections) {
-      null => <String>[],
+      null => null,
       List() => collections.cast<String>(),
       _ => throw const FormatException(
         'Invalid format for managedCollections in config file. '
@@ -37,7 +36,7 @@ final class ConfigService {
     final source = configMap[ConfigKey.credentialsSource];
     final credentialsSource = switch (source) {
       String() => CredentialsSource.fromKey(source),
-      null => CredentialsSource.prompt,
+      null => null,
       _ => throw const FormatException(
         'Invalid format for credentialsSource in config file. '
         'Should be a string.',

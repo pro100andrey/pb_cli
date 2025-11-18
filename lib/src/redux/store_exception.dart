@@ -1,4 +1,3 @@
-
 class StoreException implements Exception {
   const StoreException(this.msg);
 

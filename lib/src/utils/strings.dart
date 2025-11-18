@@ -82,6 +82,5 @@ abstract final class S {
 
   // Error Messages
 
-  static String pocketBaseFailed(String error) =>
-      'PocketBase: $error.';
+  static String pocketBaseFailed(String error) => 'PocketBase: $error.';
 }
