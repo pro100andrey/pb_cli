@@ -52,8 +52,6 @@ final class Credentials {
 /// 1. From environment variables (dotenv) if configured and complete
 /// 2. By prompting the user for input via the provided input interface
 ///
-/// [dotenv] The environment configuration containing potential credentials.
-/// [config] The application configuration specifying credential sources.
 /// [input] The interface for gathering user input when needed.
 ///
 /// Returns a [CliResult] containing either the resolved [Credentials] or
