@@ -14,7 +14,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$SchemaState {
 
- List<CollectionModel>? get collections;
+ List<CollectionModel>? get collections; List<String>? get managedCollections;
 /// Create a copy of SchemaState
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -25,16 +25,16 @@ $SchemaStateCopyWith<SchemaState> get copyWith => _$SchemaStateCopyWithImpl<Sche
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is SchemaState&&const DeepCollectionEquality().equals(other.collections, collections));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is SchemaState&&const DeepCollectionEquality().equals(other.collections, collections)&&const DeepCollectionEquality().equals(other.managedCollections, managedCollections));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,const DeepCollectionEquality().hash(collections));
+int get hashCode => Object.hash(runtimeType,const DeepCollectionEquality().hash(collections),const DeepCollectionEquality().hash(managedCollections));
 
 @override
 String toString() {
-  return 'SchemaState(collections: $collections)';
+  return 'SchemaState(collections: $collections, managedCollections: $managedCollections)';
 }
 
 
@@ -45,7 +45,7 @@ abstract mixin class $SchemaStateCopyWith<$Res>  {
   factory $SchemaStateCopyWith(SchemaState value, $Res Function(SchemaState) _then) = _$SchemaStateCopyWithImpl;
 @useResult
 $Res call({
- List<CollectionModel>? collections
+ List<CollectionModel>? collections, List<String>? managedCollections
 });
 
 
@@ -62,10 +62,11 @@ class _$SchemaStateCopyWithImpl<$Res>
 
 /// Create a copy of SchemaState
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? collections = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? collections = freezed,Object? managedCollections = freezed,}) {
   return _then(_self.copyWith(
 collections: freezed == collections ? _self.collections : collections // ignore: cast_nullable_to_non_nullable
-as List<CollectionModel>?,
+as List<CollectionModel>?,managedCollections: freezed == managedCollections ? _self.managedCollections : managedCollections // ignore: cast_nullable_to_non_nullable
+as List<String>?,
   ));
 }
 
@@ -77,7 +78,7 @@ as List<CollectionModel>?,
 
 
 class _SchemaState implements SchemaState {
-  const _SchemaState({final  List<CollectionModel>? collections}): _collections = collections;
+  const _SchemaState({final  List<CollectionModel>? collections, final  List<String>? managedCollections}): _collections = collections,_managedCollections = managedCollections;
   
 
  final  List<CollectionModel>? _collections;
@@ -85,6 +86,15 @@ class _SchemaState implements SchemaState {
   final value = _collections;
   if (value == null) return null;
   if (_collections is EqualUnmodifiableListView) return _collections;
+  // ignore: implicit_dynamic_type
+  return EqualUnmodifiableListView(value);
+}
+
+ final  List<String>? _managedCollections;
+@override List<String>? get managedCollections {
+  final value = _managedCollections;
+  if (value == null) return null;
+  if (_managedCollections is EqualUnmodifiableListView) return _managedCollections;
   // ignore: implicit_dynamic_type
   return EqualUnmodifiableListView(value);
 }
@@ -100,16 +110,16 @@ _$SchemaStateCopyWith<_SchemaState> get copyWith => __$SchemaStateCopyWithImpl<_
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _SchemaState&&const DeepCollectionEquality().equals(other._collections, _collections));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _SchemaState&&const DeepCollectionEquality().equals(other._collections, _collections)&&const DeepCollectionEquality().equals(other._managedCollections, _managedCollections));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,const DeepCollectionEquality().hash(_collections));
+int get hashCode => Object.hash(runtimeType,const DeepCollectionEquality().hash(_collections),const DeepCollectionEquality().hash(_managedCollections));
 
 @override
 String toString() {
-  return 'SchemaState(collections: $collections)';
+  return 'SchemaState(collections: $collections, managedCollections: $managedCollections)';
 }
 
 
@@ -120,7 +130,7 @@ abstract mixin class _$SchemaStateCopyWith<$Res> implements $SchemaStateCopyWith
   factory _$SchemaStateCopyWith(_SchemaState value, $Res Function(_SchemaState) _then) = __$SchemaStateCopyWithImpl;
 @override @useResult
 $Res call({
- List<CollectionModel>? collections
+ List<CollectionModel>? collections, List<String>? managedCollections
 });
 
 
@@ -137,10 +147,11 @@ class __$SchemaStateCopyWithImpl<$Res>
 
 /// Create a copy of SchemaState
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? collections = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? collections = freezed,Object? managedCollections = freezed,}) {
   return _then(_SchemaState(
 collections: freezed == collections ? _self._collections : collections // ignore: cast_nullable_to_non_nullable
-as List<CollectionModel>?,
+as List<CollectionModel>?,managedCollections: freezed == managedCollections ? _self._managedCollections : managedCollections // ignore: cast_nullable_to_non_nullable
+as List<String>?,
   ));
 }
 

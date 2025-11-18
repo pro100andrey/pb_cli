@@ -7,6 +7,7 @@ import '../../state/actions/store_pocket_base_action.dart';
 import '../../state/config/actions/read_config_action.dart';
 import '../../state/env/actions/read_env_action.dart';
 import '../../state/schema/actions/fetch_schema_action.dart';
+import '../../state/schema/actions/select_managed_collections_action.dart';
 import '../../state/session/actions/log_in_action.dart';
 import '../../state/session/actions/resolve_credentials.dart';
 import '../../utils/strings.dart';
@@ -43,6 +44,8 @@ class SetupCommand extends BaseCommand {
 
     await dispatchAndWait(LogInAction());
     await dispatchAndWait(FetchSchemaAction());
+
+    dispatchSync(SelectManagedCollectionsAction());
 
     // final inputs = InputsFactory(logger);
     // final pbClient = await resolvePBConnection();

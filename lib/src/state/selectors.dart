@@ -1,9 +1,11 @@
 import 'dart:convert';
 
-import 'session/session_state.dart';
+import 'package:pocketbase/pocketbase.dart';
+
 import '../models/credentials_source.dart';
 import '../utils/path.dart';
 import 'actions/action.dart';
+import 'session/session_state.dart';
 
 /// Extension methods for convenient access to AppState properties.
 extension type Selectors(AppState state) {
@@ -15,7 +17,6 @@ extension type Selectors(AppState state) {
       state.config.credentialsSource ?? CredentialsSource.prompt;
 
   SessionState get session => state.session;
-
 
   String? get token => state.env.token;
 
@@ -38,4 +39,12 @@ extension type Selectors(AppState state) {
 
     return exp > (DateTime.now().millisecondsSinceEpoch / 1000);
   }
+
+  List<CollectionModel> get collections => state.schema.collections ?? [];
+
+  Iterable<CollectionModel> get collectionsWithoutSystem =>
+      collections.where((c) => !c.system);
+
+  Iterable<String> get collectionNamesWithoutSystem =>
+      collectionsWithoutSystem.map((c) => c.name);
 }
