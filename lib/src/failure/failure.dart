@@ -195,6 +195,18 @@ class Failure {
   final Object? details;
 
   @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is Failure &&
+          runtimeType == other.runtimeType &&
+          message == other.message &&
+          exitCode == other.exitCode &&
+          details == other.details;
+
+  @override
+  int get hashCode => message.hashCode ^ exitCode.hashCode ^ details.hashCode;
+
+  @override
   String toString() => 'Failure: $message (exit code: $exitCode)';
 }
 

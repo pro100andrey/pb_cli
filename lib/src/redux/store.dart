@@ -71,14 +71,12 @@ final class Store<St> {
        _errorObserver = errorObserver,
        _changeController = StreamController<St>.broadcast(sync: syncStream),
        _stateTimestamp = DateTime.now().toUtc(),
-       _errors = Queue<UserException>(),
        _actionsInProgress = HashSet<ReduxAction<St>>.identity(),
        _actionsWeCanCheckFailed = HashSet<Type>.identity(),
        _failedActions = HashMap<Type, ReduxAction<St>>(),
        _props = {},
        _dispatchCount = 0,
-       _reduceCount = 0,
-       _maxErrorsQueued = 10;
+       _reduceCount = 0;
 
   final StreamController<St> _changeController;
   final List<ActionObserver>? _actionObservers;
@@ -86,8 +84,7 @@ final class Store<St> {
   final WrapReduce<St>? _wrapReduce;
   final GlobalWrapError<St>? _globalWrapError;
   final ErrorObserver<St>? _errorObserver;
-  final int _maxErrorsQueued;
-  final Queue<UserException> _errors;
+
   final HashSet<ReduxAction<St>> _actionsInProgress;
   final HashMap<Type, ReduxAction<St>> _failedActions;
   final HashSet<Type> _actionsWeCanCheckFailed;
@@ -1033,15 +1030,8 @@ final class Store<St> {
     // again.
     _failedActions[action.runtimeType] = action;
 
-    // Memorizes errors of type UserException (in the error queue).
-    // These errors are usually shown to the user in a modal dialog, and are
-    // not logged.
-    if (errorOrNull is UserException) {
-      if (errorOrNull.ifOpenDialog) {
-        _addError(errorOrNull);
-        _changeController.add(state);
-      }
-    } else if (errorOrNull is AbortDispatchException) {
+    // If the error is an AbortDispatchException, we set the status.
+    if (errorOrNull is AbortDispatchException) {
       action._status = action._status.copy(isDispatchAborted: true);
     }
 
@@ -1087,14 +1077,6 @@ final class Store<St> {
     });
   }
 
-  /// Adds an error at the end of the error queue.
-  void _addError(UserException error) {
-    if (_errors.length > _maxErrorsQueued) {
-      _errors.removeFirst();
-    }
-
-    _errors.addLast(error);
-  }
 
   void _finalize(
     ReduxAction<St> action,
