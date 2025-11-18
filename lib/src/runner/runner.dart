@@ -2,6 +2,7 @@ import 'package:args/command_runner.dart';
 import 'package:mason_logger/mason_logger.dart';
 
 import '../redux/store.dart';
+import '../redux/user_exception.dart';
 import '../state/actions/action.dart';
 import '../state/actions/store_logger_action.dart';
 import '../state/observers.dart';
@@ -54,6 +55,10 @@ Future<int> run(List<String> args) async {
     return 0;
   } on Object catch (e) {
     final exception = e;
+
+    if (e case UserException(:final exitCode?)) {
+      return exitCode;
+    }
 
     if (e case UsageException() || ArgumentError()) {
       logger

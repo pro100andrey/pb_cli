@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:pocketbase/pocketbase.dart';
 
 import '../../../extensions/logger.dart';
+import '../../../failure/failure.dart';
 import '../../../redux/user_exception.dart';
 import '../../actions/action.dart';
 import '../../env/actions/write_env_action.dart';
@@ -44,6 +45,8 @@ final class LogInAction extends AppAction {
       return UserException(
         error.response['message'] ?? 'An error occurred during login.',
         code: error.statusCode,
+        reason: error.url.toString(),
+        exitCode: Failure.exSoftware
       );
     }
 

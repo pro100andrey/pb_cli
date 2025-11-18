@@ -3,6 +3,7 @@ class UserException implements Exception {
     this.message, {
     this.code,
     this.reason,
+    this.exitCode,
   });
 
   /// Some message shown to the user.
@@ -11,6 +12,8 @@ class UserException implements Exception {
   final int? code;
 
   final String? reason;
+
+  final int? exitCode;
 
   /// Returns a new instance with some fields replaced by new values.
   /// This is compatible with Serverpod.
@@ -29,6 +32,7 @@ class UserException implements Exception {
     final fields = {
       'message': ?message,
       'code': ?code,
+      'exitCode': ?exitCode,
       'reason': ?reason,
     }.entries.map((e) => ' - ${e.key}: ${e.value}');
 
@@ -42,8 +46,10 @@ class UserException implements Exception {
           runtimeType == other.runtimeType &&
           message == other.message &&
           code == other.code &&
-          reason == other.reason;
+          reason == other.reason &&
+          exitCode == other.exitCode;
 
   @override
-  int get hashCode => message.hashCode ^ code.hashCode ^ reason.hashCode;
+  int get hashCode =>
+      message.hashCode ^ code.hashCode ^ reason.hashCode ^ exitCode.hashCode;
 }

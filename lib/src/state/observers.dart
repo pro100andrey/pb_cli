@@ -90,7 +90,7 @@ class AppErrorObserver implements ErrorObserver<AppState> {
       ..detail(error.toString().box())
       ..detail(trace.toString());
 
-    return false;
+    return true;
   }
 }
 
