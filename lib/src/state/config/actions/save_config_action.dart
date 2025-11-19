@@ -9,7 +9,7 @@ final class SaveConfigAction extends AppAction {
     final managedCollections = select.managedCollections;
     final credentialsSource = select.credentialsSource;
 
-    ConfigService().write(
+    ConfigService.write(
       outputFile: file,
       managedCollections: managedCollections,
       credentialsSource: credentialsSource,

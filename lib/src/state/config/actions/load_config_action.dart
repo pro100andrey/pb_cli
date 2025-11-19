@@ -6,7 +6,7 @@ final class LoadConfigAction extends AppAction {
   @override
   AppState reduce() {
     final file = select.workDir.joinFile(ConfigService.fileName);
-    final result = ConfigService().read(inputFile: file);
+    final result = ConfigService.read(inputFile: file);
 
     final (
       :managedCollections,

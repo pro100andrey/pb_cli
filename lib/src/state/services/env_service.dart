@@ -1,7 +1,13 @@
 import '../../utils/path.dart';
 
-final class EnvService {
+typedef ReadEnvResult = ({
+  String? host,
+  String? usernameOrEmail,
+  String? password,
+  String? token,
+});
 
+final class EnvService {
   const EnvService._();
   static const String fileName = '.env';
 
@@ -22,18 +28,23 @@ final class EnvService {
     _write(data, outputFile);
   }
 
-  static Map<DotenvKey, String?> read({required FilePath inputFile}) {
+  static ReadEnvResult read({required FilePath inputFile}) {
     if (inputFile.notFound) {
-      return {};
+      return (host: null, usernameOrEmail: null, password: null, token: null);
     }
 
     final envData = _read(file: inputFile);
 
     if (envData.isEmpty) {
-      return {};
+      return (host: null, usernameOrEmail: null, password: null, token: null);
     }
 
-    return envData;
+    return (
+      host: envData[DotenvKey.pbHost],
+      usernameOrEmail: envData[DotenvKey.pbUsername],
+      password: envData[DotenvKey.pbPassword],
+      token: envData[DotenvKey.pbToken],
+    );
   }
 
   static void _write(Map<DotenvKey, String> data, FilePath file) {

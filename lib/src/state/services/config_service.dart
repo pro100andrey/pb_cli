@@ -9,16 +9,12 @@ typedef ReadConfigResult = ({
 });
 
 final class ConfigService {
+  const ConfigService._();
   static const fileName = 'config.json';
 
-  static const _defaultReadConfigResult = (
-    managedCollections: null,
-    credentialsSource: null,
-  );
-
-  ReadConfigResult read({required FilePath inputFile}) {
+  static ReadConfigResult read({required FilePath inputFile}) {
     if (inputFile.notFound) {
-      return _defaultReadConfigResult;
+      return (managedCollections: null, credentialsSource: null);
     }
 
     final configMap = _read(file: inputFile);
@@ -49,7 +45,7 @@ final class ConfigService {
     );
   }
 
-  void write({
+  static void write({
     required FilePath outputFile,
     required List<String>? managedCollections,
     required CredentialsSource? credentialsSource,
@@ -62,13 +58,13 @@ final class ConfigService {
     _write(data, outputFile);
   }
 
-  void _write(Map<ConfigKey, Object?> data, FilePath file) {
+  static void _write(Map<ConfigKey, Object?> data, FilePath file) {
     final json = const JsonEncoder.withIndent('  ').convert(data);
 
     file.writeAsString(json);
   }
 
-  Map<ConfigKey, dynamic> _read({required FilePath file}) {
+  static Map<ConfigKey, dynamic> _read({required FilePath file}) {
     final contents = file.readAsString();
     final configMap = jsonDecode(contents) as Map<ConfigKey, dynamic>;
 

@@ -8,12 +8,12 @@ class LoadEnvAction extends AppAction {
     final file = select.workDir.joinFile(EnvService.fileName);
     final result = EnvService.read(inputFile: file);
 
-    final {
-      DotenvKey.pbHost: host,
-      DotenvKey.pbUsername: usernameOrEmail,
-      DotenvKey.pbPassword: password,
-      DotenvKey.pbToken: token,
-    } = result;
+    final (
+      :host,
+      :usernameOrEmail,
+      :password,
+      :token,
+    ) = result;
 
     logger.sectionMapped(
       level: .verbose,
