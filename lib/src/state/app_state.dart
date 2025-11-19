@@ -8,13 +8,23 @@ import 'session/session_state.dart';
 
 part 'app_state.freezed.dart';
 
+/// The root state of the application.
 @freezed
 abstract class AppState with _$AppState {
   const factory AppState({
+    /// The current working directory.
     required DirectoryPath? workDir,
+
+    /// The environment state (loaded from .env file).
     required EnvState env,
+
+    /// The configuration state (loaded from config file).
     required ConfigState config,
+
+    /// The session state (active user credentials).
     required SessionState session,
+
+    /// The schema state (PocketBase collections).
     required SchemaState schema,
   }) = _AppState;
 

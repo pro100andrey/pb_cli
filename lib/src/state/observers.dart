@@ -9,6 +9,7 @@ import '../redux/store.dart';
 import '../redux/user_exception.dart';
 import 'app_state.dart';
 
+/// Logs actions to the console.
 class AppActionLogger extends ActionObserver<AppState> {
   AppActionLogger({required Logger logger}) : _logger = logger;
 
@@ -71,6 +72,7 @@ extension StopWatchExtension on Stopwatch {
   }
 }
 
+/// Logs errors to the console.
 class AppErrorObserver implements ErrorObserver<AppState> {
   AppErrorObserver({required Logger logger}) : _logger = logger;
 
@@ -94,6 +96,7 @@ class AppErrorObserver implements ErrorObserver<AppState> {
   }
 }
 
+/// Wraps errors into [UserException] if they are not already.
 class AppGlobalWrapError extends GlobalWrapError<AppState> {
   @override
   Object? wrap(Object error, StackTrace stackTrace, ReduxAction action) {

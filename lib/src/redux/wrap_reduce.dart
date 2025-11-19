@@ -1,9 +1,20 @@
 import 'store.dart';
 import 'store_exception.dart';
 
+/// Interface for wrapping the reducer.
+///
+/// This allows you to add logic that runs before or after the reducer,
+/// or to modify the state returned by the reducer.
 abstract class WrapReduce<St> {
+  /// Returns true if [process] should be called.
   bool ifShouldProcess() => true;
 
+  /// Processes the state change.
+  ///
+  /// [oldState] is the state before the reducer ran.
+  /// [newState] is the state returned by the reducer.
+  ///
+  /// Returns the new state to be saved in the store.
   St process({
     required St oldState,
     required St newState,

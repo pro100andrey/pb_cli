@@ -1,4 +1,10 @@
 class UserException implements Exception {
+  /// Creates a new [UserException].
+  ///
+  /// [message] is the message shown to the user.
+  /// [code] is an optional error code.
+  /// [reason] is an optional reason for the error (e.g. for debugging).
+  /// [exitCode] is an optional exit code (e.g. for CLI apps).
   const UserException(
     this.message, {
     this.code,
@@ -9,10 +15,13 @@ class UserException implements Exception {
   /// Some message shown to the user.
   final String? message;
 
+  /// An optional error code.
   final int? code;
 
+  /// An optional reason for the error (e.g. for debugging).
   final String? reason;
 
+  /// An optional exit code (e.g. for CLI apps).
   final int? exitCode;
 
   /// Returns a new instance with some fields replaced by new values.

@@ -48,18 +48,28 @@ abstract class ReduxAction<St> {
   ///
   /// If this method returns true, the action will not be dispatched and
   /// [AbortDispatchException] will be thrown.
+  ///
+  /// This is useful for validating the action's parameters or checking
+  /// preconditions before the action is executed.
   bool abortDispatch() => false;
 
   /// Wraps the reduce function with additional logic.
   ///
   /// Override this method to add middleware-like behavior around the reducer,
   /// such as logging, error handling, or state validation.
+  ///
+  /// The [reduce] parameter is the reducer function that will be executed.
+  /// You should call it to get the new state, and return that state (or a
+  /// modified version of it).
   FutureOr<St?> wrapReduce(Reducer<St> reduce) => null;
 
   /// Wraps errors thrown during action execution.
   ///
   /// Override this to transform or handle errors in a custom way.
   /// The default implementation returns the error unchanged.
+  ///
+  /// If you return `null`, the error will be swallowed (not thrown).
+  /// If you return a different error, that error will be thrown instead.
   Object? wrapError(Object error, StackTrace stackTrace) => error;
 
   /// Dispatches an action and waits for it to complete.
@@ -115,6 +125,13 @@ abstract class ReduxAction<St> {
   ///
   /// [actionOrTypeOrList] can be an action instance, a Type, or a list of
   /// Types.
+  ///
+  /// Examples:
+  /// ```dart
+  /// isWaiting(MyAction); // Checks if any MyAction is waiting.
+  /// isWaiting(myActionInstance); // Checks if this specific instance is waiting.
+  /// isWaiting([MyAction, OtherAction]); // Checks if any of these types are waiting.
+  /// ```
   bool isWaiting(Object actionOrTypeOrList) =>
       _store.isWaiting(actionOrTypeOrList);
 
@@ -122,6 +139,8 @@ abstract class ReduxAction<St> {
   ///
   /// [actionOrTypeOrList] can be an action instance, a Type, or a list of
   /// Types.
+  ///
+  /// This checks if the action threw an error that was not swallowed.
   bool isFailed(Object actionOrTypeOrList) =>
       _store.isFailed(actionOrTypeOrList);
 
@@ -133,6 +152,9 @@ abstract class ReduxAction<St> {
   ///
   /// Note: This method uses the EXACT type in [actionTypeOrList]. Subtypes are
   /// not considered.
+  ///
+  /// Returns `null` if the action has not failed, or if the error is not a
+  /// [UserException].
   UserException? exceptionFor(Object actionTypeOrList) =>
       _store.exceptionFor(actionTypeOrList);
 
@@ -141,7 +163,7 @@ abstract class ReduxAction<St> {
   ///
   /// Note that dispatching an action already removes that action type from the
   /// exceptions list. This removal happens as soon as the action is dispatched,
-  ///  not when it finishes.
+  /// not when it finishes.
   ///
   /// [actionTypeOrList] can be a [Type], or an Iterable of types. Any other
   /// type of object will return null and throw a [StoreException] after the

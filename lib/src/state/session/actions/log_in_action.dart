@@ -2,10 +2,13 @@ import 'dart:async';
 
 import '../../../extensions/logger.dart';
 import '../../actions/action.dart';
+import 'populate_session_from_env_action.dart';
 
 final class LogInAction extends AppAction {
   @override
   Future<AppState?> reduce() async {
+    dispatchSync(PopulateSessionFromEnvAction());
+
     if (select.hasToken && select.tokenIsValid) {
       pb.authStore.save(select.token!, null);
       logger.detail('Using existing authentication token.');

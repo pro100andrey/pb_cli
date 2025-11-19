@@ -246,10 +246,12 @@ final class Store<St> {
   /// Returns immediately for synchronous actions, or a [Future] for async
   /// actions.
   ///
-  /// Parameters:
-  /// - [action]: The action to dispatch.
-  /// - [notify]: If true, notifies listeners of state changes. Defaults to
-  /// true.
+  /// [action] is the action to dispatch.
+  /// [notify] if true (default), listeners will be notified of state changes.
+  ///
+  /// If the action is synchronous, it will be executed immediately and the
+  /// status will be returned.
+  /// If the action is asynchronous, a Future will be returned.
   FutureOr<ActionStatus> dispatch(
     ReduxAction<St> action, {
     bool notify = true,
@@ -258,10 +260,11 @@ final class Store<St> {
   /// Dispatches an action and returns a [Future] that completes when the action
   /// finishes.
   ///
-  /// Parameters:
-  /// - [action]: The action to dispatch.
-  /// - [notify]: If true, notifies listeners of state changes. Defaults to
-  /// true.
+  /// This is useful when you want to await for an action to complete,
+  /// regardless of whether it is synchronous or asynchronous.
+  ///
+  /// [action] is the action to dispatch.
+  /// [notify] if true (default), listeners will be notified of state changes.
   Future<ActionStatus> dispatchAndWait(
     ReduxAction<St> action, {
     bool notify = true,
@@ -604,12 +607,17 @@ final class Store<St> {
   /// If the condition is already true, the future completes immediately (if
   /// [completeImmediately] is true) or throws [StoreException].
   ///
-  /// Parameters:
-  /// - [condition]: A function that tests the state.
-  /// - [completeImmediately]: If true, completes immediately when condition
-  ///   is already true. Defaults to true.
-  /// - [timeoutMillis]: Optional timeout. Defaults to [defaultTimeoutMillis].
-  ///   Set to -1 to disable timeout.
+  /// [condition] is a function that returns true when the desired state is
+  /// reached.
+  /// [completeImmediately] if true (default), the future completes immediately
+  /// if the condition is already met.
+  /// [timeoutMillis] is the timeout in milliseconds. Defaults to
+  /// [defaultTimeoutMillis]. Set to -1 to disable.
+  ///
+  /// Example:
+  /// ```dart
+  /// await store.waitCondition((state) => state.isLoading == false);
+  /// ```
   Future<ReduxAction<St>?> waitCondition(
     bool Function(St) condition, {
     bool completeImmediately = true,
@@ -766,6 +774,7 @@ final class Store<St> {
       'This method should only be called when wrapReduce is overridden.',
     );
 
+    // wrapReduce cannot be synchronous if it returns a Future.
     if (action.ifWrapReduceOverriddenSync()) {
       throw StoreException(
         'The ${action.runtimeType}.wrapReduce method '
@@ -775,13 +784,17 @@ final class Store<St> {
 
     action._completedFuture = false;
 
+    // 1. Wrap the reducer with the global wrapper (if any).
     final reduce = (_wrapReduce != null)
         ? _wrapReduce.wrapReduce(action.reduce, this)
         : action.reduce;
 
+    // 2. Call wrapReduce, which returns a Future<St?>.
     return (action.wrapReduce(reduce) as Future<St?>?)!.then((state) {
+      // 3. Register the new state.
       _registerState(state, action, notify: notify);
 
+      // 4. Check if the reducer returned a completed future (which is bad).
       if (action._completedFuture) {
         return Future.error(
           'The reducer of action ${action.runtimeType} returned a completed '
@@ -851,15 +864,19 @@ final class Store<St> {
     Object? processedError;
 
     try {
+      // 1. If there was a "before" method (not implemented here but common in
+      // Redux), we would await it here.
       if (result is Future) {
         await result;
       }
 
+      // 2. Apply the reducer.
       result = _applyReducer(action, notify: notify);
       if (result is Future) {
         await result;
       }
 
+      // 3. Mark as finished.
       action._status = action._status.copy(hasFinishedMethodReduce: true);
     }
     //
@@ -902,16 +919,21 @@ final class Store<St> {
   /// Returns a future that completes when the given action [condition] becomes
   /// true.
   ///
-  /// Parameters:
-  /// - [condition]: Function that tests actions in progress and the trigger
-  ///   action.
-  /// - [completeImmediately]: If true, completes immediately when condition is
-  ///   already true.
-  /// - [completedErrorMessage]: Error message if condition is already true and
-  ///   [completeImmediately] is false.
-  /// - [timeoutMillis]: Optional timeout in milliseconds.
+  /// This allows you to wait for specific actions to be in progress or
+  /// finished.
+  ///
+  /// [condition] is a function that receives the set of actions in progress and
+  /// the action that triggered the check.
+  /// [completeImmediately] if true, completes immediately if the condition is
+  /// already met.
+  /// [completedErrorMessage] is the error message if the condition is already
+  /// met and [completeImmediately] is false.
+  /// [timeoutMillis] is the timeout in milliseconds.
   Future<(Set<ReduxAction<St>>, ReduxAction<St>?)> waitActionCondition(
-    bool Function(Set<ReduxAction<St>> actions, ReduxAction<St>? triggerAction)
+    bool Function(
+      Set<ReduxAction<St>> actions,
+      ReduxAction<St>? triggerAction,
+    )
     condition, {
     bool completeImmediately = false,
     String completedErrorMessage = 'Awaited action condition was already true',

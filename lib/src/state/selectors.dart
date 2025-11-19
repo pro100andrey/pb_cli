@@ -25,13 +25,13 @@ extension type Selectors(AppState state) {
   // Session selectors
   SessionState get session => state.session;
 
-  String? get token => state.env.token;
+  String? get token => state.session.token;
 
-  String? get host => state.env.host;
+  String? get host => state.session.host;
 
-  String? get usernameOrEmail => state.env.usernameOrEmail;
+  String? get usernameOrEmail => state.session.usernameOrEmail;
 
-  String? get password => state.env.password;
+  String? get password => state.session.password;
 
   bool get hasToken => token != null && token!.isNotEmpty;
 
