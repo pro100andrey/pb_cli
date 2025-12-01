@@ -21,7 +21,7 @@ class LoadEnvAction extends AppAction {
       items: {
         DotenvKey.pbHost: host ?? '<not set>',
         DotenvKey.pbUsername: usernameOrEmail ?? '<not set>',
-        DotenvKey.pbPassword: '<hidden>',
+        DotenvKey.pbPassword: password == null ? '<not set>' : '<hidden>',
         DotenvKey.pbToken: token ?? '<not set>',
       },
     );
