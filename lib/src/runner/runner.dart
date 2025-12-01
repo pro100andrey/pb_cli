@@ -18,7 +18,6 @@ Future<int> run(List<String> args) async {
     // Initialize the Redux store
     final store = Store<AppState>(
       initialState: AppState.initial(),
-      syncStream: true,
       actionObservers: [
         AppActionLogger(logger: logger),
       ],
@@ -43,7 +42,7 @@ Future<int> run(List<String> args) async {
     final result = runner.parse(args);
 
     // Store the logger in the Redux store for global access
-    store.dispatchSync(StoreLoggerAction(logger: logger), notify: false);
+    store.dispatchSync(StoreLoggerAction(logger: logger));
 
     // Run the command
     final runResult = await Future.sync(() => runner.runCommand(result));

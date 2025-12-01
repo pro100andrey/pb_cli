@@ -22,10 +22,7 @@ mixin WithStore {
   /// Dispatch an action synchronously.
   DispatchSync<AppState> get dispatchSync => store.dispatchSync;
 
-  List<ReduxAction<AppState>> Function(
-    List<ReduxAction<AppState>> actions, {
-    bool notify,
-  })
+  List<ReduxAction<AppState>> Function(List<ReduxAction<AppState>> actions)
   get dispatchAll => store.dispatchAll;
 }
 

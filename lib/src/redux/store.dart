@@ -18,23 +18,18 @@ typedef Reducer<St> = FutureOr<St?> Function();
 /// asynchronously.
 ///
 /// Returns an [ActionStatus] that indicates the result of the dispatch.
-typedef Dispatch<St> =
-    FutureOr<ActionStatus> Function(
-      ReduxAction<St> action, {
-      bool notify,
-    });
+typedef Dispatch<St> = FutureOr<ActionStatus> Function(ReduxAction<St> action);
 
 /// A function type for dispatching actions and waiting for them to complete.
 ///
 /// Always returns a [Future] that resolves to an [ActionStatus].
 typedef DispatchAndWait<St> =
-    Future<ActionStatus> Function(ReduxAction<St> action, {bool notify});
+    Future<ActionStatus> Function(ReduxAction<St> action);
 
 /// A function type for dispatching synchronous actions only.
 ///
 /// Returns an [ActionStatus] immediately.
-typedef DispatchSync<St> =
-    ActionStatus Function(ReduxAction<St> action, {bool notify});
+typedef DispatchSync<St> = ActionStatus Function(ReduxAction<St> action);
 
 /// The Redux store that manages application state.
 ///
@@ -48,7 +43,6 @@ final class Store<St> {
   ///
   /// Parameters:
   /// - [initialState]: The initial state of the store.
-  /// - [syncStream]: If true, state changes are broadcast synchronously.
   /// - [actionObservers]: List of observers to monitor action lifecycle.
   /// - [stateObservers]: List of observers to monitor state changes.
   /// - [wrapReduce]: Global reducer wrapper for all actions.
@@ -56,7 +50,6 @@ final class Store<St> {
   /// - [errorObserver]: Observer for error handling.
   Store({
     required St initialState,
-    bool syncStream = false,
     List<ActionObserver>? actionObservers,
     List<StateObserver>? stateObservers,
     WrapReduce<St>? wrapReduce,
@@ -68,8 +61,6 @@ final class Store<St> {
        _wrapReduce = wrapReduce,
        _globalWrapError = globalWrapError,
        _errorObserver = errorObserver,
-       _changeController = StreamController<St>.broadcast(sync: syncStream),
-       _stateTimestamp = DateTime.now().toUtc(),
        _actionsInProgress = HashSet<ReduxAction<St>>.identity(),
        _actionsWeCanCheckFailed = HashSet<Type>.identity(),
        _failedActions = HashMap<Type, ReduxAction<St>>(),
@@ -77,7 +68,6 @@ final class Store<St> {
        _dispatchCount = 0,
        _reduceCount = 0;
 
-  final StreamController<St> _changeController;
   final List<ActionObserver>? _actionObservers;
   final List<StateObserver>? _stateObservers;
   final WrapReduce<St>? _wrapReduce;
@@ -90,12 +80,9 @@ final class Store<St> {
   final Map<(Type, Object?), Object> _props;
 
   St _state;
-  DateTime _stateTimestamp;
+
   int _dispatchCount;
   int _reduceCount;
-
-  /// The timestamp when the state was last updated.
-  DateTime get stateTimestamp => _stateTimestamp;
 
   /// The total number of actions that have been dispatched.
   int get dispatchCount => _dispatchCount;
@@ -107,7 +94,7 @@ final class Store<St> {
   St get state => _state;
 
   /// A stream that emits the state whenever it changes.
-  Stream<St> get onChange => _changeController.stream;
+  // Stream<St> get onChange => _changeController.stream;
 
   /// The default timeout in milliseconds for [waitCondition] and similar
   /// methods.
@@ -228,9 +215,7 @@ final class Store<St> {
   ///
   /// Parameters:
   /// - [action]: The action to dispatch.
-  /// - [notify]: If true, notifies listeners of state changes. Defaults to
-  /// true.
-  ActionStatus dispatchSync(ReduxAction<St> action, {bool notify = true}) {
+  ActionStatus dispatchSync(ReduxAction<St> action) {
     if (!action.isSync) {
       throw StoreException(
         "Can't dispatchSync(${action.runtimeType}) because "
@@ -238,7 +223,7 @@ final class Store<St> {
       );
     }
 
-    return _dispatch(action, notify: notify) as ActionStatus;
+    return _dispatch(action) as ActionStatus;
   }
 
   /// Dispatches an action.
@@ -247,15 +232,11 @@ final class Store<St> {
   /// actions.
   ///
   /// [action] is the action to dispatch.
-  /// [notify] if true (default), listeners will be notified of state changes.
   ///
   /// If the action is synchronous, it will be executed immediately and the
   /// status will be returned.
   /// If the action is asynchronous, a Future will be returned.
-  FutureOr<ActionStatus> dispatch(
-    ReduxAction<St> action, {
-    bool notify = true,
-  }) => _dispatch(action, notify: notify);
+  FutureOr<ActionStatus> dispatch(ReduxAction<St> action) => _dispatch(action);
 
   /// Dispatches an action and returns a [Future] that completes when the action
   /// finishes.
@@ -264,16 +245,10 @@ final class Store<St> {
   /// regardless of whether it is synchronous or asynchronous.
   ///
   /// [action] is the action to dispatch.
-  /// [notify] if true (default), listeners will be notified of state changes.
-  Future<ActionStatus> dispatchAndWait(
-    ReduxAction<St> action, {
-    bool notify = true,
-  }) => Future.sync(() => _dispatch(action, notify: notify));
+  Future<ActionStatus> dispatchAndWait(ReduxAction<St> action) =>
+      Future.sync(() => _dispatch(action));
 
-  FutureOr<ActionStatus> _dispatch(
-    ReduxAction<St> action, {
-    required bool notify,
-  }) {
+  FutureOr<ActionStatus> _dispatch(ReduxAction<St> action) {
     // The action may access the store/state/dispatch as fields.
     action.setStore(this);
 
@@ -298,7 +273,7 @@ final class Store<St> {
       }
     }
 
-    return _processAction(action, notify: notify);
+    return _processAction(action);
   }
 
   /// Dispatches an action and waits for both the action and all subsequently
@@ -306,15 +281,14 @@ final class Store<St> {
   ///
   /// Parameters:
   /// - [action]: The action to dispatch.
-  /// - [notify]: If true, notifies listeners of state changes. Defaults to
   /// true.
   /// - [timeoutMillis]: Optional timeout in milliseconds.
   Future<ActionStatus> dispatchAndWaitAllActions(
     ReduxAction<St> action, {
-    bool notify = true,
+
     int? timeoutMillis,
   }) async {
-    final actionStatus = await dispatchAndWait(action, notify: notify);
+    final actionStatus = await dispatchAndWait(action);
     await waitAllActions(
       [],
       completeImmediately: true,
@@ -327,17 +301,16 @@ final class Store<St> {
   ///
   /// Parameters:
   /// - [actions]: List of actions to dispatch.
-  /// - [notify]: If true, notifies listeners of state changes. Defaults to
   /// true.
   Future<List<ReduxAction<St>>> dispatchAndWaitAll(
-    List<ReduxAction<St>> actions, {
-    bool notify = true,
-  }) async {
+    List<ReduxAction<St>> actions,
+  ) async {
     final futures = <Future<ActionStatus>>[];
 
     for (final action in actions) {
-      futures.add(dispatchAndWait(action, notify: notify));
+      futures.add(dispatchAndWait(action));
     }
+
     await Future.wait(futures);
 
     return actions;
@@ -347,16 +320,9 @@ final class Store<St> {
   ///
   /// Parameters:
   /// - [actions]: List of actions to dispatch.
-  /// - [notify]: If true, notifies listeners of state changes. Defaults to
   /// true.
-  List<ReduxAction<St>> dispatchAll(
-    List<ReduxAction<St>> actions, {
-    bool notify = true,
-  }) {
-    for (final action in actions) {
-      // ignore: discarded_futures
-      _dispatch(action, notify: notify);
-    }
+  List<ReduxAction<St>> dispatchAll(List<ReduxAction<St>> actions) {
+    actions.forEach(_dispatch);
     return actions;
   }
 
@@ -564,7 +530,7 @@ final class Store<St> {
     if (actionTypeOrList is Type) {
       final result = _failedActions.remove(actionTypeOrList);
       if (result != null) {
-        _changeController.add(state);
+        // _changeController.add(state);
       }
     }
     //
@@ -585,7 +551,7 @@ final class Store<St> {
         }
       }
       if (result != null) {
-        _changeController.add(state);
+        // _changeController.add(state);
       }
     }
     // 3) If something different was passed, it's an error. We show the error
@@ -659,16 +625,13 @@ final class Store<St> {
     }
   }
 
-  FutureOr<ActionStatus> _processAction(
-    ReduxAction<St> action, {
-    bool notify = true,
-  }) {
+  FutureOr<ActionStatus> _processAction(ReduxAction<St> action) {
     _calculateIsWaitingIsFailed(action);
 
     if (action.isSync) {
-      return _processActionSync(action, notify: notify);
+      return _processActionSync(action);
     } else {
-      return _processActionAsync(action, notify: notify);
+      return _processActionAsync(action);
     }
   }
 
@@ -688,7 +651,7 @@ final class Store<St> {
       // checked.
       if (removedAction != null) {
         theUIHasAlreadyUpdated = true;
-        _changeController.add(state);
+        // _changeController.add(state);
       }
     }
 
@@ -705,14 +668,11 @@ final class Store<St> {
     //`isWaiting` for this action),
     if (!theUIHasAlreadyUpdated &&
         _awaitableActions.contains(action.runtimeType)) {
-      _changeController.add(state);
+      // _changeController.add(state);
     }
   }
 
-  ActionStatus _processActionSync(
-    ReduxAction<St> action, {
-    bool notify = true,
-  }) {
+  ActionStatus _processActionSync(ReduxAction<St> action) {
     // The action may access the store/state/dispatch as fields.
     assert(
       action.store == this,
@@ -724,7 +684,7 @@ final class Store<St> {
 
     try {
       // ignore: discarded_futures
-      _applyReducer(action, notify: notify);
+      _applyReducer(action);
       action._status = action._status.copy(hasFinishedMethodReduce: true);
     }
     //
@@ -746,29 +706,26 @@ final class Store<St> {
     }
     //
     finally {
-      _finalize(action, originalError, processedError, notify);
+      _finalize(action, originalError, processedError);
     }
 
     return action._status;
   }
 
-  FutureOr<void> _applyReducer(ReduxAction<St> action, {bool notify = true}) {
+  FutureOr<void> _applyReducer(ReduxAction<St> action) {
     _reduceCount++;
 
     // Make sure the action reducer returns an acceptable type.
     _checkReducerType(action.reduce);
 
     if (action.ifWrapReduceOverridden()) {
-      return _applyReduceAndWrapReduce(action, notify: notify);
+      return _applyReduceAndWrapReduce(action);
     } else {
-      return _applyReduce(action, notify: notify);
+      return _applyReduce(action);
     }
   }
 
-  FutureOr<void> _applyReduceAndWrapReduce(
-    ReduxAction<St> action, {
-    bool notify = true,
-  }) {
+  FutureOr<void> _applyReduceAndWrapReduce(ReduxAction<St> action) {
     assert(
       action.ifWrapReduceOverridden(),
       'This method should only be called when wrapReduce is overridden.',
@@ -792,7 +749,7 @@ final class Store<St> {
     // 2. Call wrapReduce, which returns a Future<St?>.
     return (action.wrapReduce(reduce) as Future<St?>?)!.then((state) {
       // 3. Register the new state.
-      _registerState(state, action, notify: notify);
+      _registerState(state, action);
 
       // 4. Check if the reducer returned a completed future (which is bad).
       if (action._completedFuture) {
@@ -807,21 +764,21 @@ final class Store<St> {
     });
   }
 
-  FutureOr<void> _applyReduce(ReduxAction<St> action, {bool notify = true}) {
+  FutureOr<void> _applyReduce(ReduxAction<St> action) {
     final reduce = (_wrapReduce != null)
         ? _wrapReduce.wrapReduce(action.reduce, this)
         : action.reduce;
 
     // Sync reducer.
     if (reduce is St? Function()) {
-      _registerState(reduce(), action, notify: notify);
+      _registerState(reduce(), action);
     }
     // Async reducer.
     else if (reduce is Future<St?> Function()) {
       action._completedFuture = false;
 
       return reduce().then((state) {
-        _registerState(state, action, notify: notify);
+        _registerState(state, action);
 
         if (action._completedFuture) {
           {
@@ -849,10 +806,7 @@ final class Store<St> {
   /// We check the return type of methods `before` and `reduce` to decide if the
   /// reducer is synchronous or asynchronous. It's important to run the reducer
   /// synchronously, if possible.
-  Future<ActionStatus> _processActionAsync(
-    ReduxAction<St> action, {
-    bool notify = true,
-  }) async {
+  Future<ActionStatus> _processActionAsync(ReduxAction<St> action) async {
     // The action may access the store/state/dispatch as fields.
     assert(
       action.store == this,
@@ -871,7 +825,7 @@ final class Store<St> {
       }
 
       // 2. Apply the reducer.
-      result = _applyReducer(action, notify: notify);
+      result = _applyReducer(action);
       if (result is Future) {
         await result;
       }
@@ -894,7 +848,7 @@ final class Store<St> {
     }
     //
     finally {
-      _finalize(action, originalError, processedError, notify);
+      _finalize(action, originalError, processedError);
     }
 
     return action._status;
@@ -1102,19 +1056,10 @@ final class Store<St> {
     ReduxAction<St> action,
     Object? error,
     Object? processedError,
-    bool notify,
   ) {
     final ifWasRemoved = _actionsInProgress.remove(action);
     if (ifWasRemoved) {
       _checkAllActionConditions(action);
-    }
-
-    // If we'll not be notifying, it's possible we need to trigger the change
-    // controller, when the action is awaitable (that is to say, when we have
-    // already called `isWaiting` for this action).
-    if (_awaitableActions.contains(action.runtimeType) &&
-        ((error != null) || !notify)) {
-      _changeController.add(state);
     }
 
     if (_actionObservers != null) {
@@ -1126,9 +1071,11 @@ final class Store<St> {
 
   void _registerState(
     St? state,
-    ReduxAction<St> action, {
-    bool notify = true,
-  }) {
+    ReduxAction<St> action,
+    //   {
+    //   bool notify = true,
+    // }
+  ) {
     final prevState = _state;
 
     // Reducers may return null state, or the unaltered state, when they don't
@@ -1138,11 +1085,6 @@ final class Store<St> {
     if (((state != null) && !identical(_state, state)) ||
         _actionsInProgress.contains(action)) {
       _state = state ?? _state;
-      _stateTimestamp = DateTime.now().toUtc();
-
-      if (notify) {
-        _changeController.add(state ?? _state);
-      }
 
       _checkAllStateConditions(action);
     }

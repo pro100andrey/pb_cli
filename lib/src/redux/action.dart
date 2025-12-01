@@ -84,14 +84,11 @@ abstract class ReduxAction<St> {
   /// Dispatches multiple actions.
   ///
   /// Returns a list of the dispatched actions.
-  List<ReduxAction<St>> Function(List<ReduxAction<St>> actions, {bool notify})
+  List<ReduxAction<St>> Function(List<ReduxAction<St>> actions)
   get dispatchAll => _store.dispatchAll;
 
   /// Dispatches multiple actions and waits for all of them to complete.
-  Future<List<ReduxAction<St>>> Function(
-    List<ReduxAction<St>> actions, {
-    bool notify,
-  })
+  Future<List<ReduxAction<St>>> Function(List<ReduxAction<St>> actions)
   get dispatchAndWaitAll => _store.dispatchAndWaitAll;
 
   /// Returns true if [wrapReduce] is overridden with an async implementation.
