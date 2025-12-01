@@ -118,103 +118,6 @@ final class Store<St> {
   final _actionConditionCompleters =
       <ActionCondition<St>, Completer<CompleterBox<St>>>{};
 
-  /// Registers a property value that can be retrieved later by type.
-  ///
-  /// This is useful for dependency injection or sharing services across
-  /// actions.
-  /// Throws an exception if a property of the same type and key is already
-  /// registered.
-  ///
-  /// Parameters:
-  /// - [value]: The value to register.
-  /// - [key]: Optional key to distinguish between multiple instances of the
-  ///   same type.
-  void setProp<T extends Object>(T value, {Object? key}) {
-    final id = (T, key);
-
-    if (_props.containsKey(id)) {
-      throw Exception('Provider already registered for $T (key: $key)');
-    }
-
-    _props[id] = value;
-  }
-
-  /// Retrieves a previously registered property by type.
-  ///
-  /// Throws an exception if no property of the specified type and key is found.
-  ///
-  /// Parameters:
-  /// - [key]: Optional key to retrieve a specific instance.
-  T prop<T extends Object>({String? key}) {
-    final id = (T, key);
-
-    if (_props.containsKey(id)) {
-      return _props[id]! as T;
-    }
-
-    throw Exception('No provider registered for $T (key: $key)');
-  }
-
-  /// Disposes a specific property by value and key.
-  ///
-  /// If the property is a [Timer], [Future], or [Stream], it will be properly
-  /// cancelled/closed.
-  void disposeProp(Object? value, Object? keyToDispose) {
-    disposeProps(({key, value}) => key == keyToDispose && value == value);
-  }
-
-  /// Disposes properties based on a predicate.
-  ///
-  /// If no predicate is provided, disposes all properties that are [Timer],
-  /// [Future], or [Stream] instances by cancelling/closing them.
-  ///
-  /// Parameters:
-  /// - [predicate]: Optional function to determine which properties to dispose.
-  void disposeProps([bool Function({Object? value, Object? key})? predicate]) {
-    final keysToRemove = [];
-
-    for (final MapEntry(key: key, value: value) in _props.entries) {
-      final removeIt = predicate?.call(key: key, value: value) ?? true;
-
-      if (removeIt) {
-        final ifTimerFutureStream = _closeTimerFutureStream(value);
-
-        // Removes the key if the predicate was provided and returned true,
-        // or it was not provided but the value is Timer/Future/Stream.
-        if ((predicate != null) || ifTimerFutureStream) {
-          keysToRemove.add(key);
-        }
-      }
-    }
-
-    // After the iteration, remove all keys at the same time.
-    keysToRemove.forEach(_props.remove);
-  }
-
-  /// If [obj] is a timer, future or stream related, it will be
-  /// closed/cancelled/ignored, and `true` will be returned. For other object
-  /// types, the method returns `false`.
-  bool _closeTimerFutureStream(Object? obj) {
-    switch (obj) {
-      case Timer():
-        obj.cancel();
-      case Future():
-        obj.ignore();
-      case StreamSubscription():
-        // ignore: discarded_futures
-        obj.cancel();
-      case StreamConsumer():
-        // ignore: discarded_futures
-        obj.close();
-      case Sink():
-        obj.close();
-      case _:
-        return false;
-    }
-
-    return true;
-  }
-
   /// Dispatches a synchronous action.
   ///
   /// Throws [StoreException] if the action is not synchronous.
@@ -1111,5 +1014,104 @@ final class Store<St> {
     });
 
     keysToRemove.forEach(_stateConditionCompleters.remove);
+  }
+}
+
+extension StorePropsExtension on Store<dynamic> {
+  /// Registers a property value that can be retrieved later by type.
+  ///
+  /// This is useful for dependency injection or sharing services across
+  /// actions.
+  /// Throws an exception if a property of the same type and key is already
+  /// registered.
+  ///
+  /// Parameters:
+  /// - [value]: The value to register.
+  /// - [key]: Optional key to distinguish between multiple instances of the
+  ///   same type.
+  void setProp<T extends Object>(T value, {Object? key}) {
+    final id = (T, key);
+
+    if (_props.containsKey(id)) {
+      throw Exception('Provider already registered for $T (key: $key)');
+    }
+
+    _props[id] = value;
+  }
+
+  /// Retrieves a previously registered property by type.
+  ///
+  /// Throws an exception if no property of the specified type and key is found.
+  ///
+  /// Parameters:
+  /// - [key]: Optional key to retrieve a specific instance.
+  T prop<T extends Object>({String? key}) {
+    final id = (T, key);
+
+    if (_props.containsKey(id)) {
+      return _props[id]! as T;
+    }
+
+    throw Exception('No provider registered for $T (key: $key)');
+  }
+
+  /// Disposes a specific property by value and key.
+  ///
+  /// If the property is a [Timer], [Future], or [Stream], it will be properly
+  /// cancelled/closed.
+  void disposeProp(Object? value, Object? keyToDispose) {
+    disposeProps(({key, value}) => key == keyToDispose && value == value);
+  }
+
+  /// Disposes properties based on a predicate.
+  ///
+  /// If no predicate is provided, disposes all properties that are [Timer],
+  /// [Future], or [Stream] instances by cancelling/closing them.
+  ///
+  /// Parameters:
+  /// - [predicate]: Optional function to determine which properties to dispose.
+  void disposeProps([bool Function({Object? value, Object? key})? predicate]) {
+    final keysToRemove = [];
+
+    for (final MapEntry(key: key, value: value) in _props.entries) {
+      final removeIt = predicate?.call(key: key, value: value) ?? true;
+
+      if (removeIt) {
+        final ifTimerFutureStream = _closeTimerFutureStream(value);
+
+        // Removes the key if the predicate was provided and returned true,
+        // or it was not provided but the value is Timer/Future/Stream.
+        if ((predicate != null) || ifTimerFutureStream) {
+          keysToRemove.add(key);
+        }
+      }
+    }
+
+    // After the iteration, remove all keys at the same time.
+    keysToRemove.forEach(_props.remove);
+  }
+
+  /// If [obj] is a timer, future or stream related, it will be
+  /// closed/cancelled/ignored, and `true` will be returned. For other object
+  /// types, the method returns `false`.
+  bool _closeTimerFutureStream(Object? obj) {
+    switch (obj) {
+      case Timer():
+        obj.cancel();
+      case Future():
+        obj.ignore();
+      case StreamSubscription():
+        // ignore: discarded_futures
+        obj.cancel();
+      case StreamConsumer():
+        // ignore: discarded_futures
+        obj.close();
+      case Sink():
+        obj.close();
+      case _:
+        return false;
+    }
+
+    return true;
   }
 }
