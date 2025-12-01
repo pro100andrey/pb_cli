@@ -3,6 +3,7 @@ import 'dart:collection';
 
 import 'package:collection/collection.dart';
 
+import 'action_status.dart';
 import 'observers.dart';
 import 'store_exception.dart';
 import 'user_exception.dart';
@@ -30,6 +31,14 @@ typedef DispatchAndWait<St> =
 ///
 /// Returns an [ActionStatus] immediately.
 typedef DispatchSync<St> = ActionStatus Function(ReduxAction<St> action);
+
+/// A function type that represents a condition on actions.
+/// The function receives the set of actions currently in progress and
+/// the action that triggered the check (if any).
+typedef ActionCondition<St> =
+    bool Function(Set<ReduxAction<St>>, ReduxAction<St>?);
+
+typedef CompleterBox<St> = (Set<ReduxAction<St>>, ReduxAction<St>?);
 
 /// The Redux store that manages application state.
 ///
@@ -107,10 +116,7 @@ final class Store<St> {
   final _awaitableActions = HashSet<Type>.identity();
 
   final _actionConditionCompleters =
-      <
-        bool Function(Set<ReduxAction<St>>, ReduxAction<St>?),
-        Completer<(Set<ReduxAction<St>>, ReduxAction<St>?)>
-      >{};
+      <ActionCondition<St>, Completer<CompleterBox<St>>>{};
 
   /// Registers a property value that can be retrieved later by type.
   ///
@@ -853,8 +859,11 @@ final class Store<St> {
   }
 
   void _checkAllActionConditions(ReduxAction<St> triggerAction) {
-    final keysToRemove =
-        <bool Function(Set<ReduxAction<St>>, ReduxAction<St>?)>[];
+    if (_actionConditionCompleters.isEmpty) {
+      return;
+    }
+
+    final keysToRemove = <ActionCondition<St>>[];
 
     _actionConditionCompleters.forEach((condition, completer) {
       final actionsInProgress = UnmodifiableSetView(_actionsInProgress);
@@ -881,12 +890,8 @@ final class Store<St> {
   /// [completedErrorMessage] is the error message if the condition is already
   /// met and [completeImmediately] is false.
   /// [timeoutMillis] is the timeout in milliseconds.
-  Future<(Set<ReduxAction<St>>, ReduxAction<St>?)> waitActionCondition(
-    bool Function(
-      Set<ReduxAction<St>> actions,
-      ReduxAction<St>? triggerAction,
-    )
-    condition, {
+  Future<CompleterBox<St>> waitActionCondition(
+    ActionCondition<St> condition, {
     bool completeImmediately = false,
     String completedErrorMessage = 'Awaited action condition was already true',
     int? timeoutMillis,
@@ -905,7 +910,7 @@ final class Store<St> {
     }
     //
     else {
-      final completer = Completer<(Set<ReduxAction<St>>, ReduxAction<St>?)>();
+      final completer = Completer<CompleterBox<St>>();
 
       _actionConditionCompleters[condition] = completer;
 
@@ -1107,80 +1112,4 @@ final class Store<St> {
 
     keysToRemove.forEach(_stateConditionCompleters.remove);
   }
-}
-
-/// Represents the status of an action's execution.
-///
-/// Tracks whether an action has been dispatched, completed, aborted, and any
-/// errors that occurred during execution.
-final class ActionStatus {
-  /// Creates an [ActionStatus] with the given properties.
-  const ActionStatus({
-    this.isDispatched = false,
-    this.hasFinishedMethodReduce = false,
-    this.isDispatchAborted = false,
-    this.originalError,
-    this.wrappedError,
-  });
-
-  /// True if the action has been dispatched.
-  final bool isDispatched;
-
-  /// True if the reducer method has finished executing.
-  final bool hasFinishedMethodReduce;
-
-  /// True if the action was aborted before execution.
-  final bool isDispatchAborted;
-
-  /// The original error that was thrown, if any.
-  final Object? originalError;
-
-  /// The error after being wrapped by error handlers, if any.
-  final Object? wrappedError;
-
-  /// True if the action completed successfully without errors.
-  bool get isCompletedOk => isCompleted && (originalError == null);
-
-  /// True if the action completed with an error.
-  bool get isCompletedFailed => isCompleted && (originalError != null);
-
-  /// True if the action has finished executing (either successfully or with
-  /// error) or was aborted.
-  bool get isCompleted =>
-      hasFinishedMethodReduce || originalError != null || isDispatchAborted;
-
-  /// Creates a copy of this status with updated properties.
-  ActionStatus copy({
-    bool? isDispatched,
-    bool? hasFinishedMethodReduce,
-    bool? isDispatchAborted,
-    Object? originalError,
-    Object? wrappedError,
-  }) => ActionStatus(
-    isDispatched: isDispatched ?? this.isDispatched,
-    hasFinishedMethodReduce:
-        hasFinishedMethodReduce ?? this.hasFinishedMethodReduce,
-    isDispatchAborted: isDispatchAborted ?? this.isDispatchAborted,
-    originalError: originalError ?? this.originalError,
-    wrappedError: wrappedError ?? this.wrappedError,
-  );
-
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      other is ActionStatus &&
-          runtimeType == other.runtimeType &&
-          isDispatched == other.isDispatched &&
-          hasFinishedMethodReduce == other.hasFinishedMethodReduce &&
-          isDispatchAborted == other.isDispatchAborted &&
-          originalError == other.originalError &&
-          wrappedError == other.wrappedError;
-
-  @override
-  int get hashCode =>
-      isDispatched.hashCode ^
-      hasFinishedMethodReduce.hashCode ^
-      isDispatchAborted.hashCode ^
-      originalError.hashCode ^
-      wrappedError.hashCode;
 }
