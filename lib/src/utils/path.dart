@@ -26,17 +26,21 @@ typedef PathCache = ({
 /// path-related properties once and caching them.
 PathCache _getPathCache(String path) {
   final type = FileSystemEntity.typeSync(path);
+  final notFound = type == FileSystemEntityType.notFound;
+
+  // Use absolute path for canonicalization fallback when path doesn't exist
+  final canonicalized = notFound ? p.absolute(path) : p.canonicalize(path);
 
   return (
     path: path,
-    notFound: type == FileSystemEntityType.notFound,
+    notFound: notFound,
     isFile: type == FileSystemEntityType.file,
     isDirectory: type == FileSystemEntityType.directory,
     isLink: type == FileSystemEntityType.link,
     isAbsolute: p.isAbsolute(path),
     isRelative: p.isRelative(path),
     normalized: p.normalize(path),
-    canonicalized: p.canonicalize(path),
+    canonicalized: canonicalized,
     absolute: p.absolute(path),
     relative: p.relative(path),
     dirname: p.dirname(path),
@@ -47,7 +51,7 @@ PathCache _getPathCache(String path) {
 
 /// Base extension type for file system entity paths that provides
 /// cached access to common path operations and properties.
-extension type const FileEntityPath._(PathCache _cache) {
+extension type FileEntityPath._(PathCache _cache) {
   /// The original path string.
   String get path => _cache.path;
 
@@ -93,11 +97,11 @@ extension type const FileEntityPath._(PathCache _cache) {
 
 /// Extension type for directory paths that provides directory-specific
 /// operations while implementing [FileEntityPath].
-extension type const DirectoryPath._(PathCache _cache)
-    implements FileEntityPath {
+extension type DirectoryPath._(PathCache _cache) implements FileEntityPath {
   /// Creates a new [DirectoryPath] for the given [path].
   factory DirectoryPath(String path) => DirectoryPath._(_getPathCache(path));
 
+  /// Creates a new [DirectoryPath] for the current working directory.
   factory DirectoryPath.current() =>
       DirectoryPath._(_getPathCache(Directory.current.path));
 
@@ -109,6 +113,8 @@ extension type const DirectoryPath._(PathCache _cache)
   DirectoryPath get sync => DirectoryPath(path);
 
   /// Checks if the directory is empty.
+  ///
+  /// Throws an exception if the directory does not exist.
   bool get isEmpty => _dir.listSync().isEmpty;
 
   /// Lists the contents of the directory as a list of [FileEntityPath]s.
@@ -151,12 +157,15 @@ extension type const DirectoryPath._(PathCache _cache)
     return FilePath(joinedPath);
   }
 
-  /// Joins the given [parts] to the directory path and
+  /// Joins the given path [components] to the directory path and
   /// returns a new [DirectoryPath] representing the resulting path.
+  ///
+  /// The [components] parameter can be a relative path with separators,
+  /// which will be split and joined appropriately.
   @useResult
-  DirectoryPath join(String parts) {
-    final components = p.split(parts);
-    final joinedPath = p.joinAll([path, ...components]);
+  DirectoryPath join(String components) {
+    final parts = p.split(components);
+    final joinedPath = p.joinAll([path, ...parts]);
 
     return DirectoryPath(joinedPath);
   }
@@ -169,7 +178,7 @@ extension type FilePath._(PathCache _cache) implements FileEntityPath {
   factory FilePath(String path) => FilePath._(_getPathCache(path));
 
   /// Gets the underlying [File] object.
-  File get _file => File(canonicalized);
+  File get _file => File(path);
 
   /// Returns a new [FilePath] instance with refreshed file system state.
   @useResult
@@ -181,7 +190,6 @@ extension type FilePath._(PathCache _cache) implements FileEntityPath {
   /// Creates the file in the file system.
   ///
   /// If [recursive] is true, creates all necessary parent directories.
-
   void create({bool recursive = false}) =>
       _file.createSync(recursive: recursive);
 
