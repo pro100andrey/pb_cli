@@ -1,10 +1,10 @@
 import 'package:args/command_runner.dart';
+import 'package:cli_async_redux/cli_async_redux.dart';
 import 'package:mason_logger/mason_logger.dart';
 
 import '../../client/pb_client.dart';
 import '../../inputs/factory.dart';
 import '../../models/credentials.dart';
-import '../../redux/store.dart';
 import '../../state/actions/action.dart';
 import '../../state/selectors.dart';
 

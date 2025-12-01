@@ -245,7 +245,7 @@ abstract class ReduxAction<St> {
 
   /// Returns the runtime type as a string, without the generic part.
   ///
-  /// For example, if the runtime type is `MyAction<int>`, this returns
+  /// For example, if the runtime type is `MyAction&lt;int&gt;`, this returns
   /// `"MyAction"`.
   String runtimeTypeString() {
     final text = runtimeType.toString();

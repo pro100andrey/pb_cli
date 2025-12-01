@@ -1,6 +1,6 @@
+import 'package:cli_async_redux/cli_async_redux.dart';
 import 'package:mason_logger/mason_logger.dart';
 
-import '../../redux/store.dart';
 import '../../state/actions/resolve_work_dir_action.dart';
 import '../../state/actions/store_pocket_base_action.dart';
 import '../../state/app_state.dart';

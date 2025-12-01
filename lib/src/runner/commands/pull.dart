@@ -1,7 +1,7 @@
+import 'package:cli_async_redux/cli_async_redux.dart';
 import 'package:mason_logger/mason_logger.dart';
 
 import '../../models/result.dart';
-import '../../redux/store.dart';
 import '../../repositories/config.dart';
 import '../../repositories/schema.dart';
 import '../../repositories/seed.dart';
