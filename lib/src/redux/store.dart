@@ -260,8 +260,8 @@ final class Store<St> {
 
     if (action.status.isDispatched) {
       throw const StoreException(
-        'The action was already dispatched. '
-        'Please, create a new action each time.',
+        'The action was already dispatched. Please, create a new action each '
+        'time.',
       );
     }
 
@@ -285,15 +285,16 @@ final class Store<St> {
   /// - [timeoutMillis]: Optional timeout in milliseconds.
   Future<ActionStatus> dispatchAndWaitAllActions(
     ReduxAction<St> action, {
-
     int? timeoutMillis,
   }) async {
     final actionStatus = await dispatchAndWait(action);
+
     await waitAllActions(
       [],
       completeImmediately: true,
       timeoutMillis: timeoutMillis,
     );
+
     return actionStatus;
   }
 
@@ -354,7 +355,7 @@ final class Store<St> {
         completeImmediately: completeImmediately,
         completedErrorMessage: 'None of the given actions were in progress',
         timeoutMillis: timeoutMillis,
-        //
+
         (actionsInProgress, triggerAction) {
           for (final action in actions) {
             if (actionsInProgress.contains(action)) {
@@ -374,7 +375,6 @@ final class Store<St> {
   /// - A [Type] representing an action class
   /// - An [Iterable] of actions or types
   bool isWaiting(Object actionOrActionTypeOrList) {
-    //
     // 1) If a type was passed:
     if (actionOrActionTypeOrList is Type) {
       _awaitableActions.add(actionOrActionTypeOrList);
@@ -382,13 +382,11 @@ final class Store<St> {
         (action) => action.runtimeType == actionOrActionTypeOrList,
       );
     }
-    //
     // 2) If an action was passed:
     else if (actionOrActionTypeOrList is ReduxAction) {
       _awaitableActions.add(actionOrActionTypeOrList.runtimeType);
       return _actionsInProgress.contains(actionOrActionTypeOrList);
     }
-    //
     // 3) If an iterable was passed:
     // 3.1) For each action or action type in the iterable...
     else if (actionOrActionTypeOrList is Iterable) {

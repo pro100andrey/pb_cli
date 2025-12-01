@@ -11,11 +11,7 @@ abstract class ActionObserver<St> {
   /// [action] is the action being observed.
   /// [dispatchCount] is the total number of actions dispatched so far.
   /// [ini] is true when the action is dispatched, and false when it finishes.
-  void observe(
-    ReduxAction<St> action,
-    int dispatchCount, {
-    required bool ini,
-  });
+  void observe(ReduxAction<St> action, int dispatchCount, {required bool ini});
 }
 
 /// Interface for observing errors thrown by actions.
