@@ -1,16 +1,16 @@
 import 'package:cli_async_redux/cli_async_redux.dart';
 import 'package:mason_logger/mason_logger.dart';
 
-import '../../state/actions/resolve_work_dir_action.dart';
-import '../../state/actions/store_pocket_base_action.dart';
-import '../../state/app_state.dart';
-import '../../state/config/actions/load_config_action.dart';
-import '../../state/env/actions/load_env_action.dart';
-import '../../state/schema/actions/fetch_schema_action.dart';
-import '../../state/schema/actions/select_managed_collections_action.dart';
-import '../../state/session/actions/log_in_action.dart';
-import '../../state/session/actions/resolve_credentials.dart';
-import '../../state/session/actions/select_credentials_source_action.dart';
+import '../../redux/actions/resolve_work_dir_action.dart';
+import '../../redux/actions/store_pocket_base_action.dart';
+import '../../redux/app_state.dart';
+import '../../redux/config/actions/load_config_action.dart';
+import '../../redux/env/actions/load_env_action.dart';
+import '../../redux/schema/actions/fetch_schema_action.dart';
+import '../../redux/schema/actions/select_managed_collections_action.dart';
+import '../../redux/session/actions/log_in_action.dart';
+import '../../redux/session/actions/resolve_credentials.dart';
+import '../../redux/session/actions/select_credentials_source_action.dart';
 import '../../utils/strings.dart';
 import 'base_command.dart';
 

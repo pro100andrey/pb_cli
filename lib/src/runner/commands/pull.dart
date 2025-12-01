@@ -2,13 +2,13 @@ import 'package:cli_async_redux/cli_async_redux.dart';
 import 'package:mason_logger/mason_logger.dart';
 
 import '../../models/result.dart';
+import '../../redux/actions/action.dart';
 import '../../repositories/config.dart';
 import '../../repositories/schema.dart';
 import '../../repositories/seed.dart';
 import '../../services/collection_data.dart';
 import '../../services/files_downloader.dart';
 import '../../services/schema_sync.dart';
-import '../../state/actions/action.dart';
 import '../../utils/path.dart';
 import '../../utils/strings.dart';
 import '../../utils/validation.dart';

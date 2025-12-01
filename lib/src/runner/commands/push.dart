@@ -10,7 +10,7 @@ import '../../client/pb_client.dart';
 import '../../failure/common.dart';
 import '../../failure/failure.dart';
 import '../../models/result.dart';
-import '../../state/actions/action.dart';
+import '../../redux/actions/action.dart';
 import '../../utils/path.dart';
 import '../../utils/strings.dart';
 import 'base_command.dart';

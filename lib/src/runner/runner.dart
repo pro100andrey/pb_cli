@@ -2,9 +2,9 @@ import 'package:args/command_runner.dart';
 import 'package:cli_async_redux/cli_async_redux.dart';
 import 'package:mason_logger/mason_logger.dart';
 
-import '../state/actions/action.dart';
-import '../state/actions/store_logger_action.dart';
-import '../state/observers.dart';
+import '../redux/actions/action.dart';
+import '../redux/actions/store_logger_action.dart';
+import '../redux/observers.dart';
 import '../utils/strings.dart';
 import 'commands/pull.dart';
 import 'commands/push.dart';
