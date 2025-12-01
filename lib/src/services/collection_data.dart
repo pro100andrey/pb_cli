@@ -1,8 +1,8 @@
+import 'package:cli_utils/cli_utils.dart';
 import 'package:mason_logger/mason_logger.dart';
 import 'package:pocketbase/pocketbase.dart';
 
 import '../client/pb_client.dart';
-import '../extensions/string_style.dart';
 import '../failure/failure.dart';
 import '../models/result.dart';
 

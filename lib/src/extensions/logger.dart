@@ -1,8 +1,7 @@
 import 'dart:io';
 
+import 'package:cli_utils/cli_utils.dart';
 import 'package:mason_logger/mason_logger.dart';
-
-import 'string_style.dart';
 
 extension LoggerInfoSectionExt on Logger {
   /// Logs a formatted information section.

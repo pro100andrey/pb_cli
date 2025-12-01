@@ -1,0 +1,13 @@
+name: cli_utils
+description: Common utilities for command line applications.
+version: 1.0.0
+publish_to: "none"
+
+environment:
+  sdk: ^3.10.0
+
+dependencies:
+  io: ^1.0.5
+
+dev_dependencies:
+  pro_lints: ^5.0.0

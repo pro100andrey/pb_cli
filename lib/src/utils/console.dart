@@ -4,7 +4,7 @@
 /// well-formatted messages throughout the CLI application.
 library;
 
-import '../extensions/string_style.dart';
+import 'package:cli_utils/cli_utils.dart';
 
 // ignore_for_file: avoid_classes_with_only_static_members
 abstract final class Console {

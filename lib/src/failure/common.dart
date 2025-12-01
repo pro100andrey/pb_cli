@@ -1,4 +1,5 @@
-import '../extensions/string_style.dart';
+import 'package:cli_utils/cli_utils.dart';
+
 import 'failure.dart';
 
 class DirectoryNotFoundFailure extends Failure {
