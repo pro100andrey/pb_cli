@@ -141,7 +141,7 @@ abstract class ReduxAction<St> {
   bool isFailed(Object actionOrTypeOrList) =>
       _store.isFailed(actionOrTypeOrList);
 
-  /// Returns the [UserException] of the [actionTypeOrList] that failed.
+  /// Returns the [ReduxException] of the [actionTypeOrList] that failed.
   ///
   /// [actionTypeOrList] can be a [Type], or an Iterable of types. Any other
   /// type of object will return null and throw a [StoreException] after the
@@ -151,8 +151,8 @@ abstract class ReduxAction<St> {
   /// not considered.
   ///
   /// Returns `null` if the action has not failed, or if the error is not a
-  /// [UserException].
-  UserException? exceptionFor(Object actionTypeOrList) =>
+  /// [ReduxException].
+  ReduxException? exceptionFor(Object actionTypeOrList) =>
       _store.exceptionFor(actionTypeOrList);
 
   /// Removes the given [actionTypeOrList] from the list of action types that

@@ -1,20 +1,18 @@
-import 'dart:async';
-
-import '../models/result.dart';
-
-const int kSuccess = 0;
-
-/// Represents an application-level failure that can be reported with a
-/// specific exit code and message.
+/// Exception thrown by Redux actions.
 ///
-/// Based on BSD `sysexits.h` standard exit codes:
-/// https://man.openbsd.org/sysexits
+/// Provides structured error handling with optional exit codes, error codes,
+/// and descriptive messages suitable for CLI applications.
 ///
-/// Each factory constructor maps to a particular failure type that
-/// clearly communicates the cause of failure to the caller or CI system.
-class Failure {
-  /// Creates a [Failure] with a specific message and exit code.
-  const Failure({required this.message, required this.exitCode, this.details});
+/// Named constructors map to standard exit codes based on common error
+/// scenarios (user errors, system errors, network issues, etc.).
+class ReduxException implements Exception {
+  /// Creates a [ReduxException] with optional details.
+  ///
+  /// - [message]: User-facing error message
+  /// - [reason]: Optional internal reason for debugging
+  /// - [code]: Optional error code (e.g., HTTP status code)
+  /// - [exitCode]: Optional exit code for CLI applications
+  const ReduxException({this.message, this.reason, this.code, this.exitCode});
 
   /// Generic, unspecified error.
   ///
@@ -22,14 +20,15 @@ class Failure {
   /// Typically indicates a bug or unforeseen condition.
   ///
   /// Exit code: **EX_GENERAL = 1**
-  Failure.generic({required this.message, this.details}) : exitCode = exGeneric;
+  ReduxException.generic({required this.message, this.reason, this.code})
+    : exitCode = exGeneric;
 
   /// User aborted the operation.
   ///
   /// Use this when the user cancels an operation or declines a prompt.
   ///
   /// Exit code: **EX_USER_ABORTED = 2**
-  Failure.userAborted({required this.message, this.details})
+  ReduxException.userAborted({required this.message, this.reason, this.code})
     : exitCode = exUserAborted;
 
   /// Command line usage error.
@@ -38,7 +37,8 @@ class Failure {
   /// Example: user did not provide mandatory flags or options.
   ///
   /// Exit code: **EX_USAGE = 64**
-  Failure.usage({required this.message, this.details}) : exitCode = exUsage;
+  ReduxException.usage({required this.message, this.reason, this.code})
+    : exitCode = exUsage;
 
   /// Data format or type error.
   ///
@@ -46,14 +46,16 @@ class Failure {
   /// Example: JSON/YAML parsing failure, unexpected value type.
   ///
   /// Exit code: **EX_DATAERR = 65**
-  Failure.data({required this.message, this.details}) : exitCode = exData;
+  ReduxException.data({required this.message, this.reason, this.code})
+    : exitCode = exData;
 
   /// Input file missing or cannot be opened.
   ///
   /// Use this when a required file does not exist or is inaccessible.
   ///
   /// Exit code: **EX_NOINPUT = 66**
-  Failure.noInput({required this.message, this.details}) : exitCode = exNoInput;
+  ReduxException.noInput({required this.message, this.reason, this.code})
+    : exitCode = exNoInput;
 
   /// Remote host not found or unreachable.
   ///
@@ -61,7 +63,8 @@ class Failure {
   /// failures.
   ///
   /// Exit code: **EX_NOHOST = 68**
-  Failure.noHost({required this.message, this.details}) : exitCode = exNoHost;
+  ReduxException.noHost({required this.message, this.reason, this.code})
+    : exitCode = exNoHost;
 
   /// Service or dependency unavailable.
   ///
@@ -69,7 +72,7 @@ class Failure {
   /// or temporarily not responding (e.g., HTTP 503, API outage).
   ///
   /// Exit code: **EX_UNAVAILABLE = 69**
-  Failure.unavailable({required this.message, this.details})
+  ReduxException.unavailable({required this.message, this.reason, this.code})
     : exitCode = exUnavailable;
 
   /// Internal software error.
@@ -77,7 +80,7 @@ class Failure {
   /// Use this for unexpected exceptions, logic errors, or internal bugs.
   ///
   /// Exit code: **EX_SOFTWARE = 70**
-  Failure.software({required this.message, this.details})
+  ReduxException.software({required this.message, this.reason, this.code})
     : exitCode = exSoftware;
 
   /// I/O failure during read or write operation.
@@ -86,7 +89,8 @@ class Failure {
   /// fails unexpectedly.
   ///
   /// Exit code: **EX_IOERR = 74**
-  Failure.io({required this.message, this.details}) : exitCode = exIO;
+  ReduxException.io({required this.message, this.reason, this.code})
+    : exitCode = exIO;
 
   /// Temporary failure where retry may succeed.
   ///
@@ -94,7 +98,8 @@ class Failure {
   /// or when a resource is temporarily locked.
   ///
   /// Exit code: **EX_TEMPFAIL = 75**
-  Failure.temp({required this.message, this.details}) : exitCode = exTempFail;
+  ReduxException.temp({required this.message, this.reason, this.code})
+    : exitCode = exTempFail;
 
   /// Permission denied or authentication failure.
   ///
@@ -102,7 +107,7 @@ class Failure {
   /// fails.
   ///
   /// Exit code: **EX_NOPERM = 77**
-  Failure.permission({required this.message, this.details})
+  ReduxException.permission({required this.message, this.reason, this.code})
     : exitCode = exNoPerm;
 
   /// Configuration error.
@@ -111,9 +116,10 @@ class Failure {
   /// unsupported options.
   ///
   /// Exit code: **EX_CONFIG = 78**
-  Failure.config({required this.message, this.details}) : exitCode = exConfig;
+  ReduxException.config({required this.message, this.reason, this.code})
+    : exitCode = exConfig;
 
-  /// Returns a [Failure] corresponding to an HTTP status code.
+  /// Returns a [ReduxException] corresponding to an HTTP status code.
   ///
   /// Maps HTTP responses to exit codes for CLI usage:
   /// - 400 → usage error (EX_USAGE)
@@ -122,30 +128,30 @@ class Failure {
   /// - 408, 429 → temporary failure (EX_TEMPFAIL)
   /// - 500–599 → service unavailable (EX_UNAVAILABLE)
   /// - otherwise → internal software error (EX_SOFTWARE)
-  factory Failure.fromHttpStatus(
+  factory ReduxException.fromHttpStatus(
     int statusCode, {
     String? message,
-    Object? details,
+    String? details,
   }) {
     message ??= 'HTTP request failed with status $statusCode';
 
     if (statusCode >= 500 && statusCode < 600) {
-      return Failure.unavailable(message: message, details: details);
+      return ReduxException.unavailable(message: message, reason: details);
     }
 
     switch (statusCode) {
       case 400: // Bad Request - invalid request syntax
-        return Failure.usage(message: message, details: details);
+        return ReduxException.usage(message: message, reason: details);
       case 401: // Unauthorized - authentication required
       case 403: // Forbidden - access denied
-        return Failure.permission(message: message, details: details);
+        return ReduxException.permission(message: message, reason: details);
       case 404: // Not Found - resource unavailable
-        return Failure.unavailable(message: message, details: details);
+        return ReduxException.unavailable(message: message, reason: details);
       case 408: // Request Timeout - temporary network issue
       case 429: // Too Many Requests - rate limiting
-        return Failure.temp(message: message, details: details);
+        return ReduxException.temp(message: message, reason: details);
       default: // Unhandled status codes
-        return Failure.software(message: message, details: details);
+        return ReduxException.software(message: message, reason: details);
     }
   }
 
@@ -185,43 +191,50 @@ class Failure {
   /// Configuration file missing or invalid.
   static const int exConfig = 78;
 
-  /// The exit code representing this failure.
-  final int exitCode;
+  /// Some message shown to the user.
+  final String? message;
 
-  /// The human-readable description of the failure.
-  final String message;
+  /// An optional reason for the error (e.g. for debugging).
+  final String? reason;
 
-  /// Optional additional details about the failure.
-  final Object? details;
+  /// An optional exit code (e.g. for CLI apps).
+  final int? exitCode;
+
+  /// An optional error code (e.g. HTTP status code).
+  final int? code;
+
+  /// Returns a new instance with some fields replaced by new values.
+  ///
+  /// Allows updating individual fields while preserving others.
+  /// Note: [code] field cannot be updated via this method.
+  ReduxException copyWith({String? message, int? exitCode, String? reason}) =>
+      ReduxException(
+        message: message ?? this.message,
+        exitCode: exitCode ?? this.exitCode,
+        reason: reason ?? this.reason,
+        code: code,
+      );
+
+  @override
+  String toString() {
+    final fields = {
+      'message': ?message,
+      'exitCode': ?exitCode,
+      'reason': ?reason,
+    }.entries.map((e) => ' - ${e.key}: ${e.value}');
+
+    return 'ReduxException\n${fields.join('\n')}';
+  }
 
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is Failure &&
+      other is ReduxException &&
           runtimeType == other.runtimeType &&
           message == other.message &&
-          exitCode == other.exitCode &&
-          details == other.details;
+          reason == other.reason &&
+          exitCode == other.exitCode;
 
   @override
-  int get hashCode => Object.hash(runtimeType, message, exitCode, details);
-
-  @override
-  String toString() => 'Failure: $message (exit code: $exitCode)';
+  int get hashCode => Object.hash(runtimeType, message, reason, exitCode);
 }
-
-extension FailureResultExtension on Failure {
-  /// Returns a [Result.failure] wrapping this [Failure].
-  CliResult<T> asResult<T>() => Result.failure(this);
-}
-
-extension SuccessResultExtension<T> on T {
-  /// Returns a [Result.success] wrapping this value.
-  CliResult<T> asResult() => Result.success(this);
-}
-
-/// Type alias for a CLI operation result.
-typedef CliResult<T> = Result<T, Failure>;
-
-/// Type alias for a future CLI operation result.
-typedef CliFuture<T> = Future<CliResult<T>>;

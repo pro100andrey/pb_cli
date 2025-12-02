@@ -54,7 +54,7 @@ Future<int> run(List<String> args) async {
   } on Object catch (e) {
     final exception = e;
 
-    if (e case UserException(:final exitCode?)) {
+    if (e case ReduxException(:final exitCode?)) {
       return exitCode;
     }
 

@@ -18,10 +18,10 @@ abstract class AppAction extends ReduxAction<AppState> {
   @override
   Object? wrapError(Object error, StackTrace stackTrace) {
     if (error case ClientException()) {
-      return UserException(
-        error.response['message'],
-        code: error.statusCode,
+      return ReduxException(
+        message: error.response['message'],
         reason: error.url.toString(),
+        code: error.statusCode,
         exitCode: Failure.exSoftware,
       );
     }

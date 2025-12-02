@@ -95,14 +95,14 @@ class AppErrorObserver implements ErrorObserver<AppState> {
   }
 }
 
-/// Wraps errors into [UserException] if they are not already.
+/// Wraps errors into [ReduxException] if they are not already.
 class AppGlobalWrapError extends GlobalWrapError<AppState> {
   @override
   Object? wrap(Object error, StackTrace stackTrace, ReduxAction action) {
-    if (error is UserException) {
+    if (error is ReduxException) {
       return error;
     }
 
-    return UserException(null, reason: error.toString());
+    return ReduxException(reason: error.toString());
   }
 }

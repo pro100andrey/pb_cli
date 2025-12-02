@@ -4,9 +4,9 @@ import 'dart:collection';
 import 'package:collection/collection.dart';
 
 import 'action_status.dart';
+import 'exception.dart';
 import 'observers.dart';
 import 'store_exception.dart';
-import 'user_exception.dart';
 import 'wrap_reduce.dart';
 
 part 'action.dart';
@@ -368,21 +368,21 @@ final class Store<St> {
   bool isFailed(Object actionOrActionTypeOrList) =>
       exceptionFor(actionOrActionTypeOrList) != null;
 
-  /// Returns the [UserException] of the action type that failed.
+  /// Returns the [ReduxException] of the action type that failed.
   ///
   /// [actionTypeOrList] can be a [Type] or an [Iterable] of types.
   /// Returns null if the action hasn't failed or if the error is not a
-  /// [UserException].
+  /// [ReduxException].
   ///
   /// Note: This method uses the EXACT type. Subtypes are not considered.
-  UserException? exceptionFor(Object actionTypeOrList) {
+  ReduxException? exceptionFor(Object actionTypeOrList) {
     //
     // 1) If a type was passed:
     if (actionTypeOrList is Type) {
       _actionsWeCanCheckFailed.add(actionTypeOrList);
       final action = _failedActions[actionTypeOrList];
       final error = action?.status.wrappedError;
-      return (error is UserException) ? error : null;
+      return (error is ReduxException) ? error : null;
     }
     //
     // 2) If a list was passed:
@@ -395,7 +395,7 @@ final class Store<St> {
               ?.value
               .status
               .wrappedError;
-          return (error is UserException) ? error : null;
+          return (error is ReduxException) ? error : null;
         } else {
           // ignore: discarded_futures
           Future.microtask(() {
@@ -919,7 +919,7 @@ final class Store<St> {
     // If an errorObserver was NOT defined, return (to throw) all errors which
     // are not UserException or AbortDispatchException.
     if (_errorObserver == null) {
-      if ((errorOrNull is! UserException) &&
+      if ((errorOrNull is! ReduxException) &&
           (errorOrNull is! AbortDispatchException)) {
         return errorOrNull;
       }

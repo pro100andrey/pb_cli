@@ -1,10 +1,10 @@
 import '../../extensions/logger.dart';
 import '../../utils/path.dart';
-import '../../utils/validation.dart';
+import '../exeptions.dart';
 import 'action.dart';
 
 /// Action to resolve and validate the working directory path.
-/// 
+///
 /// Throws an exception if the provided path is not a valid directory.
 final class ResolveWorkDirAction extends AppAction {
   ResolveWorkDirAction({required this.path});
@@ -16,10 +16,12 @@ final class ResolveWorkDirAction extends AppAction {
   AppState reduce() {
     final workDir = DirectoryPath(path);
 
-    final failure = workDir.validateIsDirectory();
-    if (failure != null) {
-      logger.err(failure.message);
-      throw Exception(failure.message);
+    if (workDir case DirectoryPath(notFound: true)) {
+      throw PathNotFoundException(path);
+    }
+
+    if (workDir case DirectoryPath(isDirectory: false)) {
+      throw PathIsNotADirectoryException(path);
     }
 
     logger.sectionMapped(

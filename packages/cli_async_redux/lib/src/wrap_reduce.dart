@@ -15,16 +15,13 @@ abstract class WrapReduce<St> {
   /// [newState] is the state returned by the reducer.
   ///
   /// Returns the new state to be saved in the store.
-  St process({
-    required St oldState,
-    required St newState,
-  });
+  St process({required St oldState, required St newState});
 
-  Reducer<St> wrapReduce(
-    Reducer<St> reduce,
-    Store<St> store,
-  ) {
-    //
+  /// Wraps the given [reduce] function.
+  /// 
+  /// The [store] is provided for context.
+  /// Returns a new reducer function that includes the wrapping logic.
+  Reducer<St> wrapReduce(Reducer<St> reduce, Store<St> store) {
     if (!ifShouldProcess()) {
       return reduce;
     }
@@ -32,7 +29,6 @@ abstract class WrapReduce<St> {
     else {
       if (reduce is St? Function()) {
         return () {
-          //
           // The old-state right before calling the sync reducer.
           final oldState = store.state;
 
@@ -47,7 +43,6 @@ abstract class WrapReduce<St> {
           return process(oldState: oldState, newState: newState);
         };
       }
-      //
       // 2) Async reducer.
       else if (reduce is Future<St?> Function()) {
         return () async {
