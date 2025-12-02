@@ -1,14 +1,9 @@
 part of 'store.dart';
 
-/// Base class for all Redux actions.
+/// All actions you create must extend this class `ReduxAction`.
 ///
-/// An action represents an intent to change the state. It encapsulates the
-/// logic for state transformations through the [reduce] method.
-///
-/// Actions can be synchronous or asynchronous, and provide access to the store,
-/// current state, and various dispatch methods.
-///
-/// Type parameter [St] represents the state type.
+/// Important: Do NOT override operator == and hashCode. Actions must retain
+/// their default [Object] comparison by identity, for Redux to work.
 abstract class ReduxAction<St> {
   late Store<St> _store;
 
@@ -38,10 +33,12 @@ abstract class ReduxAction<St> {
     _initialState = _store.state;
   }
 
-  /// The reducer function that transforms the state.
+  /// The `reduce` method is the action reducer. It may read the action state,
+  /// the store state, and then return a new state (or `null` if no state
+  /// change is necessary).
   ///
-  /// This method should return the new state, or null if the state should not
-  /// change. It can be synchronous or asynchronous.
+  /// It may be synchronous (returning `AppState` or `null`)
+  /// or async (returning `Future<AppState>` or `Future<null>`).
   FutureOr<St?> reduce();
 
   /// Called before the action is dispatched.
@@ -53,14 +50,29 @@ abstract class ReduxAction<St> {
   /// preconditions before the action is executed.
   bool abortDispatch() => false;
 
-  /// Wraps the reduce function with additional logic.
+  /// You may override [wrapReduce] to wrap the [reduce] method and allow for
+  /// some pre- or post-processing. For example, if you want to prevent an
+  /// async reducer to change the current state in cases where the current
+  /// state has already changed since when the reducer started:
   ///
-  /// Override this method to add middleware-like behavior around the reducer,
-  /// such as logging, error handling, or state validation.
+  /// ```dart
+  /// Future<St?> wrapReduce(Reducer<St> reduce) async {
+  ///    var oldState = state;
+  ///    AppState? newState = await reduce();
+  ///    return identical(oldState, state) ? newState : null;
+  /// };
+  /// ```
   ///
-  /// The [reduce] parameter is the reducer function that will be executed.
-  /// You should call it to get the new state, and return that state (or a
-  /// modified version of it).
+  /// IMPORTANT:
+  ///
+  /// * Your [wrapReduce] method MUST always return `Future<St?>`. If it
+  /// returns a `FutureOr`, it will NOT be called, and no error will be shown.
+  /// This is because AsyncRedux uses the return type to determine if
+  /// [wrapReduce] was overridden or not.
+  ///
+  /// * If [wrapReduce] returns `St` or `St?`, an error will be thrown.
+  ///
+  /// * Once you override [wrapReduce] the action will always be ASYNC
   FutureOr<St?> wrapReduce(Reducer<St> reduce) => null;
 
   /// Wraps errors thrown during action execution.

@@ -16,13 +16,7 @@ final class ResolveWorkDirAction extends AppAction {
   AppState reduce() {
     final workDir = DirectoryPath(path);
 
-    if (workDir case DirectoryPath(notFound: true)) {
-      throw PathNotFoundException(path);
-    }
 
-    if (workDir case DirectoryPath(isDirectory: false)) {
-      throw PathIsNotADirectoryException(path);
-    }
 
     logger.sectionMapped(
       level: .verbose,

@@ -9,7 +9,7 @@ import 'session/session_state.dart';
 
 /// Extension methods for convenient access to AppState properties.
 extension type Selectors(AppState state) {
-  DirectoryPath get workDir => state.workDir!;
+  DirectoryPath? get workDir => state.workDir;
 
   // Config selectors
 

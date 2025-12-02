@@ -4,7 +4,10 @@ import 'package:mason_logger/mason_logger.dart';
 
 import '../redux/actions/action.dart';
 import '../redux/actions/store_logger_action.dart';
-import '../redux/observers.dart';
+import '../redux/guards/wrap_reduce.dart';
+import '../redux/observers/action_observer.dart';
+import '../redux/observers/error_observer.dart';
+import '../redux/observers/global_warap_error.dart';
 import '../utils/strings.dart';
 import 'commands/pull.dart';
 import 'commands/push.dart';
@@ -22,6 +25,7 @@ Future<int> run(List<String> args) async {
       ],
       errorObserver: AppErrorObserver(logger: logger),
       globalWrapError: AppGlobalWrapError(),
+      wrapReduce: GuardsWrapReduce(),
     );
 
     // Setup the command runner

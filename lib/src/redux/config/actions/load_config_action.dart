@@ -5,7 +5,7 @@ import '../../services/config_service.dart';
 final class LoadConfigAction extends AppAction {
   @override
   AppState reduce() {
-    final file = select.workDir.joinFile(ConfigService.fileName);
+    final file = select.workDir!.joinFile(ConfigService.fileName);
     final result = ConfigService.read(inputFile: file);
 
     final (

@@ -5,7 +5,7 @@ import '../../services/env_service.dart';
 class LoadEnvAction extends AppAction {
   @override
   AppState reduce() {
-    final file = select.workDir.joinFile(EnvService.fileName);
+    final file = select.workDir!.joinFile(EnvService.fileName);
     final result = EnvService.read(inputFile: file);
 
     final (
