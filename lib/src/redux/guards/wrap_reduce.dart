@@ -28,7 +28,7 @@ class GuardsWrapReduce extends WrapReduce<AppState> {
 
     if (oldWorkDir == null &&
         newWorkDir != null &&
-        !curSel.isCreateWorkDirIfNotExists) {
+        !curSel.shouldCreateWorkDir) {
       if (newWorkDir case DirectoryPath(notFound: true)) {
         throw PathNotFoundException(newWorkDir.canonicalized);
       }

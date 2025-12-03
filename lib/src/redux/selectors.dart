@@ -14,7 +14,7 @@ extension type Selectors(AppState state) {
   DirectoryPath? get workDirPath => state.workDir.path;
 
   /// Indicates whether to create the working directory if it does not exist
-  bool get isCreateWorkDirIfNotExists =>
+  bool get shouldCreateWorkDir =>
       state.workDir.resolveOption == .createIfNotExists;
 
   // Config selectors
@@ -43,10 +43,10 @@ extension type Selectors(AppState state) {
   String? get password => state.session.password;
 
   /// Checks if a valid authentication token is present
-  bool get tokenIsPresent => token != null && token!.isNotEmpty;
+  bool get hasToken => token != null && token!.isNotEmpty;
 
   /// Checks if the current token is valid based on its expiration time.
-  bool get tokenIsValid {
+  bool get isTokenValid {
     final parts = token?.split('.') ?? [];
     if (parts.length != 3) {
       return false;

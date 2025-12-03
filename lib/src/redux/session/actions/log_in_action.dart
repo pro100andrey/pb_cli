@@ -9,7 +9,7 @@ final class LogInAction extends AppAction {
   Future<AppState?> reduce() async {
     dispatchSync(PopulateSessionFromEnvAction());
 
-    if (select.tokenIsPresent && select.tokenIsValid) {
+    if (select.hasToken && select.isTokenValid) {
       pb.authStore.save(select.token!, null);
       logger.detail('Using existing authentication token.');
 
