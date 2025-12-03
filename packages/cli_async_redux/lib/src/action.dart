@@ -283,3 +283,32 @@ class AbortDispatchException implements Exception {
   @override
   int get hashCode => 0;
 }
+
+/// The [UpdateStateAction] action is used to update the state of the Redux
+/// store, by applying the given [reducerFunction] to the current state.
+class UpdateStateAction<St> extends ReduxAction<St> {
+  /// When you don't need to use the current state to create the new state, you
+  /// can use the `UpdateStateAction` factory.
+  ///
+  /// Example:
+  /// ```
+  /// var newState = AppState(...);
+  /// store.dispatch(UpdateStateAction(newState));
+  /// ```
+  factory UpdateStateAction(St state) =>
+      UpdateStateAction.withReducer((_) => state);
+
+  /// When you need to use the current state to create the new state, you
+  /// can use `UpdateStateAction.withReducer`.
+  ///
+  /// Example:
+  /// ```
+  /// store.dispatch(UpdateStateAction.withReducer((state) => state.copy(...)));
+  /// ```
+  UpdateStateAction.withReducer(this.reducerFunction);
+
+  final St? Function(St state) reducerFunction;
+
+  @override
+  St? reduce() => reducerFunction(state);
+}

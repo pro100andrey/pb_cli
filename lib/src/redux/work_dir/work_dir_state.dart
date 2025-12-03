@@ -1,6 +1,7 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 import '../../utils/path.dart';
+import '../models/enums/resolve_work_dir.dart';
 
 part 'work_dir_state.freezed.dart';
 
@@ -8,6 +9,6 @@ part 'work_dir_state.freezed.dart';
 abstract class WorkDirState with _$WorkDirState {
   const factory WorkDirState({
     DirectoryPath? path,
-    @Default(false) bool willCreateIfNotExists,
+    ResolveWorkDirOption? resolveOption,
   }) = _WorkDirState;
 }

@@ -1,6 +1,9 @@
+import 'package:cli_async_redux/cli_async_redux.dart';
+
 import '../../../extensions/logger.dart';
 import '../../../utils/path.dart';
 import '../../action.dart';
+import '../../models/enums/resolve_work_dir.dart';
 
 /// Action to resolve and validate the working directory path.
 ///
@@ -20,10 +23,18 @@ final class ResolveWorkDirAction extends AppAction {
       logger.info(
         'The provided directory does not exist: ${workDirPath.canonicalized}',
       );
-      final _ = logger.chooseAny<String>(
+
+      final choice = logger.chooseOne<ResolveWorkDirOption>(
         'Please choose an option to proceed:',
-        choices: ['Create new directory', 'Use different path'],
-        defaultValues: ['Use different path'],
+        choices: ResolveWorkDirOption.values,
+        defaultValue: ResolveWorkDirOption.createIfNotExists,
+        display: (resolveOption) => resolveOption.title,
+      );
+
+      dispatchSync(
+        UpdateStateAction.withReducer(
+          (state) => state.copyWith.workDir(resolveOption: choice),
+        ),
       );
     }
 

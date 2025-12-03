@@ -33,11 +33,6 @@ enum CredentialsSource {
     }
   }
 
-  /// Returns a list of all available source titles
-  ///
-  /// Used for displaying titles to the user in UI components
-  static List<String> get titles =>
-      CredentialsSource.values.map((e) => e.title).toList();
 
   /// Creates a [CredentialsSource] instance from its key identifier
   ///

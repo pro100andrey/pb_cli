@@ -14,7 +14,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$WorkDirState {
 
- DirectoryPath? get path; bool get willCreateIfNotExists;
+ DirectoryPath? get path; ResolveWorkDirOption? get resolveOption;
 /// Create a copy of WorkDirState
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -25,16 +25,16 @@ $WorkDirStateCopyWith<WorkDirState> get copyWith => _$WorkDirStateCopyWithImpl<W
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is WorkDirState&&(identical(other.path, path) || other.path == path)&&(identical(other.willCreateIfNotExists, willCreateIfNotExists) || other.willCreateIfNotExists == willCreateIfNotExists));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is WorkDirState&&(identical(other.path, path) || other.path == path)&&(identical(other.resolveOption, resolveOption) || other.resolveOption == resolveOption));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,path,willCreateIfNotExists);
+int get hashCode => Object.hash(runtimeType,path,resolveOption);
 
 @override
 String toString() {
-  return 'WorkDirState(path: $path, willCreateIfNotExists: $willCreateIfNotExists)';
+  return 'WorkDirState(path: $path, resolveOption: $resolveOption)';
 }
 
 
@@ -45,7 +45,7 @@ abstract mixin class $WorkDirStateCopyWith<$Res>  {
   factory $WorkDirStateCopyWith(WorkDirState value, $Res Function(WorkDirState) _then) = _$WorkDirStateCopyWithImpl;
 @useResult
 $Res call({
- DirectoryPath? path, bool willCreateIfNotExists
+ DirectoryPath? path, ResolveWorkDirOption? resolveOption
 });
 
 
@@ -62,11 +62,11 @@ class _$WorkDirStateCopyWithImpl<$Res>
 
 /// Create a copy of WorkDirState
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? path = freezed,Object? willCreateIfNotExists = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? path = freezed,Object? resolveOption = freezed,}) {
   return _then(_self.copyWith(
 path: freezed == path ? _self.path : path // ignore: cast_nullable_to_non_nullable
-as DirectoryPath?,willCreateIfNotExists: null == willCreateIfNotExists ? _self.willCreateIfNotExists : willCreateIfNotExists // ignore: cast_nullable_to_non_nullable
-as bool,
+as DirectoryPath?,resolveOption: freezed == resolveOption ? _self.resolveOption : resolveOption // ignore: cast_nullable_to_non_nullable
+as ResolveWorkDirOption?,
   ));
 }
 
@@ -78,11 +78,11 @@ as bool,
 
 
 class _WorkDirState implements WorkDirState {
-  const _WorkDirState({this.path, this.willCreateIfNotExists = false});
+  const _WorkDirState({this.path, this.resolveOption});
   
 
 @override final  DirectoryPath? path;
-@override@JsonKey() final  bool willCreateIfNotExists;
+@override final  ResolveWorkDirOption? resolveOption;
 
 /// Create a copy of WorkDirState
 /// with the given fields replaced by the non-null parameter values.
@@ -94,16 +94,16 @@ _$WorkDirStateCopyWith<_WorkDirState> get copyWith => __$WorkDirStateCopyWithImp
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _WorkDirState&&(identical(other.path, path) || other.path == path)&&(identical(other.willCreateIfNotExists, willCreateIfNotExists) || other.willCreateIfNotExists == willCreateIfNotExists));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _WorkDirState&&(identical(other.path, path) || other.path == path)&&(identical(other.resolveOption, resolveOption) || other.resolveOption == resolveOption));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,path,willCreateIfNotExists);
+int get hashCode => Object.hash(runtimeType,path,resolveOption);
 
 @override
 String toString() {
-  return 'WorkDirState(path: $path, willCreateIfNotExists: $willCreateIfNotExists)';
+  return 'WorkDirState(path: $path, resolveOption: $resolveOption)';
 }
 
 
@@ -114,7 +114,7 @@ abstract mixin class _$WorkDirStateCopyWith<$Res> implements $WorkDirStateCopyWi
   factory _$WorkDirStateCopyWith(_WorkDirState value, $Res Function(_WorkDirState) _then) = __$WorkDirStateCopyWithImpl;
 @override @useResult
 $Res call({
- DirectoryPath? path, bool willCreateIfNotExists
+ DirectoryPath? path, ResolveWorkDirOption? resolveOption
 });
 
 
@@ -131,11 +131,11 @@ class __$WorkDirStateCopyWithImpl<$Res>
 
 /// Create a copy of WorkDirState
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? path = freezed,Object? willCreateIfNotExists = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? path = freezed,Object? resolveOption = freezed,}) {
   return _then(_WorkDirState(
 path: freezed == path ? _self.path : path // ignore: cast_nullable_to_non_nullable
-as DirectoryPath?,willCreateIfNotExists: null == willCreateIfNotExists ? _self.willCreateIfNotExists : willCreateIfNotExists // ignore: cast_nullable_to_non_nullable
-as bool,
+as DirectoryPath?,resolveOption: freezed == resolveOption ? _self.resolveOption : resolveOption // ignore: cast_nullable_to_non_nullable
+as ResolveWorkDirOption?,
   ));
 }
 

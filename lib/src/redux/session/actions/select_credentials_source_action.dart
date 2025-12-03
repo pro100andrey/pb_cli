@@ -4,14 +4,14 @@ import '../../action.dart';
 final class SelectCredentialsSourceAction extends AppAction {
   @override
   AppState? reduce() {
-    final selected = logger.chooseOne(
+    final choice = logger.chooseOne(
       'Select authentication method:',
-      choices: CredentialsSource.titles,
-      defaultValue: select.credentialsSource.title,
+      choices: CredentialsSource.values,
+      defaultValue: select.credentialsSource,
+      display: (source) => source.title,
     );
 
-    final source = CredentialsSource.fromTitle(selected);
-    final sourceChanged = source != select.credentialsSource;
+    final sourceChanged = choice != select.credentialsSource;
     if (!sourceChanged) {
       logger.info('Credentials source is already up to date.');
       return null;
