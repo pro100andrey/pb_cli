@@ -4,12 +4,12 @@ import 'package:pocketbase/pocketbase.dart';
 
 import '../models/credentials_source.dart';
 import '../utils/path.dart';
-import 'actions/action.dart';
+import 'action.dart';
 import 'session/session_state.dart';
 
 /// Extension methods for convenient access to AppState properties.
 extension type Selectors(AppState state) {
-  DirectoryPath? get workDir => state.workDir;
+  DirectoryPath? get workDirPath => state.workDir.path;
 
   // Config selectors
 

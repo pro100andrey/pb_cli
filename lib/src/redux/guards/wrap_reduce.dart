@@ -23,16 +23,16 @@ class GuardsWrapReduce extends WrapReduce<AppState> {
   /// Throws [PathNotFoundException] or [PathIsNotADirectoryException]
   /// if the new work directory is invalid.
   void _applyWorkDirGuard(Selectors preSel, Selectors curSel) {
-    final oldWorkDir = preSel.workDir;
-    final newWorkDir = curSel.workDir;
+    final oldWorkDir = preSel.workDirPath;
+    final newWorkDir = curSel.workDirPath;
 
     if (oldWorkDir == null && newWorkDir != null) {
       if (newWorkDir case DirectoryPath(notFound: true)) {
-        throw PathNotFoundException(newWorkDir.path);
+        throw PathNotFoundException(newWorkDir.canonicalized);
       }
 
       if (newWorkDir case DirectoryPath(isDirectory: false)) {
-        throw PathIsNotADirectoryException(newWorkDir.path);
+        throw PathIsNotADirectoryException(newWorkDir.canonicalized);
       }
     }
   }

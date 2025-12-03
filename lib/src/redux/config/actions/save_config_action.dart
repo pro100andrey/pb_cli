@@ -1,10 +1,10 @@
-import '../../actions/action.dart';
+import '../../action.dart';
 import '../../services/config_service.dart';
 
 final class SaveConfigAction extends AppAction {
   @override
   AppState reduce() {
-    final file = select.workDir!.joinFile(ConfigService.fileName);
+    final file = select.workDirPath!.joinFile(ConfigService.fileName);
 
     final managedCollections = select.managedCollections;
     final credentialsSource = select.credentialsSource;

@@ -3,7 +3,7 @@ targets:
     builders:
       freezed:
         generate_for:
-          - lib/src/state/**.dart
+          - lib/src/redux/**.dart
         options:
           runs_before:
             - json_serializable

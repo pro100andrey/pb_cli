@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import '../../../extensions/logger.dart';
-import '../../actions/action.dart';
+import '../../action.dart';
 import 'populate_session_from_env_action.dart';
 
 final class LogInAction extends AppAction {

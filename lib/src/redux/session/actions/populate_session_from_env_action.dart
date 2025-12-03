@@ -1,4 +1,4 @@
-import '../../actions/action.dart';
+import '../../action.dart';
 
 class PopulateSessionFromEnvAction extends AppAction {
   @override

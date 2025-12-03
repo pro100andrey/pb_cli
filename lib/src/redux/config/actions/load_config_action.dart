@@ -1,11 +1,11 @@
 import '../../../extensions/logger.dart';
-import '../../actions/action.dart';
+import '../../action.dart';
 import '../../services/config_service.dart';
 
 final class LoadConfigAction extends AppAction {
   @override
   AppState reduce() {
-    final file = select.workDir!.joinFile(ConfigService.fileName);
+    final file = select.workDirPath!.joinFile(ConfigService.fileName);
     final result = ConfigService.read(inputFile: file);
 
     final (

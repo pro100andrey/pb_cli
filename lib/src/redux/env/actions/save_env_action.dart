@@ -1,11 +1,11 @@
 import '../../../extensions/logger.dart';
-import '../../actions/action.dart';
+import '../../action.dart';
 import '../../services/env_service.dart';
 
 final class SaveEnvAction extends AppAction {
   @override
   AppState reduce() {
-    final file = select.workDir!.joinFile(EnvService.fileName);
+    final file = select.workDirPath!.joinFile(EnvService.fileName);
     final host = select.host;
     final usernameOrEmail = select.usernameOrEmail;
     final password = select.password;

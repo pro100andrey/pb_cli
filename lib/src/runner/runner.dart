@@ -2,8 +2,7 @@ import 'package:args/command_runner.dart';
 import 'package:cli_async_redux/cli_async_redux.dart';
 import 'package:mason_logger/mason_logger.dart';
 
-import '../redux/actions/action.dart';
-import '../redux/actions/store_logger_action.dart';
+import '../redux/action.dart';
 import '../redux/guards/wrap_reduce.dart';
 import '../redux/observers/action_observer.dart';
 import '../redux/observers/error_observer.dart';
@@ -45,7 +44,8 @@ Future<int> run(List<String> args) async {
     final result = runner.parse(args);
 
     // Store the logger in the Redux store for global access
-    store.dispatchSync(StoreLoggerAction(logger: logger));
+    store.setProp(logger);
+    logger.detail('Logger instance stored.');
 
     // Run the command
     final runResult = await Future.sync(() => runner.runCommand(result));

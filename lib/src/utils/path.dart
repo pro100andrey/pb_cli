@@ -26,21 +26,16 @@ typedef PathCache = ({
 /// path-related properties once and caching them.
 PathCache _getPathCache(String path) {
   final type = FileSystemEntity.typeSync(path);
-  final notFound = type == FileSystemEntityType.notFound;
-
-  // Use absolute path for canonicalization fallback when path doesn't exist
-  final canonicalized = notFound ? p.absolute(path) : p.canonicalize(path);
-
   return (
     path: path,
-    notFound: notFound,
+    notFound: type == FileSystemEntityType.notFound,
     isFile: type == FileSystemEntityType.file,
     isDirectory: type == FileSystemEntityType.directory,
     isLink: type == FileSystemEntityType.link,
     isAbsolute: p.isAbsolute(path),
     isRelative: p.isRelative(path),
     normalized: p.normalize(path),
-    canonicalized: canonicalized,
+    canonicalized:  p.canonicalize(path),
     absolute: p.absolute(path),
     relative: p.relative(path),
     dirname: p.dirname(path),

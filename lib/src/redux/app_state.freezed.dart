@@ -14,7 +14,12 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$AppState {
 
- DirectoryPath? get workDir; EnvState get env; ConfigState get config; SessionState get session; SchemaState get schema;
+/// The current working directory.
+ WorkDirState get workDir;/// The environment state (loaded from .env file).
+ EnvState get env;/// The configuration state (loaded from config file).
+ ConfigState get config;/// The session state (active user credentials).
+ SessionState get session;/// The schema state (PocketBase collections).
+ SchemaState get schema;
 /// Create a copy of AppState
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -45,11 +50,11 @@ abstract mixin class $AppStateCopyWith<$Res>  {
   factory $AppStateCopyWith(AppState value, $Res Function(AppState) _then) = _$AppStateCopyWithImpl;
 @useResult
 $Res call({
- DirectoryPath? workDir, EnvState env, ConfigState config, SessionState session, SchemaState schema
+ WorkDirState workDir, EnvState env, ConfigState config, SessionState session, SchemaState schema
 });
 
 
-$EnvStateCopyWith<$Res> get env;$ConfigStateCopyWith<$Res> get config;$SessionStateCopyWith<$Res> get session;$SchemaStateCopyWith<$Res> get schema;
+$WorkDirStateCopyWith<$Res> get workDir;$EnvStateCopyWith<$Res> get env;$ConfigStateCopyWith<$Res> get config;$SessionStateCopyWith<$Res> get session;$SchemaStateCopyWith<$Res> get schema;
 
 }
 /// @nodoc
@@ -62,10 +67,10 @@ class _$AppStateCopyWithImpl<$Res>
 
 /// Create a copy of AppState
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? workDir = freezed,Object? env = null,Object? config = null,Object? session = null,Object? schema = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? workDir = null,Object? env = null,Object? config = null,Object? session = null,Object? schema = null,}) {
   return _then(_self.copyWith(
-workDir: freezed == workDir ? _self.workDir : workDir // ignore: cast_nullable_to_non_nullable
-as DirectoryPath?,env: null == env ? _self.env : env // ignore: cast_nullable_to_non_nullable
+workDir: null == workDir ? _self.workDir : workDir // ignore: cast_nullable_to_non_nullable
+as WorkDirState,env: null == env ? _self.env : env // ignore: cast_nullable_to_non_nullable
 as EnvState,config: null == config ? _self.config : config // ignore: cast_nullable_to_non_nullable
 as ConfigState,session: null == session ? _self.session : session // ignore: cast_nullable_to_non_nullable
 as SessionState,schema: null == schema ? _self.schema : schema // ignore: cast_nullable_to_non_nullable
@@ -73,6 +78,15 @@ as SchemaState,
   ));
 }
 /// Create a copy of AppState
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$WorkDirStateCopyWith<$Res> get workDir {
+  
+  return $WorkDirStateCopyWith<$Res>(_self.workDir, (value) {
+    return _then(_self.copyWith(workDir: value));
+  });
+}/// Create a copy of AppState
 /// with the given fields replaced by the non-null parameter values.
 @override
 @pragma('vm:prefer-inline')
@@ -120,10 +134,15 @@ class _AppState implements AppState {
   const _AppState({required this.workDir, required this.env, required this.config, required this.session, required this.schema});
   
 
-@override final  DirectoryPath? workDir;
+/// The current working directory.
+@override final  WorkDirState workDir;
+/// The environment state (loaded from .env file).
 @override final  EnvState env;
+/// The configuration state (loaded from config file).
 @override final  ConfigState config;
+/// The session state (active user credentials).
 @override final  SessionState session;
+/// The schema state (PocketBase collections).
 @override final  SchemaState schema;
 
 /// Create a copy of AppState
@@ -156,11 +175,11 @@ abstract mixin class _$AppStateCopyWith<$Res> implements $AppStateCopyWith<$Res>
   factory _$AppStateCopyWith(_AppState value, $Res Function(_AppState) _then) = __$AppStateCopyWithImpl;
 @override @useResult
 $Res call({
- DirectoryPath? workDir, EnvState env, ConfigState config, SessionState session, SchemaState schema
+ WorkDirState workDir, EnvState env, ConfigState config, SessionState session, SchemaState schema
 });
 
 
-@override $EnvStateCopyWith<$Res> get env;@override $ConfigStateCopyWith<$Res> get config;@override $SessionStateCopyWith<$Res> get session;@override $SchemaStateCopyWith<$Res> get schema;
+@override $WorkDirStateCopyWith<$Res> get workDir;@override $EnvStateCopyWith<$Res> get env;@override $ConfigStateCopyWith<$Res> get config;@override $SessionStateCopyWith<$Res> get session;@override $SchemaStateCopyWith<$Res> get schema;
 
 }
 /// @nodoc
@@ -173,10 +192,10 @@ class __$AppStateCopyWithImpl<$Res>
 
 /// Create a copy of AppState
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? workDir = freezed,Object? env = null,Object? config = null,Object? session = null,Object? schema = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? workDir = null,Object? env = null,Object? config = null,Object? session = null,Object? schema = null,}) {
   return _then(_AppState(
-workDir: freezed == workDir ? _self.workDir : workDir // ignore: cast_nullable_to_non_nullable
-as DirectoryPath?,env: null == env ? _self.env : env // ignore: cast_nullable_to_non_nullable
+workDir: null == workDir ? _self.workDir : workDir // ignore: cast_nullable_to_non_nullable
+as WorkDirState,env: null == env ? _self.env : env // ignore: cast_nullable_to_non_nullable
 as EnvState,config: null == config ? _self.config : config // ignore: cast_nullable_to_non_nullable
 as ConfigState,session: null == session ? _self.session : session // ignore: cast_nullable_to_non_nullable
 as SessionState,schema: null == schema ? _self.schema : schema // ignore: cast_nullable_to_non_nullable
@@ -185,6 +204,15 @@ as SchemaState,
 }
 
 /// Create a copy of AppState
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$WorkDirStateCopyWith<$Res> get workDir {
+  
+  return $WorkDirStateCopyWith<$Res>(_self.workDir, (value) {
+    return _then(_self.copyWith(workDir: value));
+  });
+}/// Create a copy of AppState
 /// with the given fields replaced by the non-null parameter values.
 @override
 @pragma('vm:prefer-inline')

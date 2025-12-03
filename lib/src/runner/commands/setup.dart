@@ -1,7 +1,6 @@
 import 'package:cli_async_redux/cli_async_redux.dart';
 import 'package:mason_logger/mason_logger.dart';
 
-import '../../redux/actions/resolve_work_dir_action.dart';
 import '../../redux/actions/store_pocket_base_action.dart';
 import '../../redux/app_state.dart';
 import '../../redux/config/actions/load_config_action.dart';
@@ -11,6 +10,7 @@ import '../../redux/schema/actions/select_managed_collections_action.dart';
 import '../../redux/session/actions/log_in_action.dart';
 import '../../redux/session/actions/resolve_credentials.dart';
 import '../../redux/session/actions/select_credentials_source_action.dart';
+import '../../redux/work_dir/actions/resolve_work_dir_action.dart';
 import '../../utils/strings.dart';
 import 'base_command.dart';
 
@@ -37,7 +37,7 @@ class SetupCommand extends BaseCommand {
   Future<int> run() async {
     final dirArg = argResults![S.dirOptionName];
 
-    dispatchSync(ResolveWorkDirAction(path: dirArg));
+    dispatchSync(ResolveWorkDirAction(path: dirArg, withUserPrompt: true));
     dispatchSync(LoadConfigAction());
     dispatchSync(LoadEnvAction());
     dispatchSync(ResolveCredentialsAction());

@@ -1,7 +1,7 @@
 import 'package:cli_async_redux/cli_async_redux.dart';
 import 'package:pocketbase/pocketbase.dart';
 
-import 'action.dart';
+import '../action.dart';
 
 final class StorePocketBaseAction extends AppAction {
   @override

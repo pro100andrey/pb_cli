@@ -1,10 +1,10 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
-import '../utils/path.dart';
 import 'config/config_state.dart';
 import 'env/env_state.dart';
 import 'schema/schema_state.dart';
 import 'session/session_state.dart';
+import 'work_dir/work_dir_state.dart';
 
 part 'app_state.freezed.dart';
 
@@ -13,7 +13,7 @@ part 'app_state.freezed.dart';
 abstract class AppState with _$AppState {
   const factory AppState({
     /// The current working directory.
-    required DirectoryPath? workDir,
+    required WorkDirState workDir,
 
     /// The environment state (loaded from .env file).
     required EnvState env,
@@ -33,6 +33,6 @@ abstract class AppState with _$AppState {
     config: ConfigState(),
     session: SessionState(),
     schema: SchemaState(),
-    workDir: null,
+    workDir: WorkDirState(),
   );
 }
