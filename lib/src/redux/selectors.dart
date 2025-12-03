@@ -5,11 +5,17 @@ import 'package:pocketbase/pocketbase.dart';
 import '../models/credentials_source.dart';
 import '../utils/path.dart';
 import 'action.dart';
-import 'session/session_state.dart';
 
 /// Extension methods for convenient access to AppState properties.
 extension type Selectors(AppState state) {
+  // WorkDir selectors
+
+  /// Working directory path
   DirectoryPath? get workDirPath => state.workDir.path;
+
+  /// Indicates whether to create the working directory if it does not exist
+  bool get isCreateWorkDirIfNotExists =>
+      state.workDir.resolveOption == .createIfNotExists;
 
   // Config selectors
 
@@ -22,19 +28,24 @@ extension type Selectors(AppState state) {
   CredentialsSource get credentialsSource =>
       state.config.credentialsSource ?? CredentialsSource.prompt;
 
-  // Session selectors
-  SessionState get session => state.session;
+  /// Session selectors
 
+  /// PocketBase authentication token
   String? get token => state.session.token;
 
+  /// PocketBase connection host
   String? get host => state.session.host;
 
+  /// Username or email used for authentication
   String? get usernameOrEmail => state.session.usernameOrEmail;
 
+  /// Password used for authentication
   String? get password => state.session.password;
 
-  bool get hasToken => token != null && token!.isNotEmpty;
+  /// Checks if a valid authentication token is present
+  bool get tokenIsPresent => token != null && token!.isNotEmpty;
 
+  /// Checks if the current token is valid based on its expiration time.
   bool get tokenIsValid {
     final parts = token?.split('.') ?? [];
     if (parts.length != 3) {

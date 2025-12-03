@@ -9,18 +9,16 @@ final class LogInAction extends AppAction {
   Future<AppState?> reduce() async {
     dispatchSync(PopulateSessionFromEnvAction());
 
-    if (select.hasToken && select.tokenIsValid) {
+    if (select.tokenIsPresent && select.tokenIsValid) {
       pb.authStore.save(select.token!, null);
       logger.detail('Using existing authentication token.');
 
       return null;
     }
 
-    final session = select.session;
-
     final result = await pb
         .collection('_superusers')
-        .authWithPassword(session.usernameOrEmail!, session.password!);
+        .authWithPassword(select.usernameOrEmail!, select.password!);
 
     // dispatchSync(WriteEnvAction(token: pb.authStore.token));
 

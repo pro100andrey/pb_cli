@@ -6,9 +6,7 @@ import '../action.dart';
 final class StorePocketBaseAction extends AppAction {
   @override
   AppState? reduce() {
-    final host = select.session.host!;
-
-    final pocketBase = PocketBase(host);
+    final pocketBase = PocketBase(select.host!);
 
     // Save PocketBase instance to the store
     store.setProp(pocketBase);
