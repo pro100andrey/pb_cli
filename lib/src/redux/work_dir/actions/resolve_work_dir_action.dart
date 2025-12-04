@@ -40,11 +40,12 @@ final class ResolveWorkDirAction extends AppAction {
 
     logger.sectionMapped(
       level: .verbose,
-      title: 'Working directory:',
+      title: 'Resolved Working Directory:',
       items: {
         'Provided': path,
         'Canonicalized': workDirPath.canonicalized,
         'Exists': workDirPath.notFound ? 'No' : 'Yes',
+        'Should Create': select.shouldCreateWorkDir ? 'Yes' : 'No',
       },
     );
 

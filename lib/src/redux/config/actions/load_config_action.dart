@@ -6,12 +6,11 @@ final class LoadConfigAction extends AppAction {
   @override
   AppState reduce() {
     final file = select.workDirPath!.joinFile(ConfigService.fileName);
-    final result = ConfigService.read(inputFile: file);
 
     final (
       :managedCollections,
       :credentialsSource,
-    ) = result;
+    ) = ConfigService.read(inputFile: file);
 
     logger.sectionMapped(
       level: .verbose,
@@ -28,8 +27,8 @@ final class LoadConfigAction extends AppAction {
     );
 
     return state.copyWith.config(
-      managedCollections: result.managedCollections,
-      credentialsSource: result.credentialsSource,
+      managedCollections: managedCollections,
+      credentialsSource: credentialsSource,
     );
   }
 }
