@@ -44,9 +44,11 @@ class SetupCommand extends BaseCommand {
     final dirArg = argResults![S.dirOptionName];
     // 1. Resolve working directory
     dispatchSync(ResolveWorkDirAction(path: dirArg, withUserPrompt: true));
+
     // 2. Load existing config and env files
     dispatchSync(LoadConfigAction());
     dispatchSync(LoadEnvAction());
+
     // 3. Populate session from env (use existing values if available)
     dispatchSync(PopulateSessionFromEnvAction());
 
