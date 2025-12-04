@@ -1,5 +1,6 @@
+import 'package:cli_utils/cli_utils.dart';
+
 import '../redux/models/enums/dotenv.dart';
-import '../utils/path.dart';
 
 abstract interface class EnvRepository {
   factory EnvRepository() => const _FileEnvRepository();

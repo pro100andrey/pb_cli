@@ -5,8 +5,8 @@ import 'package:mason_logger/mason_logger.dart';
 import '../../client/pb_client.dart';
 import '../../inputs/factory.dart';
 import '../../models/credentials.dart';
-import '../../redux/action.dart';
-import '../../redux/selectors.dart';
+import '../../redux/common/app_action.dart';
+import '../../redux/common/selectors.dart';
 
 mixin WithStore {
   Logger get logger => store.prop();

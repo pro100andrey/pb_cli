@@ -1,10 +1,10 @@
 import 'dart:convert';
 
+import 'package:cli_utils/cli_utils.dart';
 import 'package:pocketbase/pocketbase.dart';
 
-import '../utils/path.dart';
-import 'action.dart';
-import 'models/enums/credentials_source.dart';
+import '../models/enums/credentials_source.dart';
+import 'app_action.dart';
 
 /// Extension methods for convenient access to AppState properties.
 extension type Selectors(AppState state) {

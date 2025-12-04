@@ -1,5 +1,5 @@
 import '../../../extensions/logger.dart';
-import '../../action.dart';
+import '../../common/app_action.dart';
 import '../../services/env_service.dart';
 
 final class SaveEnvAction extends AppAction {

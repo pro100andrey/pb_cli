@@ -1,4 +1,4 @@
-import '../../action.dart';
+import '../../common/app_action.dart';
 
 final class SelectManagedCollectionsAction extends AppAction {
   @override

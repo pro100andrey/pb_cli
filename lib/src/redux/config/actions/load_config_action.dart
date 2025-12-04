@@ -1,5 +1,5 @@
 import '../../../extensions/logger.dart';
-import '../../action.dart';
+import '../../common/app_action.dart';
 import '../../services/config_service.dart';
 
 final class LoadConfigAction extends AppAction {

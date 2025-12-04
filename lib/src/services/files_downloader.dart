@@ -1,3 +1,4 @@
+import 'package:cli_utils/cli_utils.dart';
 import 'package:http/http.dart' as http;
 import 'package:mason_logger/mason_logger.dart';
 import 'package:pocketbase/pocketbase.dart';
@@ -5,7 +6,6 @@ import 'package:pocketbase/pocketbase.dart';
 import '../client/pb_client.dart';
 import '../failure/failure.dart';
 import '../models/result.dart';
-import '../utils/path.dart';
 
 class FilesDownloaderService {
   const FilesDownloaderService({required Logger logger}) : _logger = logger;

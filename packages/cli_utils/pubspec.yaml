@@ -8,6 +8,8 @@ environment:
 
 dependencies:
   io: ^1.0.5
+  meta: ^1.17.0
+  path: ^1.9.1
 
 dev_dependencies:
   pro_lints: ^5.0.0

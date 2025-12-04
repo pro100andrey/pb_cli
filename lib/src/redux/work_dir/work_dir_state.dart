@@ -1,6 +1,6 @@
+import 'package:cli_utils/cli_utils.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
-import '../../utils/path.dart';
 import '../models/enums/resolve_work_dir.dart';
 
 part 'work_dir_state.freezed.dart';

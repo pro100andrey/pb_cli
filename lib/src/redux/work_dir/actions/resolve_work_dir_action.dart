@@ -1,8 +1,9 @@
 import 'package:cli_async_redux/cli_async_redux.dart';
+import 'package:cli_utils/cli_utils.dart';
+
 
 import '../../../extensions/logger.dart';
-import '../../../utils/path.dart';
-import '../../action.dart';
+import '../../common/app_action.dart';
 import '../../models/enums/resolve_work_dir.dart';
 
 /// Action to resolve and validate the working directory path.

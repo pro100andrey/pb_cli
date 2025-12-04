@@ -1,6 +1,7 @@
+import 'package:cli_utils/cli_utils.dart';
+
 import '../failure/common.dart';
 import '../failure/failure.dart';
-import 'path.dart';
 
 /// Extension providing validation methods for [DirectoryPath].
 ///

@@ -1,4 +1,4 @@
-import '../../action.dart';
+import '../../common/app_action.dart';
 
 final class FetchSchemaAction extends AppAction {
   @override

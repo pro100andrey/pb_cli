@@ -10,6 +10,7 @@ import '../../redux/env/actions/save_env_action.dart';
 import '../../redux/schema/actions/fetch_schema_action.dart';
 import '../../redux/schema/actions/select_managed_collections_action.dart';
 import '../../redux/session/actions/log_in_action.dart';
+import '../../redux/session/actions/populate_session_from_env_action.dart';
 import '../../redux/session/actions/resolve_credentials.dart';
 import '../../redux/session/actions/select_credentials_source_action.dart';
 import '../../redux/work_dir/actions/resolve_work_dir_action.dart';
@@ -38,10 +39,15 @@ class SetupCommand extends BaseCommand {
   @override
   Future<int> run() async {
     final dirArg = argResults![S.dirOptionName];
-
+    // 1. Resolve working directory
     dispatchSync(ResolveWorkDirAction(path: dirArg, withUserPrompt: true));
+    // 2. Load existing config and env files
     dispatchSync(LoadConfigAction());
     dispatchSync(LoadEnvAction());
+    // 3. Populate session from env (use existing values if available)
+    dispatchSync(PopulateSessionFromEnvAction());
+
+    // 4. Resolve missing credentials from user (only if needed)
     dispatchSync(ResolveCredentialsAction());
 
     dispatchSync(StorePocketBaseAction());

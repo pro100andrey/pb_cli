@@ -1,8 +1,7 @@
 import 'dart:convert';
 
+import 'package:cli_utils/cli_utils.dart';
 import 'package:pocketbase/pocketbase.dart';
-
-import '../utils/path.dart';
 
 abstract interface class SchemaRepository {
   factory SchemaRepository() => const _FileSchemaRepository();

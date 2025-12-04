@@ -1,9 +1,9 @@
 import 'package:cli_async_redux/cli_async_redux.dart';
+import 'package:cli_utils/cli_utils.dart';
 
-import '../../utils/path.dart';
 import '../app_state.dart';
-import '../exeptions.dart';
-import '../selectors.dart';
+import '../common/exceptions.dart';
+import '../common/selectors.dart';
 
 class GuardsWrapReduce extends WrapReduce<AppState> {
   @override

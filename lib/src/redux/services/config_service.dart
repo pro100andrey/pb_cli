@@ -1,6 +1,7 @@
 import 'dart:convert';
 
-import '../../utils/path.dart';
+import 'package:cli_utils/cli_utils.dart';
+
 import '../models/enums/credentials_source.dart';
 
 typedef ReadConfigResult = ({

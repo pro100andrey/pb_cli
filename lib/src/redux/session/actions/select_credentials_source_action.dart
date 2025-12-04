@@ -1,4 +1,4 @@
-import '../../action.dart';
+import '../../common/app_action.dart';
 import '../../models/enums/credentials_source.dart';
 
 final class SelectCredentialsSourceAction extends AppAction {

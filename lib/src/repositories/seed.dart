@@ -1,8 +1,7 @@
 import 'dart:convert';
 
+import 'package:cli_utils/cli_utils.dart';
 import 'package:pocketbase/pocketbase.dart';
-
-import '../utils/path.dart';
 
 abstract interface class SeedRepository {
   factory SeedRepository() => const _FileSeedRepository();

@@ -1,4 +1,4 @@
-import '../../utils/path.dart';
+import 'package:cli_utils/cli_utils.dart';
 
 typedef ReadEnvResult = ({
   String? host,

@@ -35,7 +35,7 @@ PathCache _getPathCache(String path) {
     isAbsolute: p.isAbsolute(path),
     isRelative: p.isRelative(path),
     normalized: p.normalize(path),
-    canonicalized:  p.canonicalize(path),
+    canonicalized: p.canonicalize(path),
     absolute: p.absolute(path),
     relative: p.relative(path),
     dirname: p.dirname(path),
