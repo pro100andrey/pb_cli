@@ -66,11 +66,14 @@ extension type Selectors(AppState state) {
 
   // Schema selectors
 
+  /// All collections in the PocketBase schema.
   List<CollectionModel> get collections => state.schema.collections ?? [];
 
+  /// Collections excluding system collections.
   Iterable<CollectionModel> get collectionsWithoutSystem =>
       collections.where((c) => !c.system);
 
+  /// Names of collections excluding system collections.
   Iterable<String> get collectionNamesWithoutSystem =>
       collectionsWithoutSystem.map((c) => c.name);
 }
