@@ -19,8 +19,6 @@ final class LogInAction extends AppAction {
         .collection('_superusers')
         .authWithPassword(select.usernameOrEmail!, select.password!);
 
-    // dispatchSync(WriteEnvAction(token: pb.authStore.token));
-
     logger.sectionMapped(
       level: .verbose,
       title: 'Session',
