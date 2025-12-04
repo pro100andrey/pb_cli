@@ -32,9 +32,15 @@ class SetupCommand extends BaseCommand {
 
   @override
   Future<int> run() async {
-    final dirArg = argResults![S.dirOptionName];
+    logger.info('Starting setup command...');
+
     // 1. Resolve working directory
-    dispatchSync(ResolveWorkDirAction(path: dirArg, withUserPrompt: true));
+    dispatchSync(
+      ResolveWorkDirAction(
+        path: argResults![S.dirOptionName],
+        withUserPrompt: true,
+      ),
+    );
 
     // 2. Load existing config and env files
     dispatchSync(LoadConfigAction());
@@ -63,6 +69,8 @@ class SetupCommand extends BaseCommand {
     dispatchSync(EnsureWorkDirExistsAction());
     dispatchSync(SaveConfigAction());
     dispatchSync(SaveEnvAction());
+
+    logger.success('Setup completed successfully.');
 
     return ExitCode.success.code;
   }

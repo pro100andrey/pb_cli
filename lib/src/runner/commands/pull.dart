@@ -4,6 +4,9 @@ import 'package:mason_logger/mason_logger.dart';
 
 import '../../models/result.dart';
 import '../../redux/common/app_action.dart';
+import '../../redux/config/actions/load_config_action.dart';
+import '../../redux/env/actions/load_env_action.dart';
+import '../../redux/work_dir/work_dir.dart';
 import '../../repositories/config.dart';
 import '../../repositories/schema.dart';
 import '../../repositories/seed.dart';
@@ -49,6 +52,16 @@ class PullCommand extends BaseCommand {
 
   @override
   Future<int> run() async {
+    logger.info('Starting pull command...');
+
+    final dirArg = argResults![S.dirOptionName];
+    // 1. Resolve working directory
+    dispatchSync(ResolveWorkDirAction(path: dirArg));
+
+    // 2. Load existing config and env files
+    dispatchSync(LoadConfigAction());
+    dispatchSync(LoadEnvAction());
+
     final dir = DirectoryPath(argResults![S.dirOptionName]);
     // 1. Validate directory path
     if (dir.validate() case final failure?) {
@@ -56,7 +69,6 @@ class PullCommand extends BaseCommand {
       return failure.exitCode;
     }
 
-    final dirArg = argResults![S.dirOptionName];
     resolveDataDir(dirArg);
     final pbClient = await resolvePBConnection();
 

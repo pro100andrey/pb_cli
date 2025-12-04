@@ -20,6 +20,7 @@ final class SaveEnvAction extends AppAction {
     );
 
     logger.sectionMapped(
+      level: .verbose,
       title: 'Environment',
       items: {
         DotenvKey.pbHost: ?host,

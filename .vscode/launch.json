@@ -12,7 +12,7 @@
             "console": "terminal",
             "args": [
                 "setup",
-                "--verbose",
+                // "--verbose",
                 "--dir=./pb_data"
             ]
         },
