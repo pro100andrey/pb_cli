@@ -1,5 +1,5 @@
-import '../../../models/credentials_source.dart';
 import '../../action.dart';
+import '../../models/enums/credentials_source.dart';
 
 final class SelectCredentialsSourceAction extends AppAction {
   @override

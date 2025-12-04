@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import '../models/config.dart';
+import '../redux/models/config.dart';
 import '../utils/path.dart';
 
 abstract interface class ConfigRepository {

@@ -1,4 +1,4 @@
-import 'credentials_source.dart';
+import 'enums/credentials_source.dart';
 
 /// A type-safe representation of configuration keys.
 ///

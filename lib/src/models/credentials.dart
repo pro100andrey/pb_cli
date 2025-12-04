@@ -1,7 +1,7 @@
 import '../failure/failure.dart';
 import '../inputs/credentials.dart';
-import 'config.dart';
-import 'dotenv.dart';
+import '../redux/models/config.dart';
+import '../redux/models/enums/dotenv.dart';
 
 /// Model class to hold PocketBase admin credentials.
 ///

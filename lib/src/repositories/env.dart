@@ -1,4 +1,4 @@
-import '../models/dotenv.dart';
+import '../redux/models/enums/dotenv.dart';
 import '../utils/path.dart';
 
 abstract interface class EnvRepository {

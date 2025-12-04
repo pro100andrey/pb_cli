@@ -1,7 +1,7 @@
 import 'dart:convert';
 
-import '../../models/credentials_source.dart';
 import '../../utils/path.dart';
+import '../models/enums/credentials_source.dart';
 
 typedef ReadConfigResult = ({
   List<String>? managedCollections,
