@@ -13,6 +13,8 @@ import '../../redux/session/actions/log_in_action.dart';
 import '../../redux/session/actions/populate_session_from_env_action.dart';
 import '../../redux/session/actions/resolve_credentials.dart';
 import '../../redux/session/actions/select_credentials_source_action.dart';
+import '../../redux/session/actions/verify_connection_action.dart';
+import '../../redux/work_dir/actions/ensure_work_dir_exists_action.dart';
 import '../../redux/work_dir/actions/resolve_work_dir_action.dart';
 import '../../utils/strings.dart';
 import 'base_command.dart';
@@ -52,11 +54,13 @@ class SetupCommand extends BaseCommand {
 
     dispatchSync(StorePocketBaseAction());
 
+    await dispatchAndWait(VerifyConnectionAction());
     await dispatchAndWait(LogInAction());
     await dispatchAndWait(FetchSchemaAction());
 
     dispatchSync(SelectManagedCollectionsAction());
     dispatchSync(SelectCredentialsSourceAction());
+    dispatchSync(EnsureWorkDirExistsAction());
     dispatchSync(SaveConfigAction());
     dispatchSync(SaveEnvAction());
 

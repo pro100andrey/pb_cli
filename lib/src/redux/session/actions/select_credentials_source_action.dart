@@ -17,6 +17,6 @@ final class SelectCredentialsSourceAction extends AppAction {
       return null;
     }
 
-    return state.copyWith();
+    return state.copyWith.config(credentialsSource: choice);
   }
 }

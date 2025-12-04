@@ -17,3 +17,11 @@ final class PathNotFoundException extends ReduxException {
             'Please ensure the path is correct and try again.',
       );
 }
+
+final class ValidationException extends ReduxException {
+  ValidationException(String message) : super.config(message: message);
+}
+
+final class ConnectionException extends ReduxException {
+  ConnectionException(String message) : super.noHost(message: message);
+}

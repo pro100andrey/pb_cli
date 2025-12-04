@@ -7,6 +7,5 @@ part 'schema_state.freezed.dart';
 abstract class SchemaState with _$SchemaState {
   const factory SchemaState({
     List<CollectionModel>? collections,
-    List<String>? managedCollections,
   }) = _SchemaState;
 }

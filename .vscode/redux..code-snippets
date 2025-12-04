@@ -3,7 +3,7 @@
         "scope": "dart",
         "prefix": ["redux-action-sync"],
         "body": [
-            "import '../../actions/action.dart';",
+            "import '../../common.dart';",
             "",
             "final class ${1:${TM_FILENAME_BASE/(.*)/${1:/pascalcase}/}} extends AppAction {",
             "  @override",
@@ -19,7 +19,7 @@
         "scope": "dart",
         "prefix": ["redux-action-async"],
         "body": [
-            "import '../../actions/action.dart';",
+            "import '../../common.dart';",
             "",
             "final class ${1:${TM_FILENAME_BASE/(.*)/${1:/pascalcase}/}} extends AppAction {",
             "  @override",
