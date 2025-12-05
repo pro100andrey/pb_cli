@@ -14,8 +14,9 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$EnvState {
 
-/// Raw key-value pairs from .env file.
-/// Empty map if .env file doesn't exist or is empty.
+/// Raw key-value pairs loaded from .env file.
+///
+/// Empty if the file doesn't exist or hasn't been loaded yet.
  EnvData get data;
 /// Create a copy of EnvState
 /// with the given fields replaced by the non-null parameter values.
@@ -82,8 +83,9 @@ class _EnvState extends EnvState {
   const _EnvState({this.data = const EnvData.empty()}): super._();
   
 
-/// Raw key-value pairs from .env file.
-/// Empty map if .env file doesn't exist or is empty.
+/// Raw key-value pairs loaded from .env file.
+///
+/// Empty if the file doesn't exist or hasn't been loaded yet.
 @override@JsonKey() final  EnvData data;
 
 /// Create a copy of EnvState

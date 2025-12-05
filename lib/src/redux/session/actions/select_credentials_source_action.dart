@@ -1,5 +1,6 @@
 import '../../common/app_action.dart';
 import '../../models/enums/credentials_source.dart';
+import '../../types/config.dart';
 
 final class SelectCredentialsSourceAction extends AppAction {
   @override
@@ -17,6 +18,11 @@ final class SelectCredentialsSourceAction extends AppAction {
       return null;
     }
 
-    return state.copyWith.config(credentialsSource: choice);
+    final newData = ConfigData.data({
+      ConfigKey.managedCollections: select.managedCollections,
+      ConfigKey.credentialsSource: choice.key,
+    });
+
+    return state.copyWith.config(data: newData);
   }
 }

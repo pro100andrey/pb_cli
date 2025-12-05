@@ -27,7 +27,7 @@ final class SaveEnvAction extends AppAction {
 
     final file = select.workDirPath!.joinFile(EnvService.fileName);
 
-    EnvService.write(outputFile: file, variables: data);
+    EnvService.write(outputFile: file, env: data);
 
     logger.sectionMapped(
       level: .verbose,

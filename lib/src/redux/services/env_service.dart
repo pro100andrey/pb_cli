@@ -18,14 +18,11 @@ final class EnvService {
 
   /// Writes environment variables to .env file.
   ///
-  /// Merges [variables] with existing file content, preserving
+  /// Merges [env] with existing file content, preserving
   /// other environment variables that may exist in the file.
   /// New values override existing ones with the same key.
-  static void write({
-    required FilePath outputFile,
-    required EnvData variables,
-  }) {
-    _write(variables.data, outputFile);
+  static void write({required FilePath outputFile, required EnvData env}) {
+    _write(env.data, outputFile);
   }
 
   /// Reads environment variables from .env file.

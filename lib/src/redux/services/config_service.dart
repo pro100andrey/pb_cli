@@ -2,62 +2,37 @@ import 'dart:convert';
 
 import 'package:cli_utils/cli_utils.dart';
 
-import '../models/config.dart';
-import '../models/enums/credentials_source.dart';
+import '../types/config.dart';
 
-typedef ReadConfigResult = ({
-  List<String>? managedCollections,
-  CredentialsSource? credentialsSource,
-});
-
+/// Service for reading and writing config.json files containing
+/// CLI configuration.
+///
+/// Handles:
+/// - Reading configuration from config.json file
+/// - Writing configuration to config.json file
+/// - JSON serialization/deserialization
 final class ConfigService {
   const ConfigService._();
+
+  /// The standard config file name.
   static const fileName = 'config.json';
 
-  static ReadConfigResult read({required FilePath inputFile}) {
+  /// Reads configuration from config.json file.
+  ///
+  /// Returns [ConfigData.empty()] if the file doesn't exist.
+  static ConfigData read({required FilePath inputFile}) {
     if (inputFile.notFound) {
-      return (managedCollections: null, credentialsSource: null);
+      return const ConfigData.empty();
     }
 
-    final configMap = _read(file: inputFile);
-
-    final collections = configMap[ConfigKey.managedCollections];
-    final managedCollections = switch (collections) {
-      null => null,
-      List() => collections.cast<String>(),
-      _ => throw const FormatException(
-        'Invalid format for managedCollections in config file. '
-        'Should be a list of strings.',
-      ),
-    };
-
-    final source = configMap[ConfigKey.credentialsSource];
-    final credentialsSource = switch (source) {
-      String() => CredentialsSource.fromKey(source),
-      null => null,
-      _ => throw const FormatException(
-        'Invalid format for credentialsSource in config file. '
-        'Should be a string.',
-      ),
-    };
-
-    return (
-      credentialsSource: credentialsSource,
-      managedCollections: managedCollections,
-    );
+    return ConfigData.data(_read(file: inputFile));
   }
 
-  static void write({
-    required FilePath outputFile,
-    required List<String>? managedCollections,
-    required CredentialsSource? credentialsSource,
-  }) {
-    final data = {
-      ConfigKey.managedCollections: managedCollections,
-      ConfigKey.credentialsSource: credentialsSource?.key,
-    };
-
-    _write(data, outputFile);
+  /// Writes configuration to config.json file.
+  ///
+  /// Serializes [data] to JSON with pretty printing (2-space indent).
+  static void write({required FilePath outputFile, required ConfigData data}) {
+    _write(data.data, outputFile);
   }
 
   static void _write(Map<ConfigKey, Object?> data, FilePath file) {

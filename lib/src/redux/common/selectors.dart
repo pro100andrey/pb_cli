@@ -38,13 +38,13 @@ extension type Selectors(AppState state) {
   /// List of collection names that are managed by the CLI.
   ///
   /// Returns an empty list if no collections are configured.
-  List<String> get managedCollections => state.config.managedCollections ?? [];
+  List<String> get managedCollections => state.config.data.managedCollections;
 
   /// The source for obtaining credentials (dotenv file or user prompt).
   ///
   /// Defaults to [CredentialsSource.prompt] if not explicitly configured.
   CredentialsSource get credentialsSource =>
-      state.config.credentialsSource ?? CredentialsSource.prompt;
+      state.config.data.credentialsSource;
 
   // Session selectors
 

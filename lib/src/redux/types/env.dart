@@ -63,11 +63,4 @@ extension type EnvData._(Map<EnvKey, String> data) implements Map {
   void operator []=(EnvKey key, String value) {
     data[key] = value;
   }
-
-  /// Checks if all required credentials are present in the environment data.
-  bool get hasData =>
-      host != null &&
-      usernameOrEmail != null &&
-      password != null &&
-      token != null;
 }

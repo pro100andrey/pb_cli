@@ -1,4 +1,5 @@
 import '../../common/app_action.dart';
+import '../../types/config.dart';
 
 final class SelectManagedCollectionsAction extends AppAction {
   @override
@@ -23,6 +24,11 @@ final class SelectManagedCollectionsAction extends AppAction {
       return null;
     }
 
-    return state.copyWith.config(managedCollections: selected);
+    final newData = ConfigData.data({
+      ConfigKey.managedCollections: selected,
+      ConfigKey.credentialsSource: select.credentialsSource.key,
+    });
+
+    return state.copyWith.config(data: newData);
   }
 }

@@ -14,7 +14,10 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$ConfigState {
 
- List<String>? get managedCollections; CredentialsSource? get credentialsSource;
+/// Configuration data loaded from config.json file.
+///
+/// Empty if the file doesn't exist or hasn't been loaded yet.
+ ConfigData get data;
 /// Create a copy of ConfigState
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -25,16 +28,16 @@ $ConfigStateCopyWith<ConfigState> get copyWith => _$ConfigStateCopyWithImpl<Conf
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is ConfigState&&const DeepCollectionEquality().equals(other.managedCollections, managedCollections)&&(identical(other.credentialsSource, credentialsSource) || other.credentialsSource == credentialsSource));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is ConfigState&&const DeepCollectionEquality().equals(other.data, data));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,const DeepCollectionEquality().hash(managedCollections),credentialsSource);
+int get hashCode => Object.hash(runtimeType,const DeepCollectionEquality().hash(data));
 
 @override
 String toString() {
-  return 'ConfigState(managedCollections: $managedCollections, credentialsSource: $credentialsSource)';
+  return 'ConfigState(data: $data)';
 }
 
 
@@ -45,7 +48,7 @@ abstract mixin class $ConfigStateCopyWith<$Res>  {
   factory $ConfigStateCopyWith(ConfigState value, $Res Function(ConfigState) _then) = _$ConfigStateCopyWithImpl;
 @useResult
 $Res call({
- List<String>? managedCollections, CredentialsSource? credentialsSource
+ ConfigData data
 });
 
 
@@ -62,11 +65,10 @@ class _$ConfigStateCopyWithImpl<$Res>
 
 /// Create a copy of ConfigState
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? managedCollections = freezed,Object? credentialsSource = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? data = null,}) {
   return _then(_self.copyWith(
-managedCollections: freezed == managedCollections ? _self.managedCollections : managedCollections // ignore: cast_nullable_to_non_nullable
-as List<String>?,credentialsSource: freezed == credentialsSource ? _self.credentialsSource : credentialsSource // ignore: cast_nullable_to_non_nullable
-as CredentialsSource?,
+data: null == data ? _self.data : data // ignore: cast_nullable_to_non_nullable
+as ConfigData,
   ));
 }
 
@@ -77,20 +79,14 @@ as CredentialsSource?,
 /// @nodoc
 
 
-class _ConfigState implements ConfigState {
-  const _ConfigState({final  List<String>? managedCollections, this.credentialsSource}): _managedCollections = managedCollections;
+class _ConfigState extends ConfigState {
+  const _ConfigState({this.data = const ConfigData.empty()}): super._();
   
 
- final  List<String>? _managedCollections;
-@override List<String>? get managedCollections {
-  final value = _managedCollections;
-  if (value == null) return null;
-  if (_managedCollections is EqualUnmodifiableListView) return _managedCollections;
-  // ignore: implicit_dynamic_type
-  return EqualUnmodifiableListView(value);
-}
-
-@override final  CredentialsSource? credentialsSource;
+/// Configuration data loaded from config.json file.
+///
+/// Empty if the file doesn't exist or hasn't been loaded yet.
+@override@JsonKey() final  ConfigData data;
 
 /// Create a copy of ConfigState
 /// with the given fields replaced by the non-null parameter values.
@@ -102,16 +98,16 @@ _$ConfigStateCopyWith<_ConfigState> get copyWith => __$ConfigStateCopyWithImpl<_
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _ConfigState&&const DeepCollectionEquality().equals(other._managedCollections, _managedCollections)&&(identical(other.credentialsSource, credentialsSource) || other.credentialsSource == credentialsSource));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _ConfigState&&const DeepCollectionEquality().equals(other.data, data));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,const DeepCollectionEquality().hash(_managedCollections),credentialsSource);
+int get hashCode => Object.hash(runtimeType,const DeepCollectionEquality().hash(data));
 
 @override
 String toString() {
-  return 'ConfigState(managedCollections: $managedCollections, credentialsSource: $credentialsSource)';
+  return 'ConfigState(data: $data)';
 }
 
 
@@ -122,7 +118,7 @@ abstract mixin class _$ConfigStateCopyWith<$Res> implements $ConfigStateCopyWith
   factory _$ConfigStateCopyWith(_ConfigState value, $Res Function(_ConfigState) _then) = __$ConfigStateCopyWithImpl;
 @override @useResult
 $Res call({
- List<String>? managedCollections, CredentialsSource? credentialsSource
+ ConfigData data
 });
 
 
@@ -139,11 +135,10 @@ class __$ConfigStateCopyWithImpl<$Res>
 
 /// Create a copy of ConfigState
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? managedCollections = freezed,Object? credentialsSource = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? data = null,}) {
   return _then(_ConfigState(
-managedCollections: freezed == managedCollections ? _self._managedCollections : managedCollections // ignore: cast_nullable_to_non_nullable
-as List<String>?,credentialsSource: freezed == credentialsSource ? _self.credentialsSource : credentialsSource // ignore: cast_nullable_to_non_nullable
-as CredentialsSource?,
+data: null == data ? _self.data : data // ignore: cast_nullable_to_non_nullable
+as ConfigData,
   ));
 }
 

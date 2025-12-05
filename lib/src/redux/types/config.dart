@@ -1,15 +1,15 @@
-/// A type-safe representation of configuration keys.
+import 'package:meta/meta.dart';
+
+import '../models/enums/credentials_source.dart';
+
+/// Configuration keys used in config.json file.
 ///
-/// This extension type wraps a string value and ensures that only known
-/// configuration keys can be used. It provides compile-time safety by
-/// restricting the set of valid keys to predefined constants.
+/// Provides compile-time safety by restricting the set of valid keys
+/// to predefined constants.
 extension type const ConfigKey._(String value) implements String {
-  /// Creates a new ConfigKey from a string value.
+  /// Creates a [ConfigKey] from a string value.
   ///
-  /// [value] The string value representing the configuration key.
-  ///
-  /// Throws [ArgumentError] if the provided value is not a known configuration
-  /// key.
+  /// Throws [ArgumentError] if the value is not a known key.
   factory ConfigKey(String value) {
     if (!_known.contains(value)) {
       throw ArgumentError('Unknown ConfigKey: $value');
@@ -24,6 +24,55 @@ extension type const ConfigKey._(String value) implements String {
   /// Configuration key for credentials source setting.
   static const credentialsSource = ConfigKey._('credentialsSource');
 
-  /// Set of all known configuration keys.
+  /// Set of all known [ConfigKey]s.
   static const Set<ConfigKey> _known = {managedCollections, credentialsSource};
+}
+
+/// Configuration data structure representing config.json key-value pairs.
+///
+/// Provides type-safe access to configuration values with convenient getters.
+extension type ConfigData._(Map<ConfigKey, Object?> data) implements Map {
+  /// Creates an empty [ConfigData] instance.
+  const ConfigData.empty() : data = const {};
+
+  /// Creates a [ConfigData] instance from a map of key-value pairs.
+  factory ConfigData.data(Map<ConfigKey, Object?> data) => ConfigData._(data);
+
+  /// Returns the list of managed collections.
+  ///
+  /// Returns an empty list if not configured.
+  List<String> get managedCollections {
+    final collections = data[ConfigKey.managedCollections];
+    return switch (collections) {
+      null => [],
+      List() => collections.cast<String>(),
+      _ => throw const FormatException(
+        'Invalid format for managedCollections. Should be a list of strings.',
+      ),
+    };
+  }
+
+  /// Returns the credentials source configuration.
+  ///
+  /// Returns [CredentialsSource.prompt] if not configured.
+  CredentialsSource get credentialsSource {
+    final source = data[ConfigKey.credentialsSource];
+    return switch (source) {
+      String() => CredentialsSource.fromKey(source),
+      null => CredentialsSource.prompt,
+      _ => throw const FormatException(
+        'Invalid format for credentialsSource. Should be a string.',
+      ),
+    };
+  }
+
+  /// Map operator to access values by [ConfigKey].
+  @redeclare
+  Object? operator [](ConfigKey? key) => data[key];
+
+  /// Map operator to set values by [ConfigKey].
+  @redeclare
+  void operator []=(ConfigKey key, Object? value) {
+    data[key] = value;
+  }
 }
