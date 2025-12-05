@@ -5,6 +5,8 @@ import 'package:mason_logger/mason_logger.dart';
 import '../../redux/common/app_action.dart';
 import '../../redux/config/actions/load_config_action.dart';
 import '../../redux/env/actions/load_env_action.dart';
+import '../../redux/schema/actions/fetch_schema_action.dart';
+import '../../redux/session/session.dart';
 import '../../redux/work_dir/work_dir.dart';
 import '../../utils/strings.dart';
 import 'base_command.dart';
@@ -38,34 +40,28 @@ class PullCommand extends Command with WithStore {
   @override
   Future<int> run() async {
     logger.info('Starting pull command...');
-
-    final dirArg = argResults![S.dirOptionName];
     // 1. Resolve working directory
-    dispatchSync(ResolveWorkDirAction(path: dirArg));
+    dispatchSync(ResolveWorkDirAction(path: argResults![S.dirOptionName]));
 
     // 2. Load existing config and env files
     dispatchSync(LoadConfigAction());
     dispatchSync(LoadEnvAction());
 
-    // final dir = DirectoryPath(argResults![S.dirOptionName]);
-    // // 1. Validate directory path
-    // if (dir.validate() case final failure?) {
-    //   logger.err(failure.message);
-    //   return failure.exitCode;
-    // }
+    // 3. Populate session from env (use existing values if available)
+    dispatchSync(PopulateSessionFromEnvAction());
 
-    // // resolveDataDir(dirArg);
-    // // final pbClient = await resolvePBConnection();
+    // 4. Resolve missing credentials from user (only if needed)
+    dispatchSync(ResolveCredentialsAction());
+    dispatchSync(ValidateCredentialsAction());
 
-    // // 3. Sync collections schema from PocketBase server
-    // final fetchProgress = logger.progress('Fetching schema from server');
-    // final collectionsResult = await pbClient.getCollections();
-    // if (collectionsResult case Result(:final error?)) {
-    //   fetchProgress.fail(error.message);
-    //   return error.exitCode;
-    // }
+    // 5. Setup PocketBase connection and authenticate
+    await dispatchAndWait(SetupPocketBaseConnectionAction());
+    await dispatchAndWait(LogInAction());
 
-    // fetchProgress.complete('Fetched schema from server successfully.');
+    // 6. Fetch schema and select collections/credentials source
+    await dispatchAndWait(FetchSchemaAction());
+
+
 
     // final syncProgress = logger.progress('Syncing collections schema');
 

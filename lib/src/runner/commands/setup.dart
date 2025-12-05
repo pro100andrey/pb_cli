@@ -63,18 +63,19 @@ class SetupCommand extends Command with WithStore {
     dispatchSync(ResolveCredentialsAction());
     dispatchSync(ValidateCredentialsAction());
 
-    // 5. Setup PocketBase connection
+    // 5. Setup PocketBase connection and authenticate
     await dispatchAndWait(SetupPocketBaseConnectionAction());
-    // 6. Authenticate
     await dispatchAndWait(LogInAction());
 
-    // 7. Fetch schema and select collections/credentials source
+    // 6. Fetch schema and select collections/credentials source
     await dispatchAndWait(FetchSchemaAction());
     dispatchSync(SelectManagedCollectionsAction());
     dispatchSync(SelectCredentialsSourceAction());
 
-    // 8. Persist configuration
+    // 7. Ensure working directory exists (or create it)
     dispatchSync(EnsureWorkDirExistsAction());
+
+    // 8. Persist configuration
     dispatchSync(SaveConfigAction());
     dispatchSync(SaveEnvAction());
 

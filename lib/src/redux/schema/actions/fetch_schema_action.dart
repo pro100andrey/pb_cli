@@ -5,6 +5,8 @@ final class FetchSchemaAction extends AppAction {
   Future<AppState?> reduce() async {
     final collections = await pb.collections.getFullList();
 
+    logger.detail('Fetched ${collections.length} collections from PocketBase.');
+
     return state.copyWith.schema(collections: collections);
   }
 }
