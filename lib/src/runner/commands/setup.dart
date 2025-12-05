@@ -12,6 +12,21 @@ import '../../redux/work_dir/work_dir.dart';
 import '../../utils/strings.dart';
 import 'base_command.dart';
 
+/// Command to set up the PocketBase CLI environment.
+////
+/// This command guides the user through the initial setup process,
+/// including:
+/// - Resolving the working directory
+/// - Loading existing configuration and environment files
+/// - Populating session credentials from environment variables
+/// - Prompting the user for any missing credentials
+/// - Validating credentials and establishing a connection to PocketBase
+/// - Fetching the database schema
+/// - Allowing the user to select managed collections and credential sources
+/// - Saving the final configuration and environment settings
+/// This command is typically run once during initial setup
+/// or whenever the user wants to reconfigure their
+/// PocketBase CLI environment.
 class SetupCommand extends Command with WithStore {
   SetupCommand({required this.store}) {
     argParser.addOption(
