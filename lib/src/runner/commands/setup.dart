@@ -5,7 +5,7 @@ import 'package:mason_logger/mason_logger.dart';
 import '../../redux/app_state.dart';
 import '../../redux/config/config.dart';
 import '../../redux/env/env.dart';
-import '../../redux/schema/schema.dart';
+import '../../redux/remote_schema/remote_schema.dart';
 import '../../redux/session/session.dart';
 import '../../redux/work_dir/work_dir.dart';
 import '../../utils/strings.dart';

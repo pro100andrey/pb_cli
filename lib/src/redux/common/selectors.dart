@@ -78,15 +78,16 @@ extension type Selectors(AppState state) {
   /// (including system collections).
   ///
   /// Returns an empty list if the schema hasn't been fetched yet.
-  List<CollectionModel> get collections => state.schema.collections ?? [];
+  List<CollectionModel> get remoteCollections =>
+      state.remoteSchema.collections ?? [];
 
   /// User-created collections (excludes system collections).
-  Iterable<CollectionModel> get collectionsWithoutSystem =>
-      collections.where((c) => !c.system);
+  Iterable<CollectionModel> get remoteCollectionsWithoutSystem =>
+      remoteCollections.where((c) => !c.system);
 
   /// Names of user-created collections.
   ///
   /// Useful for displaying collection choices or filtering operations.
-  Iterable<String> get collectionNamesWithoutSystem =>
-      collectionsWithoutSystem.map((c) => c.name);
+  Iterable<String> get remoteCollectionNamesWithoutSystem =>
+      remoteCollectionsWithoutSystem.map((c) => c.name);
 }

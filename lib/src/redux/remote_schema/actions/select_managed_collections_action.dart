@@ -4,7 +4,7 @@ import '../../types/config.dart';
 final class SelectManagedCollectionsAction extends AppAction {
   @override
   AppState? reduce() {
-    final collectionsNames = select.collectionNamesWithoutSystem.toList(
+    final collectionsNames = select.remoteCollectionNamesWithoutSystem.toList(
       growable: false,
     );
 

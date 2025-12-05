@@ -7,6 +7,6 @@ final class FetchSchemaAction extends AppAction {
 
     logger.detail('Fetched ${collections.length} collections from PocketBase.');
 
-    return state.copyWith.schema(collections: collections);
+    return state.copyWith.remoteSchema(collections: collections);
   }
 }

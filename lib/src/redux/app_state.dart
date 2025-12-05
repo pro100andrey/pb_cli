@@ -2,7 +2,7 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 
 import 'config/config_state.dart';
 import 'env/env_state.dart';
-import 'schema/schema_state.dart';
+import 'remote_schema/remote_schema_state.dart';
 import 'session/session_state.dart';
 import 'work_dir/work_dir_state.dart';
 
@@ -24,15 +24,15 @@ abstract class AppState with _$AppState {
     /// The session state (active user credentials).
     required SessionState session,
 
-    /// The schema state (PocketBase collections).
-    required SchemaState schema,
+    /// The remote schema state (PocketBase collections).
+    required RemoteSchemaState remoteSchema,
   }) = _AppState;
 
   factory AppState.initial() => const AppState(
     env: EnvState(),
     config: ConfigState(),
     session: SessionState(),
-    schema: SchemaState(),
+    remoteSchema: RemoteSchemaState(),
     workDir: WorkDirState(),
   );
 }

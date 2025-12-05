@@ -3,7 +3,7 @@
 // ignore_for_file: type=lint
 // ignore_for_file: unused_element, deprecated_member_use, deprecated_member_use_from_same_package, use_function_type_syntax_for_parameters, unnecessary_const, avoid_init_to_null, invalid_override_different_default_values_named, prefer_expression_function_bodies, annotate_overrides, invalid_annotation_target, unnecessary_question_mark
 
-part of 'schema_state.dart';
+part of 'remote_schema_state.dart';
 
 // **************************************************************************
 // FreezedGenerator
@@ -12,20 +12,20 @@ part of 'schema_state.dart';
 // dart format off
 T _$identity<T>(T value) => value;
 /// @nodoc
-mixin _$SchemaState {
+mixin _$RemoteSchemaState {
 
  List<CollectionModel>? get collections;
-/// Create a copy of SchemaState
+/// Create a copy of RemoteSchemaState
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
 @pragma('vm:prefer-inline')
-$SchemaStateCopyWith<SchemaState> get copyWith => _$SchemaStateCopyWithImpl<SchemaState>(this as SchemaState, _$identity);
+$RemoteSchemaStateCopyWith<RemoteSchemaState> get copyWith => _$RemoteSchemaStateCopyWithImpl<RemoteSchemaState>(this as RemoteSchemaState, _$identity);
 
 
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is SchemaState&&const DeepCollectionEquality().equals(other.collections, collections));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is RemoteSchemaState&&const DeepCollectionEquality().equals(other.collections, collections));
 }
 
 
@@ -34,15 +34,15 @@ int get hashCode => Object.hash(runtimeType,const DeepCollectionEquality().hash(
 
 @override
 String toString() {
-  return 'SchemaState(collections: $collections)';
+  return 'RemoteSchemaState(collections: $collections)';
 }
 
 
 }
 
 /// @nodoc
-abstract mixin class $SchemaStateCopyWith<$Res>  {
-  factory $SchemaStateCopyWith(SchemaState value, $Res Function(SchemaState) _then) = _$SchemaStateCopyWithImpl;
+abstract mixin class $RemoteSchemaStateCopyWith<$Res>  {
+  factory $RemoteSchemaStateCopyWith(RemoteSchemaState value, $Res Function(RemoteSchemaState) _then) = _$RemoteSchemaStateCopyWithImpl;
 @useResult
 $Res call({
  List<CollectionModel>? collections
@@ -53,14 +53,14 @@ $Res call({
 
 }
 /// @nodoc
-class _$SchemaStateCopyWithImpl<$Res>
-    implements $SchemaStateCopyWith<$Res> {
-  _$SchemaStateCopyWithImpl(this._self, this._then);
+class _$RemoteSchemaStateCopyWithImpl<$Res>
+    implements $RemoteSchemaStateCopyWith<$Res> {
+  _$RemoteSchemaStateCopyWithImpl(this._self, this._then);
 
-  final SchemaState _self;
-  final $Res Function(SchemaState) _then;
+  final RemoteSchemaState _self;
+  final $Res Function(RemoteSchemaState) _then;
 
-/// Create a copy of SchemaState
+/// Create a copy of RemoteSchemaState
 /// with the given fields replaced by the non-null parameter values.
 @pragma('vm:prefer-inline') @override $Res call({Object? collections = freezed,}) {
   return _then(_self.copyWith(
@@ -76,8 +76,8 @@ as List<CollectionModel>?,
 /// @nodoc
 
 
-class _SchemaState implements SchemaState {
-  const _SchemaState({final  List<CollectionModel>? collections}): _collections = collections;
+class _RemoteSchemaState implements RemoteSchemaState {
+  const _RemoteSchemaState({final  List<CollectionModel>? collections}): _collections = collections;
   
 
  final  List<CollectionModel>? _collections;
@@ -90,17 +90,17 @@ class _SchemaState implements SchemaState {
 }
 
 
-/// Create a copy of SchemaState
+/// Create a copy of RemoteSchemaState
 /// with the given fields replaced by the non-null parameter values.
 @override @JsonKey(includeFromJson: false, includeToJson: false)
 @pragma('vm:prefer-inline')
-_$SchemaStateCopyWith<_SchemaState> get copyWith => __$SchemaStateCopyWithImpl<_SchemaState>(this, _$identity);
+_$RemoteSchemaStateCopyWith<_RemoteSchemaState> get copyWith => __$RemoteSchemaStateCopyWithImpl<_RemoteSchemaState>(this, _$identity);
 
 
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _SchemaState&&const DeepCollectionEquality().equals(other._collections, _collections));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _RemoteSchemaState&&const DeepCollectionEquality().equals(other._collections, _collections));
 }
 
 
@@ -109,15 +109,15 @@ int get hashCode => Object.hash(runtimeType,const DeepCollectionEquality().hash(
 
 @override
 String toString() {
-  return 'SchemaState(collections: $collections)';
+  return 'RemoteSchemaState(collections: $collections)';
 }
 
 
 }
 
 /// @nodoc
-abstract mixin class _$SchemaStateCopyWith<$Res> implements $SchemaStateCopyWith<$Res> {
-  factory _$SchemaStateCopyWith(_SchemaState value, $Res Function(_SchemaState) _then) = __$SchemaStateCopyWithImpl;
+abstract mixin class _$RemoteSchemaStateCopyWith<$Res> implements $RemoteSchemaStateCopyWith<$Res> {
+  factory _$RemoteSchemaStateCopyWith(_RemoteSchemaState value, $Res Function(_RemoteSchemaState) _then) = __$RemoteSchemaStateCopyWithImpl;
 @override @useResult
 $Res call({
  List<CollectionModel>? collections
@@ -128,17 +128,17 @@ $Res call({
 
 }
 /// @nodoc
-class __$SchemaStateCopyWithImpl<$Res>
-    implements _$SchemaStateCopyWith<$Res> {
-  __$SchemaStateCopyWithImpl(this._self, this._then);
+class __$RemoteSchemaStateCopyWithImpl<$Res>
+    implements _$RemoteSchemaStateCopyWith<$Res> {
+  __$RemoteSchemaStateCopyWithImpl(this._self, this._then);
 
-  final _SchemaState _self;
-  final $Res Function(_SchemaState) _then;
+  final _RemoteSchemaState _self;
+  final $Res Function(_RemoteSchemaState) _then;
 
-/// Create a copy of SchemaState
+/// Create a copy of RemoteSchemaState
 /// with the given fields replaced by the non-null parameter values.
 @override @pragma('vm:prefer-inline') $Res call({Object? collections = freezed,}) {
-  return _then(_SchemaState(
+  return _then(_RemoteSchemaState(
 collections: freezed == collections ? _self._collections : collections // ignore: cast_nullable_to_non_nullable
 as List<CollectionModel>?,
   ));
