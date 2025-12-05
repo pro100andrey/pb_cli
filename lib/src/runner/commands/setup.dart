@@ -1,3 +1,4 @@
+import 'package:args/command_runner.dart';
 import 'package:cli_async_redux/cli_async_redux.dart';
 import 'package:mason_logger/mason_logger.dart';
 
@@ -11,7 +12,7 @@ import '../../redux/work_dir/work_dir.dart';
 import '../../utils/strings.dart';
 import 'base_command.dart';
 
-class SetupCommand extends BaseCommand {
+class SetupCommand extends Command with WithStore {
   SetupCommand({required this.store}) {
     argParser.addOption(
       S.dirOptionName,

@@ -1,53 +1,31 @@
 import 'package:cli_utils/cli_utils.dart';
 
-typedef ReadEnvResult = ({
-  String? host,
-  String? usernameOrEmail,
-  String? password,
-  String? token,
-});
+import '../types/env.dart';
 
 final class EnvService {
   const EnvService._();
   static const String fileName = '.env';
 
+  /// Write environment variables to .env file.
+  /// Only writes non-null values.
   static void write({
     required FilePath outputFile,
-    String? host,
-    String? usernameOrEmail,
-    String? password,
-    String? token,
+    required EnvData variables,
   }) {
-    final data = <DotenvKey, String>{
-      DotenvKey.pbHost: ?host,
-      DotenvKey.pbUsername: ?usernameOrEmail,
-      DotenvKey.pbPassword: ?password,
-      DotenvKey.pbToken: ?token,
-    };
-
-    _write(data, outputFile);
+    _write(variables.data, outputFile);
   }
 
-  static ReadEnvResult read({required FilePath inputFile}) {
+  /// Read environment variables from .env file.
+  /// Returns empty map if file doesn't exist or is empty.
+  static EnvData read({required FilePath inputFile}) {
     if (inputFile.notFound) {
-      return (host: null, usernameOrEmail: null, password: null, token: null);
+      return const EnvData.empty();
     }
 
-    final envData = _read(file: inputFile);
-
-    if (envData.isEmpty) {
-      return (host: null, usernameOrEmail: null, password: null, token: null);
-    }
-
-    return (
-      host: envData[DotenvKey.pbHost],
-      usernameOrEmail: envData[DotenvKey.pbUsername],
-      password: envData[DotenvKey.pbPassword],
-      token: envData[DotenvKey.pbToken],
-    );
+    return EnvData.data(_read(file: inputFile));
   }
 
-  static void _write(Map<DotenvKey, String> data, FilePath file) {
+  static void _write(Map<EnvKey, String> data, FilePath file) {
     // 1. Read existing .env data with merge priority to new data
     final envData = _read(file: file)..addAll(data);
     // 2. Write back to .env file
@@ -58,8 +36,8 @@ final class EnvService {
     file.writeAsString(buffer.toString());
   }
 
-  static Map<DotenvKey, String> _read({required FilePath file}) {
-    final envData = <DotenvKey, String>{};
+  static Map<EnvKey, String> _read({required FilePath file}) {
+    final envData = <EnvKey, String>{};
 
     if (!file.notFound) {
       final lines = file.readAsLines();
@@ -73,44 +51,11 @@ final class EnvService {
         if (parts.length >= 2) {
           final key = parts[0].trim();
           final value = parts.sublist(1).join('=').trim();
-          envData[DotenvKey(key)] = value;
+          envData[EnvKey(key)] = value;
         }
       }
     }
 
     return envData;
   }
-}
-
-extension type const DotenvKey._(String value) implements String {
-  /// Creates a [DotenvKey] from a string value.
-  ///
-  /// Throws [ArgumentError] if the value is not a known key.
-  factory DotenvKey(String value) {
-    if (!_known.contains(value)) {
-      throw ArgumentError('Unknown DotenvKey: $value');
-    }
-
-    return DotenvKey._(value);
-  }
-
-  /// Host key for PocketBase instance.
-  static const pbHost = DotenvKey._('PB_HOST');
-
-  /// Username or email key for PocketBase authentication.
-  static const pbUsername = DotenvKey._('PB_USERNAME');
-
-  /// Password key for PocketBase authentication.
-  static const pbPassword = DotenvKey._('PB_PASSWORD');
-
-  /// Token key for PocketBase authentication.
-  static const pbToken = DotenvKey._('PB_TOKEN');
-
-  /// Set of all known [DotenvKey]s.
-  static const Set<DotenvKey> _known = {
-    pbHost,
-    pbUsername,
-    pbPassword,
-    pbToken,
-  };
 }

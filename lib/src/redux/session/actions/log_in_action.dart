@@ -2,6 +2,7 @@ import 'dart:async';
 
 import '../../../extensions/logger.dart';
 import '../../common/app_action.dart';
+import '../../types/session_token.dart';
 
 final class LogInAction extends AppAction {
   @override
@@ -28,6 +29,6 @@ final class LogInAction extends AppAction {
       },
     );
 
-    return state.copyWith.session(token: result.token);
+    return state.copyWith.session(token: SessionToken(result.token));
   }
 }

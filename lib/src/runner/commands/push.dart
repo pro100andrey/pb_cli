@@ -1,6 +1,6 @@
 import 'dart:convert';
-import 'dart:io' as io;
 
+import 'package:args/command_runner.dart';
 import 'package:cli_async_redux/cli_async_redux.dart';
 import 'package:cli_utils/cli_utils.dart';
 import 'package:mason_logger/mason_logger.dart';
@@ -11,11 +11,10 @@ import '../../failure/common.dart';
 import '../../failure/failure.dart';
 import '../../models/result.dart';
 import '../../redux/common/app_action.dart';
-
 import '../../utils/strings.dart';
 import 'base_command.dart';
 
-class PushCommand extends BaseCommand {
+class PushCommand extends Command with WithStore {
   PushCommand({required this.store}) {
     argParser
       ..addOption(
@@ -52,10 +51,10 @@ class PushCommand extends BaseCommand {
       return Failure.exIO;
     }
 
-    final dirArg = argResults![S.dirOptionName];
-    resolveDataDir(dirArg);
+    // final dirArg = argResults![S.dirOptionName];
+    // resolveDataDir(dirArg);
 
-    final pbClient = await resolvePBConnection();
+    // final pbClient = await resolvePBConnection();
 
     // final dirArg = argResults!['dir'] as String;
     // final dir = DirectoryPath(dirArg);
@@ -64,30 +63,30 @@ class PushCommand extends BaseCommand {
     // Import the schema
     // await _importPBSchema(config, pb);
 
-    var batchSize = int.tryParse(argResults!['batch-size'] as String) ?? 20;
-    if (batchSize <= 0 || batchSize > 50) {
-      logger.warn('Batch size must be between 1 and 50. Using default of 20.');
-      batchSize = 20;
-    }
+    // var batchSize = int.tryParse(argResults!['batch-size'] as String) ?? 20;
+    // if (batchSize <= 0 || batchSize > 50) {
+    //   logger.warn('Batch size must be between 1 and 50. Using default of 20.');
+    //   batchSize = 20;
+    // }
 
-    final truncateArg = argResults!['truncate'] as bool;
-    if (truncateArg) {
-      logger.detail(
-        'Truncate option enabled: Skipping confirmation prompt.',
-      );
-    }
-    final hasTerminal =
-        io.IOOverrides.current?.stdout.hasTerminal ?? io.stdout.hasTerminal;
+    // final truncateArg = argResults!['truncate'] as bool;
+    // if (truncateArg) {
+    //   logger.detail(
+    //     'Truncate option enabled: Skipping confirmation prompt.',
+    //   );
+    // }
+    // final hasTerminal =
+    //     io.IOOverrides.current?.stdout.hasTerminal ?? io.stdout.hasTerminal;
 
-    final truncate =
-        truncateArg ||
-        (hasTerminal && logger.confirm('Truncate collections before seeding?'));
+    // final truncate =
+    //     truncateArg ||
+    //     (hasTerminal && logger.confirm('Truncate collections before seeding?'));
 
-    await _seedCollections(
-      pb: pbClient,
-      batchSize: batchSize,
-      truncate: truncate,
-    );
+    // await _seedCollections(
+    //   pb: pbClient,
+    //   batchSize: batchSize,
+    //   truncate: truncate,
+    // );
 
     return ExitCode.success.code;
   }

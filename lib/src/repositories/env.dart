@@ -1,13 +1,13 @@
 import 'package:cli_utils/cli_utils.dart';
 
-import '../redux/models/enums/dotenv.dart';
+import '../redux/types/env.dart';
 
 abstract interface class EnvRepository {
   factory EnvRepository() => const _FileEnvRepository();
 
-  Dotenv read({required DirectoryPath dataDir});
+  EnvData read({required DirectoryPath dataDir});
 
-  void write({required Dotenv dotenv, required DirectoryPath dataDir});
+  void write({required EnvData dotenv, required DirectoryPath dataDir});
 }
 
 final class _FileEnvRepository implements EnvRepository {
@@ -18,21 +18,21 @@ final class _FileEnvRepository implements EnvRepository {
   FilePath _file(DirectoryPath dataDir) => dataDir.joinFile(file);
 
   @override
-  Dotenv read({required DirectoryPath dataDir}) {
+  EnvData read({required DirectoryPath dataDir}) {
     final file = _file(dataDir);
     final data = _readEnv(file);
 
-    return Dotenv.data(data);
+    return EnvData.data(data);
   }
 
   @override
-  void write({required Dotenv dotenv, required DirectoryPath dataDir}) {
+  void write({required EnvData dotenv, required DirectoryPath dataDir}) {
     final file = _file(dataDir);
     _writeEnv(dotenv.data, file);
   }
 }
 
-void _writeEnv(Map<DotenvKey, String> data, FilePath envFile) {
+void _writeEnv(Map<EnvKey, String> data, FilePath envFile) {
   // 1. Read existing .env data with merge priority to new data
   final envData = _readEnv(envFile)..addAll(data);
   // 2. Write back to .env file
@@ -43,8 +43,8 @@ void _writeEnv(Map<DotenvKey, String> data, FilePath envFile) {
   envFile.writeAsString(buffer.toString());
 }
 
-Map<DotenvKey, String> _readEnv(FilePath envFile) {
-  final envData = <DotenvKey, String>{};
+Map<EnvKey, String> _readEnv(FilePath envFile) {
+  final envData = <EnvKey, String>{};
 
   if (!envFile.notFound) {
     final lines = envFile.readAsLines();
@@ -58,7 +58,7 @@ Map<DotenvKey, String> _readEnv(FilePath envFile) {
       if (parts.length >= 2) {
         final key = parts[0].trim();
         final value = parts.sublist(1).join('=').trim();
-        envData[DotenvKey(key)] = value;
+        envData[EnvKey(key)] = value;
       }
     }
   }

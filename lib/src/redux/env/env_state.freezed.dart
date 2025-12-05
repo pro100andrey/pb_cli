@@ -14,7 +14,9 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$EnvState {
 
- String? get host; String? get usernameOrEmail; String? get password; String? get token;
+/// Raw key-value pairs from .env file.
+/// Empty map if .env file doesn't exist or is empty.
+ EnvData get data;
 /// Create a copy of EnvState
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -25,16 +27,16 @@ $EnvStateCopyWith<EnvState> get copyWith => _$EnvStateCopyWithImpl<EnvState>(thi
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is EnvState&&(identical(other.host, host) || other.host == host)&&(identical(other.usernameOrEmail, usernameOrEmail) || other.usernameOrEmail == usernameOrEmail)&&(identical(other.password, password) || other.password == password)&&(identical(other.token, token) || other.token == token));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is EnvState&&const DeepCollectionEquality().equals(other.data, data));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,host,usernameOrEmail,password,token);
+int get hashCode => Object.hash(runtimeType,const DeepCollectionEquality().hash(data));
 
 @override
 String toString() {
-  return 'EnvState(host: $host, usernameOrEmail: $usernameOrEmail, password: $password, token: $token)';
+  return 'EnvState(data: $data)';
 }
 
 
@@ -45,7 +47,7 @@ abstract mixin class $EnvStateCopyWith<$Res>  {
   factory $EnvStateCopyWith(EnvState value, $Res Function(EnvState) _then) = _$EnvStateCopyWithImpl;
 @useResult
 $Res call({
- String? host, String? usernameOrEmail, String? password, String? token
+ EnvData data
 });
 
 
@@ -62,13 +64,10 @@ class _$EnvStateCopyWithImpl<$Res>
 
 /// Create a copy of EnvState
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? host = freezed,Object? usernameOrEmail = freezed,Object? password = freezed,Object? token = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? data = null,}) {
   return _then(_self.copyWith(
-host: freezed == host ? _self.host : host // ignore: cast_nullable_to_non_nullable
-as String?,usernameOrEmail: freezed == usernameOrEmail ? _self.usernameOrEmail : usernameOrEmail // ignore: cast_nullable_to_non_nullable
-as String?,password: freezed == password ? _self.password : password // ignore: cast_nullable_to_non_nullable
-as String?,token: freezed == token ? _self.token : token // ignore: cast_nullable_to_non_nullable
-as String?,
+data: null == data ? _self.data : data // ignore: cast_nullable_to_non_nullable
+as EnvData,
   ));
 }
 
@@ -79,14 +78,13 @@ as String?,
 /// @nodoc
 
 
-class _EnvState implements EnvState {
-  const _EnvState({this.host, this.usernameOrEmail, this.password, this.token});
+class _EnvState extends EnvState {
+  const _EnvState({this.data = const EnvData.empty()}): super._();
   
 
-@override final  String? host;
-@override final  String? usernameOrEmail;
-@override final  String? password;
-@override final  String? token;
+/// Raw key-value pairs from .env file.
+/// Empty map if .env file doesn't exist or is empty.
+@override@JsonKey() final  EnvData data;
 
 /// Create a copy of EnvState
 /// with the given fields replaced by the non-null parameter values.
@@ -98,16 +96,16 @@ _$EnvStateCopyWith<_EnvState> get copyWith => __$EnvStateCopyWithImpl<_EnvState>
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _EnvState&&(identical(other.host, host) || other.host == host)&&(identical(other.usernameOrEmail, usernameOrEmail) || other.usernameOrEmail == usernameOrEmail)&&(identical(other.password, password) || other.password == password)&&(identical(other.token, token) || other.token == token));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _EnvState&&const DeepCollectionEquality().equals(other.data, data));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,host,usernameOrEmail,password,token);
+int get hashCode => Object.hash(runtimeType,const DeepCollectionEquality().hash(data));
 
 @override
 String toString() {
-  return 'EnvState(host: $host, usernameOrEmail: $usernameOrEmail, password: $password, token: $token)';
+  return 'EnvState(data: $data)';
 }
 
 
@@ -118,7 +116,7 @@ abstract mixin class _$EnvStateCopyWith<$Res> implements $EnvStateCopyWith<$Res>
   factory _$EnvStateCopyWith(_EnvState value, $Res Function(_EnvState) _then) = __$EnvStateCopyWithImpl;
 @override @useResult
 $Res call({
- String? host, String? usernameOrEmail, String? password, String? token
+ EnvData data
 });
 
 
@@ -135,13 +133,10 @@ class __$EnvStateCopyWithImpl<$Res>
 
 /// Create a copy of EnvState
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? host = freezed,Object? usernameOrEmail = freezed,Object? password = freezed,Object? token = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? data = null,}) {
   return _then(_EnvState(
-host: freezed == host ? _self.host : host // ignore: cast_nullable_to_non_nullable
-as String?,usernameOrEmail: freezed == usernameOrEmail ? _self.usernameOrEmail : usernameOrEmail // ignore: cast_nullable_to_non_nullable
-as String?,password: freezed == password ? _self.password : password // ignore: cast_nullable_to_non_nullable
-as String?,token: freezed == token ? _self.token : token // ignore: cast_nullable_to_non_nullable
-as String?,
+data: null == data ? _self.data : data // ignore: cast_nullable_to_non_nullable
+as EnvData,
   ));
 }
 

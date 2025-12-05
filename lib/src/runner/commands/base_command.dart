@@ -1,12 +1,7 @@
-import 'package:args/command_runner.dart';
 import 'package:cli_async_redux/cli_async_redux.dart';
 import 'package:mason_logger/mason_logger.dart';
 
-import '../../client/pb_client.dart';
-import '../../inputs/factory.dart';
-import '../../models/credentials.dart';
-import '../../redux/common/app_action.dart';
-import '../../redux/common/selectors.dart';
+import '../../redux/common.dart';
 
 mixin WithStore {
   Logger get logger => store.prop();
@@ -24,32 +19,4 @@ mixin WithStore {
 
   List<ReduxAction<AppState>> Function(List<ReduxAction<AppState>> actions)
   get dispatchAll => store.dispatchAll;
-}
-
-abstract class BaseCommand extends Command with WithStore {
-  void resolveDataDir(String dir) {}
-
-  Future<PbClient> resolvePBConnection() async {
-    final inputs = InputsFactory(logger);
-
-    final credentials = resolveCredentials(
-      input: inputs.createCredentialsInput(),
-    );
-
-    final pbResult = await resolvePbClient(
-      host: credentials.host,
-      usernameOrEmail: credentials.usernameOrEmail,
-      password: credentials.password,
-      token: credentials.token,
-      logger: logger,
-    );
-
-    store
-      ..setProp(pbResult.value)
-      ..setProp(credentials);
-
-    final pbClient = pbResult.value;
-
-    return pbClient;
-  }
 }

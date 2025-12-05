@@ -14,7 +14,11 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$SessionState {
 
- String? get host; String? get usernameOrEmail; String? get password; String? get token;
+/// PocketBase instance host URL.
+ String? get host;/// Username or email for authentication.
+ String? get usernameOrEmail;/// Password for authentication.
+ String? get password;/// JWT authentication token.
+ SessionToken? get token;
 /// Create a copy of SessionState
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -45,7 +49,7 @@ abstract mixin class $SessionStateCopyWith<$Res>  {
   factory $SessionStateCopyWith(SessionState value, $Res Function(SessionState) _then) = _$SessionStateCopyWithImpl;
 @useResult
 $Res call({
- String? host, String? usernameOrEmail, String? password, String? token
+ String? host, String? usernameOrEmail, String? password, SessionToken? token
 });
 
 
@@ -68,7 +72,7 @@ host: freezed == host ? _self.host : host // ignore: cast_nullable_to_non_nullab
 as String?,usernameOrEmail: freezed == usernameOrEmail ? _self.usernameOrEmail : usernameOrEmail // ignore: cast_nullable_to_non_nullable
 as String?,password: freezed == password ? _self.password : password // ignore: cast_nullable_to_non_nullable
 as String?,token: freezed == token ? _self.token : token // ignore: cast_nullable_to_non_nullable
-as String?,
+as SessionToken?,
   ));
 }
 
@@ -83,10 +87,14 @@ class _SessionState implements SessionState {
   const _SessionState({this.host, this.usernameOrEmail, this.password, this.token});
   
 
+/// PocketBase instance host URL.
 @override final  String? host;
+/// Username or email for authentication.
 @override final  String? usernameOrEmail;
+/// Password for authentication.
 @override final  String? password;
-@override final  String? token;
+/// JWT authentication token.
+@override final  SessionToken? token;
 
 /// Create a copy of SessionState
 /// with the given fields replaced by the non-null parameter values.
@@ -118,7 +126,7 @@ abstract mixin class _$SessionStateCopyWith<$Res> implements $SessionStateCopyWi
   factory _$SessionStateCopyWith(_SessionState value, $Res Function(_SessionState) _then) = __$SessionStateCopyWithImpl;
 @override @useResult
 $Res call({
- String? host, String? usernameOrEmail, String? password, String? token
+ String? host, String? usernameOrEmail, String? password, SessionToken? token
 });
 
 
@@ -141,7 +149,7 @@ host: freezed == host ? _self.host : host // ignore: cast_nullable_to_non_nullab
 as String?,usernameOrEmail: freezed == usernameOrEmail ? _self.usernameOrEmail : usernameOrEmail // ignore: cast_nullable_to_non_nullable
 as String?,password: freezed == password ? _self.password : password // ignore: cast_nullable_to_non_nullable
 as String?,token: freezed == token ? _self.token : token // ignore: cast_nullable_to_non_nullable
-as String?,
+as SessionToken?,
   ));
 }
 

@@ -20,6 +20,7 @@ dependencies:
   json_annotation: ^4.9.0
   mason_logger: ^0.3.3
 
+  meta: ^1.17.0
   pocketbase: ^0.23.0
   stack_trace: ^1.12.1
 
