@@ -1,8 +1,8 @@
 import 'package:cli_async_redux/cli_async_redux.dart';
+import 'package:cli_utils/cli_utils.dart';
 import 'package:mason_logger/mason_logger.dart';
 import 'package:stack_trace/stack_trace.dart';
 
-import '../../extensions/string_style.dart';
 import '../app_state.dart';
 
 /// Logs errors to the console.

@@ -1,5 +1,5 @@
 
-import 'package:cli_utils/cli_utils.dart';
+import 'string_style.dart';
 
 /// Extension methods for common string operations in CLI context.
 extension StringCliExtensions on String {
@@ -132,10 +132,7 @@ extension StringCliExtensions on String {
   /// // │ Hello │
   /// // └───────┘
   /// ```
-  String box({
-    int padding = 1,
-    BoxBorderStyle style = .unicode,
-  }) {
+  String box({int padding = 1, BoxBorderStyle style = .unicode}) {
     final lines = split('\n');
     final maxLength = lines
         .map((l) => l.plain.length)
