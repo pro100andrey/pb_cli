@@ -3,10 +3,6 @@ import '../../common/app_action.dart';
 final class EnsureWorkDirExistsAction extends AppAction {
   @override
   AppState? reduce() {
-    if (!select.shouldCreateWorkDir) {
-      return null;
-    }
-
     final workDirPath = select.workDirPath!;
     if (workDirPath.notFound) {
       workDirPath.create(recursive: true);
@@ -14,6 +10,11 @@ final class EnsureWorkDirExistsAction extends AppAction {
 
       return state.copyWith.workDir(path: workDirPath.sync);
     }
+
+    logger.detail(
+      'Working directory already exists at ${workDirPath.path}, '
+      'no action taken.',
+    );
 
     return null;
   }

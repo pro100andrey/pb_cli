@@ -23,12 +23,6 @@ class GuardsWrapReduce extends WrapReduce<AppState> {
   /// Throws [PathNotFoundException] or [PathIsNotADirectoryException]
   /// if the new work directory is invalid.
   void _applyWorkDirGuard(Selectors preSel, Selectors curSel) {
-    // If the current state allows creating the work directory,
-    // no need to validate its existence.
-    if (curSel.shouldCreateWorkDir) {
-      return;
-    }
-
     final oldWorkDir = preSel.workDirPath;
     final newWorkDir = curSel.workDirPath;
 

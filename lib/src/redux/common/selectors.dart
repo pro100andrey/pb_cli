@@ -29,10 +29,6 @@ extension type Selectors(AppState state) {
   /// Returns `null` if not yet resolved.
   DirectoryPath? get workDirPath => state.workDir.path;
 
-  /// Whether to automatically create the working directory if it doesn't exist.
-  bool get shouldCreateWorkDir =>
-      state.workDir.resolveOption == .createIfNotExists;
-
   // Config selectors
 
   /// List of collection names that are managed by the CLI.

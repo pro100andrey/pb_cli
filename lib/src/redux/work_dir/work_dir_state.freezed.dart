@@ -14,7 +14,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$WorkDirState {
 
- DirectoryPath? get path; ResolveWorkDirOption? get resolveOption;
+ DirectoryPath? get path;
 /// Create a copy of WorkDirState
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -25,16 +25,16 @@ $WorkDirStateCopyWith<WorkDirState> get copyWith => _$WorkDirStateCopyWithImpl<W
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is WorkDirState&&(identical(other.path, path) || other.path == path)&&(identical(other.resolveOption, resolveOption) || other.resolveOption == resolveOption));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is WorkDirState&&(identical(other.path, path) || other.path == path));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,path,resolveOption);
+int get hashCode => Object.hash(runtimeType,path);
 
 @override
 String toString() {
-  return 'WorkDirState(path: $path, resolveOption: $resolveOption)';
+  return 'WorkDirState(path: $path)';
 }
 
 
@@ -45,7 +45,7 @@ abstract mixin class $WorkDirStateCopyWith<$Res>  {
   factory $WorkDirStateCopyWith(WorkDirState value, $Res Function(WorkDirState) _then) = _$WorkDirStateCopyWithImpl;
 @useResult
 $Res call({
- DirectoryPath? path, ResolveWorkDirOption? resolveOption
+ DirectoryPath? path
 });
 
 
@@ -62,11 +62,10 @@ class _$WorkDirStateCopyWithImpl<$Res>
 
 /// Create a copy of WorkDirState
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? path = freezed,Object? resolveOption = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? path = freezed,}) {
   return _then(_self.copyWith(
 path: freezed == path ? _self.path : path // ignore: cast_nullable_to_non_nullable
-as DirectoryPath?,resolveOption: freezed == resolveOption ? _self.resolveOption : resolveOption // ignore: cast_nullable_to_non_nullable
-as ResolveWorkDirOption?,
+as DirectoryPath?,
   ));
 }
 
@@ -78,11 +77,10 @@ as ResolveWorkDirOption?,
 
 
 class _WorkDirState implements WorkDirState {
-  const _WorkDirState({this.path, this.resolveOption});
+  const _WorkDirState({this.path});
   
 
 @override final  DirectoryPath? path;
-@override final  ResolveWorkDirOption? resolveOption;
 
 /// Create a copy of WorkDirState
 /// with the given fields replaced by the non-null parameter values.
@@ -94,16 +92,16 @@ _$WorkDirStateCopyWith<_WorkDirState> get copyWith => __$WorkDirStateCopyWithImp
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _WorkDirState&&(identical(other.path, path) || other.path == path)&&(identical(other.resolveOption, resolveOption) || other.resolveOption == resolveOption));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _WorkDirState&&(identical(other.path, path) || other.path == path));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,path,resolveOption);
+int get hashCode => Object.hash(runtimeType,path);
 
 @override
 String toString() {
-  return 'WorkDirState(path: $path, resolveOption: $resolveOption)';
+  return 'WorkDirState(path: $path)';
 }
 
 
@@ -114,7 +112,7 @@ abstract mixin class _$WorkDirStateCopyWith<$Res> implements $WorkDirStateCopyWi
   factory _$WorkDirStateCopyWith(_WorkDirState value, $Res Function(_WorkDirState) _then) = __$WorkDirStateCopyWithImpl;
 @override @useResult
 $Res call({
- DirectoryPath? path, ResolveWorkDirOption? resolveOption
+ DirectoryPath? path
 });
 
 
@@ -131,11 +129,10 @@ class __$WorkDirStateCopyWithImpl<$Res>
 
 /// Create a copy of WorkDirState
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? path = freezed,Object? resolveOption = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? path = freezed,}) {
   return _then(_WorkDirState(
 path: freezed == path ? _self.path : path // ignore: cast_nullable_to_non_nullable
-as DirectoryPath?,resolveOption: freezed == resolveOption ? _self.resolveOption : resolveOption // ignore: cast_nullable_to_non_nullable
-as ResolveWorkDirOption?,
+as DirectoryPath?,
   ));
 }
 

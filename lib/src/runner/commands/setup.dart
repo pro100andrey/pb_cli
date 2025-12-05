@@ -51,12 +51,7 @@ class SetupCommand extends Command with WithStore {
     logger.info('Starting setup command...');
 
     // 1. Resolve working directory
-    dispatchSync(
-      ResolveWorkDirAction(
-        path: argResults![S.dirOptionName],
-        withUserPrompt: true,
-      ),
-    );
+    dispatchSync(ResolveWorkDirAction(path: argResults![S.dirOptionName]));
 
     // 2. Load existing config and env files
     dispatchSync(LoadConfigAction());
