@@ -152,24 +152,19 @@ class PushCommand extends Command with WithStore {
       final shouldProcess = truncate || (emptyMap[entry.value] ?? false);
 
       if (!shouldProcess) {
-        logger.info(
-          'Skipping seeding for ${entry.value} as it is not empty.',
-        );
+        logger.info('Skipping seeding for ${entry.value} as it is not empty.');
         continue;
       }
 
       if (truncate) {
         final truncateResult = await pb.truncateCollection(collectionName);
 
-        final shouldContinue = truncateResult.fold(
-          (v) => true,
-          (error) {
-            logger.err(
-              'Failed to truncate $collectionName: $error. Seeding aborted.',
-            );
-            return false;
-          },
-        );
+        final shouldContinue = truncateResult.fold((v) => true, (error) {
+          logger.err(
+            'Failed to truncate $collectionName: $error. Seeding aborted.',
+          );
+          return false;
+        });
 
         if (!shouldContinue) {
           continue;

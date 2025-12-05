@@ -5,7 +5,6 @@ part 'schema_state.freezed.dart';
 
 @freezed
 abstract class SchemaState with _$SchemaState {
-  const factory SchemaState({
-    List<CollectionModel>? collections,
-  }) = _SchemaState;
+  const factory SchemaState({List<CollectionModel>? collections}) =
+      _SchemaState;
 }

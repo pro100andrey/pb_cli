@@ -8,7 +8,7 @@ final class ValidateCredentialsAction extends AppAction {
     if (select.host == null || select.host!.isEmpty) {
       missingFields.add('host');
     }
-    
+
     if (select.usernameOrEmail == null || select.usernameOrEmail!.isEmpty) {
       missingFields.add('username/email');
     }

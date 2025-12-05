@@ -1,13 +1,16 @@
 import 'package:meta/meta.dart';
 
-/// Keys used in .env files for PocketBase credentials.
+/// Environment variable keys used in .env files for PocketBase credentials.
+///
+/// Provides compile-time safety by restricting the set of valid keys
+/// to predefined constants.
 extension type const EnvKey._(String value) implements String {
-  /// Creates a [EnvKey] from a string value.
+  /// Creates an [EnvKey] from a string value.
   ///
   /// Throws [ArgumentError] if the value is not a known key.
   factory EnvKey(String value) {
     if (!_known.contains(value)) {
-      throw ArgumentError('Unknown DotenvKey: $value');
+      throw ArgumentError('Unknown EnvKey: $value');
     }
 
     return EnvKey._(value);
@@ -26,18 +29,17 @@ extension type const EnvKey._(String value) implements String {
   static const pbToken = EnvKey._('PB_TOKEN');
 
   /// Set of all known [EnvKey]s.
-  static const Set<EnvKey> _known = {
-    pbHost,
-    pbUsername,
-    pbPassword,
-    pbToken,
-  };
+  static const Set<EnvKey> _known = {pbHost, pbUsername, pbPassword, pbToken};
 }
 
-/// Env data structure representing .env key-value pairs.
+/// Environment data structure representing .env file key-value pairs.
+///
+/// Provides type-safe access to environment variables with convenient getters.
 extension type EnvData._(Map<EnvKey, String> data) implements Map {
+  /// Creates an empty [EnvData] instance.
   const EnvData.empty() : data = const {};
 
+  /// Creates an [EnvData] instance from a map of key-value pairs.
   factory EnvData.data(Map<EnvKey, String> data) => EnvData._(data);
 
   /// Returns the value for the [EnvKey.pbHost] key.
@@ -62,6 +64,7 @@ extension type EnvData._(Map<EnvKey, String> data) implements Map {
     data[key] = value;
   }
 
+  /// Checks if all required credentials are present in the environment data.
   bool get hasData =>
       host != null &&
       usernameOrEmail != null &&

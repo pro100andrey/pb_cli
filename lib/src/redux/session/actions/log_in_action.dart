@@ -23,10 +23,7 @@ final class LogInAction extends AppAction {
     logger.sectionMapped(
       level: .verbose,
       title: 'Session',
-      items: {
-        'Record id': result.record.id,
-        'Token': result.token,
-      },
+      items: {'Record id': result.record.id, 'Token': result.token},
     );
 
     return state.copyWith.session(token: SessionToken(result.token));

@@ -1,7 +1,22 @@
 import '../../common/app_action.dart';
+import '../../env/actions/load_env_action.dart';
+import '../../env/env_state.dart';
+import '../../session/session_state.dart';
 import '../../types/session_token.dart';
 
-class PopulateSessionFromEnvAction extends AppAction {
+/// Populates [SessionState] with credentials from [EnvState].
+///
+/// Takes values from the loaded .env file and merges them with
+/// existing session values. Existing session values take precedence
+/// over env values (env values are used as fallback).
+///
+/// This allows for:
+/// - Loading defaults from .env
+/// - Overriding specific values via user input
+/// - Mix of both sources
+///
+/// Should be called after [LoadEnvAction].
+final class PopulateSessionFromEnvAction extends AppAction {
   @override
   AppState reduce() {
     final envData = state.env.data;

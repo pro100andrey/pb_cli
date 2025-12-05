@@ -7,10 +7,9 @@ final class LoadConfigAction extends AppAction {
   AppState reduce() {
     final file = select.workDirPath!.joinFile(ConfigService.fileName);
 
-    final (
-      :managedCollections,
-      :credentialsSource,
-    ) = ConfigService.read(inputFile: file);
+    final (:managedCollections, :credentialsSource) = ConfigService.read(
+      inputFile: file,
+    );
 
     logger.sectionMapped(
       level: .verbose,

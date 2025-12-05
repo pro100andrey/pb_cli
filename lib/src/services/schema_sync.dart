@@ -4,9 +4,7 @@ import 'package:mason_logger/mason_logger.dart';
 import 'package:pocketbase/pocketbase.dart';
 
 class SchemaSyncService {
-  const SchemaSyncService({
-    required Logger logger,
-  }) : _logger = logger;
+  const SchemaSyncService({required Logger logger}) : _logger = logger;
 
   final Logger _logger;
 

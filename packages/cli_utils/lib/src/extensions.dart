@@ -1,4 +1,3 @@
-
 import 'string_style.dart';
 
 /// Extension methods for common string operations in CLI context.

@@ -1,8 +1,20 @@
 import '../../../extensions/logger.dart';
 import '../../common/app_action.dart';
+import '../../env/env_state.dart';
 import '../../services/env_service.dart';
+import '../../session/session_state.dart';
 import '../../types/env.dart';
 
+/// Saves current session credentials to .env file.
+///
+/// Takes values from [SessionState] (host, username, password, token)
+/// and writes them to the .env file in the working directory.
+/// Only non-null values are written.
+///
+/// This updates both the file on disk and the [EnvState] to reflect
+/// the saved values.
+///
+/// Typically called during setup or after credential changes.
 final class SaveEnvAction extends AppAction {
   @override
   AppState reduce() {
@@ -15,10 +27,7 @@ final class SaveEnvAction extends AppAction {
 
     final file = select.workDirPath!.joinFile(EnvService.fileName);
 
-    EnvService.write(
-      outputFile: file,
-      variables: data,
-    );
+    EnvService.write(outputFile: file, variables: data);
 
     logger.sectionMapped(
       level: .verbose,

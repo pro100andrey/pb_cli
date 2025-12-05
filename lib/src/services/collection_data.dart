@@ -7,9 +7,7 @@ import '../failure/failure.dart';
 import '../models/result.dart';
 
 class CollectionDataService {
-  const CollectionDataService({
-    required Logger logger,
-  }) : _logger = logger;
+  const CollectionDataService({required Logger logger}) : _logger = logger;
 
   final Logger _logger;
 

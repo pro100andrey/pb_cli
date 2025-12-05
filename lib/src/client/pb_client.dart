@@ -9,9 +9,7 @@ import '../utils/strings.dart';
 /// A wrapper around the [PocketBase] client providing simplified error handling
 /// and CLI-specific functionality.
 final class PbClient {
-  const PbClient._({
-    required PocketBase pb,
-  }) : _pb = pb;
+  const PbClient._({required PocketBase pb}) : _pb = pb;
 
   final PocketBase _pb;
 
@@ -55,10 +53,8 @@ final class PbClient {
     List<CollectionModel> collections, {
     bool deleteMissing = false,
   }) async => _op(
-    () async => _pb.collections.import(
-      collections,
-      deleteMissing: deleteMissing,
-    ),
+    () async =>
+        _pb.collections.import(collections, deleteMissing: deleteMissing),
   );
 
   Uri fileUri({required RecordModel record, required String fileName}) {
@@ -70,9 +66,8 @@ final class PbClient {
   /// Deletes all records in a specific collection.
   ///
   /// - [collectionName]: The name of the collection to truncate.
-  CliFuture<void> truncateCollection(
-    String collectionName,
-  ) async => _op(() async => _pb.collections.truncate(collectionName));
+  CliFuture<void> truncateCollection(String collectionName) async =>
+      _op(() async => _pb.collections.truncate(collectionName));
 
   /// Checks if a collection is empty.
   ///
@@ -80,15 +75,14 @@ final class PbClient {
   ///
   /// Returns a [CliFuture] that completes with `true` if the collection has no
   /// records, and `false` otherwise.
-  CliFuture<bool> collectionIsEmpty(
-    String collectionName,
-  ) async => _op(() async {
-    final existingItems = await _pb
-        .collection(collectionName)
-        .getList(perPage: 1, skipTotal: true);
+  CliFuture<bool> collectionIsEmpty(String collectionName) async =>
+      _op(() async {
+        final existingItems = await _pb
+            .collection(collectionName)
+            .getList(perPage: 1, skipTotal: true);
 
-    return existingItems.items.isEmpty;
-  });
+        return existingItems.items.isEmpty;
+      });
 
   CliFuture<ResultList<RecordModel>> getCollectionRecordsBatch(
     String collectionName,
@@ -176,9 +170,7 @@ CliFuture<PbClient> resolvePbClient({
     return pbClient.asResult();
   }
 
-  final loginProgress = logger.progress(
-    'Connecting to PocketBase at $host...',
-  );
+  final loginProgress = logger.progress('Connecting to PocketBase at $host...');
 
   // If no valid token is available, log in as superuser
   final authResult = await pbClient._logInAsSuperuser(

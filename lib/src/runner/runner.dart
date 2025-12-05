@@ -19,9 +19,7 @@ Future<int> run(List<String> args) async {
     // Initialize the Redux store
     final store = Store<AppState>(
       initialState: AppState.initial(),
-      actionObservers: [
-        AppActionLogger(logger: logger),
-      ],
+      actionObservers: [AppActionLogger(logger: logger)],
       errorObserver: AppErrorObserver(logger: logger),
       globalWrapError: AppGlobalWrapError(),
       wrapReduce: GuardsWrapReduce(),

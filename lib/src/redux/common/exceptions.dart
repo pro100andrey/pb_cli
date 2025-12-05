@@ -1,5 +1,9 @@
 import 'package:cli_async_redux/cli_async_redux.dart';
 
+/// Exception thrown when a path exists but is not a directory.
+///
+/// Used by guards to validate that working directory paths
+/// point to actual directories.
 final class PathIsNotADirectoryException extends ReduxException {
   PathIsNotADirectoryException(String path)
     : super.io(
@@ -9,6 +13,10 @@ final class PathIsNotADirectoryException extends ReduxException {
       );
 }
 
+/// Exception thrown when a required path does not exist.
+///
+/// Used by guards to validate that required paths exist
+/// before performing operations on them.
 final class PathNotFoundException extends ReduxException {
   PathNotFoundException(String path)
     : super.io(
@@ -18,10 +26,17 @@ final class PathNotFoundException extends ReduxException {
       );
 }
 
+/// Exception thrown when credential validation fails.
+///
+/// Used when required credentials (host, username, password) are missing
+/// or invalid during authentication setup.
 final class ValidationException extends ReduxException {
   ValidationException(String message) : super.config(message: message);
 }
 
+/// Exception thrown when connection to PocketBase server fails.
+///
+/// Used when unable to reach the PocketBase instance at the specified host.
 final class ConnectionException extends ReduxException {
   ConnectionException(String message) : super.noHost(message: message);
 }

@@ -2,12 +2,25 @@ import 'package:cli_utils/cli_utils.dart';
 
 import '../types/env.dart';
 
+/// Service for reading and writing .env files containing
+/// PocketBase credentials.
+///
+/// Handles:
+/// - Reading environment variables from .env file
+/// - Writing environment variables to .env file
+/// - Merging new values with existing file content
+/// - Skipping empty lines and comments
 final class EnvService {
   const EnvService._();
+
+  /// The standard .env file name.
   static const String fileName = '.env';
 
-  /// Write environment variables to .env file.
-  /// Only writes non-null values.
+  /// Writes environment variables to .env file.
+  ///
+  /// Merges [variables] with existing file content, preserving
+  /// other environment variables that may exist in the file.
+  /// New values override existing ones with the same key.
   static void write({
     required FilePath outputFile,
     required EnvData variables,
@@ -15,8 +28,10 @@ final class EnvService {
     _write(variables.data, outputFile);
   }
 
-  /// Read environment variables from .env file.
-  /// Returns empty map if file doesn't exist or is empty.
+  /// Reads environment variables from .env file.
+  ///
+  /// Returns [EnvData.empty()] if the file doesn't exist or is empty.
+  /// Skips empty lines and comments (lines starting with #).
   static EnvData read({required FilePath inputFile}) {
     if (inputFile.notFound) {
       return const EnvData.empty();
@@ -25,6 +40,7 @@ final class EnvService {
     return EnvData.data(_read(file: inputFile));
   }
 
+  /// Writes environment data to file, merging with existing content.
   static void _write(Map<EnvKey, String> data, FilePath file) {
     // 1. Read existing .env data with merge priority to new data
     final envData = _read(file: file)..addAll(data);
@@ -36,6 +52,10 @@ final class EnvService {
     file.writeAsString(buffer.toString());
   }
 
+  /// Parses .env file and returns key-value pairs.
+  ///
+  /// Skips empty lines and comments (lines starting with #).
+  /// Only recognizes known [EnvKey] values.
   static Map<EnvKey, String> _read({required FilePath file}) {
     final envData = <EnvKey, String>{};
 

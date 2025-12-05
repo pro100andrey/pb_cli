@@ -36,9 +36,7 @@ class FilesDownloaderService {
 
       return Result.success(file.path);
     } on Exception catch (e) {
-      return Result.failure(
-        Failure.io(message: 'Failed to download file: $e'),
-      );
+      return Result.failure(Failure.io(message: 'Failed to download file: $e'));
     }
   }
 
@@ -60,10 +58,7 @@ class FilesDownloaderService {
         continue;
       }
 
-      final downloadUrl = pbClient.fileUri(
-        record: record,
-        fileName: fileName,
-      );
+      final downloadUrl = pbClient.fileUri(record: record, fileName: fileName);
 
       final filePath = baseDir
           .join('storage/$collectionId/${record.id}')
@@ -80,9 +75,7 @@ class FilesDownloaderService {
       }
     }
 
-    downloadProgress.complete(
-      'Downloaded files for field ${field.name}',
-    );
+    downloadProgress.complete('Downloaded files for field ${field.name}');
   }
 
   /// Downloads files for a single field that can contain multiple files
@@ -149,9 +142,8 @@ class FilesDownloaderService {
     }
 
     final recordsWithFiles = records.where(
-      (record) => fields.any(
-        (field) => record.getStringValue(field.name).isNotEmpty,
-      ),
+      (record) =>
+          fields.any((field) => record.getStringValue(field.name).isNotEmpty),
     );
 
     if (recordsWithFiles.isEmpty) {

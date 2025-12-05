@@ -1,6 +1,15 @@
 import 'dart:convert';
 
+/// JWT authentication token for PocketBase sessions.
+///
+/// Provides convenient methods to:
+/// - Parse token payload
+/// - Check token validity
+/// - Extract expiration date
 extension type const SessionToken(String value) implements String {
+  /// Decodes and returns the JWT token payload.
+  ///
+  /// Throws [FormatException] if the token format is invalid or decoding fails.
   Map<String, dynamic> get payload {
     try {
       final parts = value.split('.');
@@ -19,6 +28,9 @@ extension type const SessionToken(String value) implements String {
     }
   }
 
+  /// Checks if the token is currently valid (not expired).
+  ///
+  /// Returns `false` if the token is expired or cannot be decoded.
   bool get isValid {
     try {
       final expiryDate = this.expiryDate;
@@ -28,6 +40,9 @@ extension type const SessionToken(String value) implements String {
     }
   }
 
+  /// Returns the token expiration date.
+  ///
+  /// Throws [FormatException] if the token payload cannot be decoded.
   DateTime get expiryDate {
     final payload = this.payload;
     final exp = payload['exp'] is int

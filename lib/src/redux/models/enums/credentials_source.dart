@@ -33,7 +33,6 @@ enum CredentialsSource {
     }
   }
 
-
   /// Creates a [CredentialsSource] instance from its key identifier
   ///
   /// Throws [ArgumentError] if no source with the given key is found
@@ -45,9 +44,8 @@ enum CredentialsSource {
   static CredentialsSource fromKey(String key) =>
       CredentialsSource.values.firstWhere(
         (e) => e.key == key,
-        orElse: () => throw ArgumentError(
-          'No CredentialsSource found for key: $key',
-        ),
+        orElse: () =>
+            throw ArgumentError('No CredentialsSource found for key: $key'),
       );
 
   /// Creates a [CredentialsSource] instance from its title
@@ -61,8 +59,7 @@ enum CredentialsSource {
   static CredentialsSource fromTitle(String title) =>
       CredentialsSource.values.firstWhere(
         (e) => e.title == title,
-        orElse: () => throw ArgumentError(
-          'No CredentialsSource found for title: $title',
-        ),
+        orElse: () =>
+            throw ArgumentError('No CredentialsSource found for title: $title'),
       );
 }

@@ -56,9 +56,5 @@ abstract class GlobalWrapError<St> {
   ///
   /// This is called for every error thrown by any action.
   /// You can use this to transform errors or add extra information.
-  Object? wrap(
-    Object error,
-    StackTrace stackTrace,
-    ReduxAction<St> action,
-  );
+  Object? wrap(Object error, StackTrace stackTrace, ReduxAction<St> action);
 }

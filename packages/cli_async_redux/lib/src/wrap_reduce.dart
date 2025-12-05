@@ -30,7 +30,7 @@ abstract class WrapReduce<St> {
   St process({required St oldState, required St newState});
 
   /// Wraps the given [reduce] function.
-  /// 
+  ///
   /// The [store] is provided for context.
   /// Returns a new reducer function that includes the wrapping logic.
   Reducer<St> wrapReduce(Reducer<St> reduce, Store<St> store) {

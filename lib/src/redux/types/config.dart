@@ -25,8 +25,5 @@ extension type const ConfigKey._(String value) implements String {
   static const credentialsSource = ConfigKey._('credentialsSource');
 
   /// Set of all known configuration keys.
-  static const Set<ConfigKey> _known = {
-    managedCollections,
-    credentialsSource,
-  };
+  static const Set<ConfigKey> _known = {managedCollections, credentialsSource};
 }
