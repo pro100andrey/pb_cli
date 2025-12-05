@@ -13,6 +13,20 @@ final class PathIsNotADirectoryException extends ReduxException {
       );
 }
 
+/// Exception thrown when a directory cannot be created.
+///
+/// Used by guards to validate that directories can be created
+/// if they don't exist (e.g., parent directory exists and is writable).
+final class PathCannotBeCreatedException extends ReduxException {
+  PathCannotBeCreatedException(String path)
+    : super.io(
+        message:
+            'Cannot create directory at $path. '
+            'Please ensure the parent directory exists '
+            'and you have write permissions.',
+      );
+}
+
 /// Exception thrown when a required path does not exist.
 ///
 /// Used by guards to validate that required paths exist

@@ -137,6 +137,28 @@ extension type DirectoryPath._(PathCache _cache) implements FileEntityPath {
     return result;
   }
 
+  /// Checks if the directory can be created.
+  ///
+  /// Returns true if:
+  /// - The path doesn't exist and the parent directory exists
+  ///   and is writable
+  /// - The path doesn't exist and is a relative path
+  ///   (assumes current dir is writable)
+  bool get canBeCreated {
+    if (!notFound) {
+      // Path already exists - check if it's not a file
+      return !isFile;
+    }
+
+    // Path doesn't exist - check if parent directory exists
+    final parentPath = p.dirname(canonicalized);
+    final parentDir = Directory(parentPath);
+
+    // Parent must exist and be a directory
+    return parentDir.existsSync() &&
+        FileSystemEntity.typeSync(parentPath) == FileSystemEntityType.directory;
+  }
+
   /// Creates the directory in the file system.
   ///
   /// If [recursive] is true, creates all necessary parent directories.

@@ -14,25 +14,26 @@ class GuardsWrapReduce extends WrapReduce<AppState> {
     final preSel = Selectors(oldState);
     final curSel = Selectors(newState);
 
-    _applyWorkDirGuard(preSel, curSel);
+    _workDirExistGuard(preSel, curSel);
 
     return newState;
   }
 
-  /// Guard for work directory changes.
-  /// Throws [PathNotFoundException] or [PathIsNotADirectoryException]
-  /// if the new work directory is invalid.
-  void _applyWorkDirGuard(Selectors preSel, Selectors curSel) {
+  void _workDirExistGuard(Selectors preSel, Selectors curSel) {
     final oldWorkDir = preSel.workDirPath;
     final newWorkDir = curSel.workDirPath;
 
     if (oldWorkDir == null && newWorkDir != null) {
-      if (newWorkDir case DirectoryPath(notFound: true)) {
-        throw PathNotFoundException(newWorkDir.canonicalized);
+      // If path exists but is not a directory (e.g., it's a file)
+      if (newWorkDir case DirectoryPath(isDirectory: false, notFound: false)) {
+        throw PathIsNotADirectoryException(newWorkDir.canonicalized);
       }
 
-      if (newWorkDir case DirectoryPath(isDirectory: false)) {
-        throw PathIsNotADirectoryException(newWorkDir.canonicalized);
+      // If path doesn't exist, check if it can be created
+      if (newWorkDir case DirectoryPath(notFound: true)) {
+        if (!newWorkDir.canBeCreated) {
+          throw PathCannotBeCreatedException(newWorkDir.canonicalized);
+        }
       }
     }
   }
