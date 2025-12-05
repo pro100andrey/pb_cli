@@ -2,7 +2,6 @@ import 'package:args/command_runner.dart';
 import 'package:cli_async_redux/cli_async_redux.dart';
 import 'package:mason_logger/mason_logger.dart';
 
-import '../../redux/actions/store_pocket_base_action.dart';
 import '../../redux/app_state.dart';
 import '../../redux/config/config.dart';
 import '../../redux/env/env.dart';
@@ -64,15 +63,13 @@ class SetupCommand extends Command with WithStore {
     dispatchSync(ResolveCredentialsAction());
     dispatchSync(ValidateCredentialsAction());
 
-    // 5. Store PocketBase instance info
-    dispatchSync(StorePocketBaseAction());
-
-    // 6. Authenticate and fetch schema
-    await dispatchAndWait(VerifyConnectionAction());
+    // 5. Setup PocketBase connection
+    await dispatchAndWait(SetupPocketBaseConnectionAction());
+    // 6. Authenticate
     await dispatchAndWait(LogInAction());
-    await dispatchAndWait(FetchSchemaAction());
 
-    // 7. Configure managed collections and auth method
+    // 7. Fetch schema and select collections/credentials source
+    await dispatchAndWait(FetchSchemaAction());
     dispatchSync(SelectManagedCollectionsAction());
     dispatchSync(SelectCredentialsSourceAction());
 
