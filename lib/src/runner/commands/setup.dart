@@ -68,7 +68,7 @@ class SetupCommand extends Command with WithStore {
     await dispatchAndWait(LogInAction());
 
     // 6. Fetch schema and select collections/credentials source
-    await dispatchAndWait(FetchSchemaAction());
+    await dispatchAndWait(FetchRemoteSchemaAction());
     dispatchSync(SelectManagedCollectionsAction());
     dispatchSync(SelectCredentialsSourceAction());
 

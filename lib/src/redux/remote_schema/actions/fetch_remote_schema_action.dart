@@ -1,6 +1,6 @@
 import '../../common/app_action.dart';
 
-final class FetchSchemaAction extends AppAction {
+final class FetchRemoteSchemaAction extends AppAction {
   @override
   Future<AppState?> reduce() async {
     final collections = await pb.collections.getFullList();
