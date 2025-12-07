@@ -35,7 +35,7 @@ extension type Selectors(AppState state) {
   /// List of collection names that are managed by the CLI.
   ///
   /// Returns an empty list if no collections are configured.
-  List<String> get managedCollections => state.config.data.managedCollections;
+  IList<String> get managedCollections => state.config.data.managedCollections;
 
   /// The source for obtaining credentials (dotenv file or user prompt).
   ///
@@ -79,16 +79,13 @@ extension type Selectors(AppState state) {
   /// in the PocketBase schema.
   IMap<String, CollectionModel> get remoteSchemaById => state.remoteSchema.byId;
 
-  /// All collections in the PocketBase schema
-  /// (including system collections).
-  ///
-  /// Returns an empty list if the schema hasn't been fetched yet.
-  Iterable<CollectionModel> get remoteCollections =>
-      state.remoteSchema.sorted.map((id) => remoteSchemaById[id]!);
-
   /// User-created collections (excludes system collections).
-  Iterable<CollectionModel> get remoteCollectionsWithoutSystem =>
-      remoteCollections.where((c) => !c.system);
+  IList<CollectionModel> get remoteCollectionsWithoutSystem => state
+      .remoteSchema
+      .sorted
+      .map((id) => remoteSchemaById[id]!)
+      .where((c) => !c.system)
+      .toIList();
 
   /// Names of user-created collections.
   ///

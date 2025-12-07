@@ -1,3 +1,4 @@
+import 'package:fast_immutable_collections/fast_immutable_collections.dart';
 import 'package:meta/meta.dart';
 
 import '../models/enums/credentials_source.dart';
@@ -41,11 +42,11 @@ extension type ConfigData._(Map<ConfigKey, Object?> data) implements Map {
   /// Returns the list of managed collections.
   ///
   /// Returns an empty list if not configured.
-  List<String> get managedCollections {
+  IList<String> get managedCollections {
     final collections = data[ConfigKey.managedCollections];
     return switch (collections) {
-      null => [],
-      List() => collections.cast<String>(),
+      null => const IListConst([]),
+      List() => collections.cast<String>().lock,
       _ => throw const FormatException(
         'Invalid format for managedCollections. Should be a list of strings.',
       ),

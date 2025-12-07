@@ -13,7 +13,7 @@ final class SelectManagedCollectionsAction extends AppAction {
     final selected = logger.chooseAny<String>(
       'Select collections to synchronize:',
       choices: collectionsNames,
-      defaultValues: currentManagedCollections,
+      defaultValues: currentManagedCollections.unlockView,
     );
 
     final managedCollectionsChanged =
