@@ -14,7 +14,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$RemoteSchemaState {
 
- List<CollectionModel>? get collections;
+ IMap<String, CollectionModel> get byId; IList<String> get sorted;
 /// Create a copy of RemoteSchemaState
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -25,16 +25,16 @@ $RemoteSchemaStateCopyWith<RemoteSchemaState> get copyWith => _$RemoteSchemaStat
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is RemoteSchemaState&&const DeepCollectionEquality().equals(other.collections, collections));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is RemoteSchemaState&&(identical(other.byId, byId) || other.byId == byId)&&const DeepCollectionEquality().equals(other.sorted, sorted));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,const DeepCollectionEquality().hash(collections));
+int get hashCode => Object.hash(runtimeType,byId,const DeepCollectionEquality().hash(sorted));
 
 @override
 String toString() {
-  return 'RemoteSchemaState(collections: $collections)';
+  return 'RemoteSchemaState(byId: $byId, sorted: $sorted)';
 }
 
 
@@ -45,7 +45,7 @@ abstract mixin class $RemoteSchemaStateCopyWith<$Res>  {
   factory $RemoteSchemaStateCopyWith(RemoteSchemaState value, $Res Function(RemoteSchemaState) _then) = _$RemoteSchemaStateCopyWithImpl;
 @useResult
 $Res call({
- List<CollectionModel>? collections
+ IMap<String, CollectionModel> byId, IList<String> sorted
 });
 
 
@@ -62,10 +62,11 @@ class _$RemoteSchemaStateCopyWithImpl<$Res>
 
 /// Create a copy of RemoteSchemaState
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? collections = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? byId = null,Object? sorted = null,}) {
   return _then(_self.copyWith(
-collections: freezed == collections ? _self.collections : collections // ignore: cast_nullable_to_non_nullable
-as List<CollectionModel>?,
+byId: null == byId ? _self.byId : byId // ignore: cast_nullable_to_non_nullable
+as IMap<String, CollectionModel>,sorted: null == sorted ? _self.sorted : sorted // ignore: cast_nullable_to_non_nullable
+as IList<String>,
   ));
 }
 
@@ -77,18 +78,11 @@ as List<CollectionModel>?,
 
 
 class _RemoteSchemaState implements RemoteSchemaState {
-  const _RemoteSchemaState({final  List<CollectionModel>? collections}): _collections = collections;
+  const _RemoteSchemaState({this.byId = const IMapConst({}), this.sorted = const IListConst([])});
   
 
- final  List<CollectionModel>? _collections;
-@override List<CollectionModel>? get collections {
-  final value = _collections;
-  if (value == null) return null;
-  if (_collections is EqualUnmodifiableListView) return _collections;
-  // ignore: implicit_dynamic_type
-  return EqualUnmodifiableListView(value);
-}
-
+@override@JsonKey() final  IMap<String, CollectionModel> byId;
+@override@JsonKey() final  IList<String> sorted;
 
 /// Create a copy of RemoteSchemaState
 /// with the given fields replaced by the non-null parameter values.
@@ -100,16 +94,16 @@ _$RemoteSchemaStateCopyWith<_RemoteSchemaState> get copyWith => __$RemoteSchemaS
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _RemoteSchemaState&&const DeepCollectionEquality().equals(other._collections, _collections));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _RemoteSchemaState&&(identical(other.byId, byId) || other.byId == byId)&&const DeepCollectionEquality().equals(other.sorted, sorted));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,const DeepCollectionEquality().hash(_collections));
+int get hashCode => Object.hash(runtimeType,byId,const DeepCollectionEquality().hash(sorted));
 
 @override
 String toString() {
-  return 'RemoteSchemaState(collections: $collections)';
+  return 'RemoteSchemaState(byId: $byId, sorted: $sorted)';
 }
 
 
@@ -120,7 +114,7 @@ abstract mixin class _$RemoteSchemaStateCopyWith<$Res> implements $RemoteSchemaS
   factory _$RemoteSchemaStateCopyWith(_RemoteSchemaState value, $Res Function(_RemoteSchemaState) _then) = __$RemoteSchemaStateCopyWithImpl;
 @override @useResult
 $Res call({
- List<CollectionModel>? collections
+ IMap<String, CollectionModel> byId, IList<String> sorted
 });
 
 
@@ -137,10 +131,11 @@ class __$RemoteSchemaStateCopyWithImpl<$Res>
 
 /// Create a copy of RemoteSchemaState
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? collections = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? byId = null,Object? sorted = null,}) {
   return _then(_RemoteSchemaState(
-collections: freezed == collections ? _self._collections : collections // ignore: cast_nullable_to_non_nullable
-as List<CollectionModel>?,
+byId: null == byId ? _self.byId : byId // ignore: cast_nullable_to_non_nullable
+as IMap<String, CollectionModel>,sorted: null == sorted ? _self.sorted : sorted // ignore: cast_nullable_to_non_nullable
+as IList<String>,
   ));
 }
 

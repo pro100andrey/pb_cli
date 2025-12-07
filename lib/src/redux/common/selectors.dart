@@ -1,4 +1,5 @@
 import 'package:cli_utils/cli_utils.dart';
+import 'package:fast_immutable_collections/fast_immutable_collections.dart';
 import 'package:pocketbase/pocketbase.dart';
 
 import '../models/enums/credentials_source.dart';
@@ -72,14 +73,18 @@ extension type Selectors(AppState state) {
   /// Returns `false` if no token exists or if it's expired.
   bool get isTokenValid => token != null && token!.isValid;
 
-  // Schema selectors
+  // Remote Schema selectors
+
+  /// Map of collection ID to [CollectionModel] for all collections
+  /// in the PocketBase schema.
+  IMap<String, CollectionModel> get remoteSchemaById => state.remoteSchema.byId;
 
   /// All collections in the PocketBase schema
   /// (including system collections).
   ///
   /// Returns an empty list if the schema hasn't been fetched yet.
-  List<CollectionModel> get remoteCollections =>
-      state.remoteSchema.collections ?? [];
+  Iterable<CollectionModel> get remoteCollections =>
+      state.remoteSchema.sorted.map((id) => remoteSchemaById[id]!);
 
   /// User-created collections (excludes system collections).
   Iterable<CollectionModel> get remoteCollectionsWithoutSystem =>
@@ -90,4 +95,16 @@ extension type Selectors(AppState state) {
   /// Useful for displaying collection choices or filtering operations.
   Iterable<String> get remoteCollectionNamesWithoutSystem =>
       remoteCollectionsWithoutSystem.map((c) => c.name);
+
+  // Local Schema selectors
+
+  /// Map of collection ID to [CollectionModel] for all local collections
+  /// defined in the local schema.
+  IMap<String, CollectionModel> get localSchemaById => state.localSchema.byId;
+
+  /// All collections defined in the local schema.
+  ///
+  /// Returns an empty list if no local schema is defined.
+  Iterable<CollectionModel> get localCollections =>
+      state.localSchema.sorted.map((id) => localSchemaById[id]!);
 }
