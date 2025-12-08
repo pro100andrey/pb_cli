@@ -28,20 +28,22 @@ class SchemaComparatorService {
     final localSorted = local.sort((a, b) => a.name.compareTo(b.name));
 
     for (var i = 0; i < remoteSorted.length; i++) {
-      final rCollection = remoteSorted[i];
-      final lCollection = localSorted[i];
+      final remoteCollection = remoteSorted[i];
+      final localCollection = localSorted[i];
       // Sanity check after sorting
-      if (rCollection.name != lCollection.name) {
+      if (remoteCollection.name != localCollection.name) {
         _logger.detail(
           'Difference found: Collection name mismatch at '
-          'index $i (${rCollection.name} vs ${lCollection.name})',
+          'index $i (${remoteCollection.name} vs ${localCollection.name})',
         );
         return false;
       }
 
       // Compare collection content (rules, type, fields, etc.)
-      if (!_isSameCollectionContent(rCollection, lCollection)) {
-        _logger.detail('Difference found in collection: ${rCollection.name}');
+      if (!_collectionsHaveSameContent(remoteCollection, localCollection)) {
+        _logger.detail(
+          'Difference found in collection: ${remoteCollection.name}',
+        );
         return false;
       }
     }
@@ -49,52 +51,52 @@ class SchemaComparatorService {
     return true;
   }
 
-  bool _isSameCollectionContent(
-    CollectionModel rCollection,
-    CollectionModel lCollection,
+  bool _collectionsHaveSameContent(
+    CollectionModel remoteCollection,
+    CollectionModel localCollection,
   ) {
     // Create copies of the maps for normalization and comparison
-    final sMap = rCollection.toJson();
-    final lMap = lCollection.toJson();
+    final remoteMap = remoteCollection.toJson();
+    final localMap = localCollection.toJson();
 
     // Remove internal fields
-    sMap
+    remoteMap
       ..remove('id')
       ..remove('created')
       ..remove('updated');
 
-    lMap
+    localMap
       ..remove('id')
       ..remove('created')
       ..remove('updated');
 
-    _normalizeRuleFields(sMap);
-    _normalizeRuleFields(lMap);
+    _normalizeRuleFields(remoteMap);
+    _normalizeRuleFields(localMap);
 
-    _normalizeIndexes(sMap);
-    _normalizeIndexes(lMap);
+    _normalizeIndexes(remoteMap);
+    _normalizeIndexes(localMap);
 
     // Normalize fields for comparison (order might differ)
-    final sFields = (sMap['fields'] as List<dynamic>?) ?? [];
-    final lFields = (lMap['fields'] as List<dynamic>?) ?? [];
+    final remoteFields = (remoteMap['fields'] as List<dynamic>?) ?? [];
+    final localFields = (localMap['fields'] as List<dynamic>?) ?? [];
 
-    final sFieldsMap = {
-      for (final f in sFields) (f as Map<String, dynamic>)['name']: f,
+    final remoteFieldsMap = {
+      for (final f in remoteFields) (f as Map<String, dynamic>)['name']: f,
     };
 
-    final lFieldsMap = {
-      for (final f in lFields) (f as Map<String, dynamic>)['name']: f,
+    final localFieldsMap = {
+      for (final f in localFields) (f as Map<String, dynamic>)['name']: f,
     };
 
-    final sFieldNames = sFieldsMap.keys.toSet();
-    final lFieldNames = lFieldsMap.keys.toSet();
+    final remoteFieldNames = remoteFieldsMap.keys.toSet();
+    final localFieldNames = localFieldsMap.keys.toSet();
 
-    final fieldsMissingOnServer = lFieldNames.difference(sFieldNames);
-    final fieldsMissingInFile = sFieldNames.difference(lFieldNames);
-    if (sFieldNames.length != lFieldNames.length ||
+    final fieldsMissingOnServer = localFieldNames.difference(remoteFieldNames);
+    final fieldsMissingInFile = remoteFieldNames.difference(localFieldNames);
+    if (remoteFieldNames.length != localFieldNames.length ||
         fieldsMissingOnServer.isNotEmpty ||
         fieldsMissingInFile.isNotEmpty) {
-      _logger.detail('Difference found in ${rCollection.name} fields:');
+      _logger.detail('Difference found in ${remoteCollection.name} fields:');
 
       if (fieldsMissingInFile.isNotEmpty) {
         _logger.detail(
@@ -114,26 +116,26 @@ class SchemaComparatorService {
     }
 
     // Remove the field lists from the main maps to compare them separately
-    sMap.remove('fields');
-    lMap.remove('fields');
+    remoteMap.remove('fields');
+    localMap.remove('fields');
 
     // Compare main collection properties (rules, type, etc.)
-    if (jsonEncode(sMap) != jsonEncode(lMap)) {
+    if (jsonEncode(remoteMap) != jsonEncode(localMap)) {
       _logger.detail('Collection properties mismatch (excluding fields)');
       return false;
     }
 
     // Compare each field individually
-    for (final name in sFieldsMap.keys) {
-      final fieldA = sFieldsMap[name]!;
-      final fieldB = lFieldsMap[name]!;
+    for (final name in remoteFieldsMap.keys) {
+      final remoteField = remoteFieldsMap[name]!;
+      final localField = localFieldsMap[name]!;
 
       // Remove field IDs, as they are internal and volatile
-      fieldA.remove('id');
-      fieldB.remove('id');
+      remoteField.remove('id');
+      localField.remove('id');
       // Compare the rest of the field properties (type, required, options,
       // etc.)
-      if (jsonEncode(fieldA) != jsonEncode(fieldB)) {
+      if (jsonEncode(remoteField) != jsonEncode(localField)) {
         _logger.detail('Difference in field "$name" content');
         return false;
       }

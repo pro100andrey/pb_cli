@@ -6,7 +6,7 @@ import '../redux/common/app_action.dart';
 import '../redux/guards/wrap_reduce.dart';
 import '../redux/observers/action_observer.dart';
 import '../redux/observers/error_observer.dart';
-import '../redux/observers/global_warap_error.dart';
+import '../redux/observers/global_wrap_error.dart';
 import '../utils/strings.dart';
 import 'commands/pull.dart';
 import 'commands/push.dart';
