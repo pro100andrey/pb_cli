@@ -4,34 +4,19 @@ import 'package:fast_immutable_collections/fast_immutable_collections.dart';
 import 'package:mason_logger/mason_logger.dart';
 import 'package:pocketbase/pocketbase.dart';
 
-class SchemaSyncService {
-  const SchemaSyncService({required Logger logger}) : _logger = logger;
+class SchemaComparatorService {
+  const SchemaComparatorService({required Logger logger}) : _logger = logger;
 
   final Logger _logger;
 
-  bool syncSchema({
-    required IList<CollectionModel> localCollections,
-    required IList<CollectionModel> remoteCollections,
+  bool compare({
+    required IList<CollectionModel> local,
+    required IList<CollectionModel> remote,
   }) {
-    // Create mutable copies of the collections lists to avoid modifying
-    // the original data
-    final sCollections = remoteCollections.unlockLazy;
-    final lCollections = localCollections.unlockLazy;
-
-    final isSame = _checkPBSchema(sCollections, lCollections, _logger);
-
-    return isSame;
-  }
-
-  bool _checkPBSchema(
-    List<CollectionModel> sCollections,
-    List<CollectionModel> lCollections,
-    Logger logger,
-  ) {
-    if (sCollections.length != lCollections.length) {
-      logger.detail(
+    if (remote.length != local.length) {
+      _logger.detail(
         'Difference found: Collection count mismatch '
-        '(${sCollections.length} vs ${lCollections.length})',
+        '(${remote.length} vs ${local.length})',
       );
 
       return false;
@@ -39,24 +24,24 @@ class SchemaSyncService {
 
     // Sort both lists by collection name to ensure reliable element-wise
     // comparison
-    sCollections.sort((a, b) => a.name.compareTo(b.name));
-    lCollections.sort((a, b) => a.name.compareTo(b.name));
+    final remoteSorted = remote.sort((a, b) => a.name.compareTo(b.name));
+    final localSorted = local.sort((a, b) => a.name.compareTo(b.name));
 
-    for (var i = 0; i < sCollections.length; i++) {
-      final sCollection = sCollections[i];
-      final lCollection = lCollections[i];
+    for (var i = 0; i < remoteSorted.length; i++) {
+      final rCollection = remoteSorted[i];
+      final lCollection = localSorted[i];
       // Sanity check after sorting
-      if (sCollection.name != lCollection.name) {
-        logger.detail(
+      if (rCollection.name != lCollection.name) {
+        _logger.detail(
           'Difference found: Collection name mismatch at '
-          'index $i (${sCollection.name} vs ${lCollection.name})',
+          'index $i (${rCollection.name} vs ${lCollection.name})',
         );
         return false;
       }
 
       // Compare collection content (rules, type, fields, etc.)
-      if (!_isSameCollectionContent(sCollection, lCollection, logger)) {
-        logger.detail('Difference found in collection: ${sCollection.name}');
+      if (!_isSameCollectionContent(rCollection, lCollection)) {
+        _logger.detail('Difference found in collection: ${rCollection.name}');
         return false;
       }
     }
@@ -65,12 +50,11 @@ class SchemaSyncService {
   }
 
   bool _isSameCollectionContent(
-    CollectionModel sCollection,
+    CollectionModel rCollection,
     CollectionModel lCollection,
-    Logger logger,
   ) {
     // Create copies of the maps for normalization and comparison
-    final sMap = sCollection.toJson();
+    final sMap = rCollection.toJson();
     final lMap = lCollection.toJson();
 
     // Remove internal fields
@@ -110,17 +94,17 @@ class SchemaSyncService {
     if (sFieldNames.length != lFieldNames.length ||
         fieldsMissingOnServer.isNotEmpty ||
         fieldsMissingInFile.isNotEmpty) {
-      logger.detail('Difference found in ${sCollection.name} fields:');
+      _logger.detail('Difference found in ${rCollection.name} fields:');
 
       if (fieldsMissingInFile.isNotEmpty) {
-        logger.detail(
+        _logger.detail(
           ' > Fields missing in File (added on server): '
           '${fieldsMissingInFile.join(', ')}',
         );
       }
 
       if (fieldsMissingOnServer.isNotEmpty) {
-        logger.detail(
+        _logger.detail(
           ' > Fields missing on Server (removed on server): '
           '${fieldsMissingOnServer.join(', ')}',
         );
@@ -135,7 +119,7 @@ class SchemaSyncService {
 
     // Compare main collection properties (rules, type, etc.)
     if (jsonEncode(sMap) != jsonEncode(lMap)) {
-      logger.detail('Collection properties mismatch (excluding fields)');
+      _logger.detail('Collection properties mismatch (excluding fields)');
       return false;
     }
 
@@ -150,7 +134,7 @@ class SchemaSyncService {
       // Compare the rest of the field properties (type, required, options,
       // etc.)
       if (jsonEncode(fieldA) != jsonEncode(fieldB)) {
-        logger.detail('Difference in field "$name" content');
+        _logger.detail('Difference in field "$name" content');
         return false;
       }
     }

@@ -67,28 +67,9 @@ class PullCommand extends Command with WithStore {
     dispatchSync(CompareSchemaWithRemoteAction());
     dispatchSync(SaveLocalSchemaAction());
 
-    // final syncProgress = logger.progress('Syncing collections schema');
-
-    // final remoteCollections = collectionsResult.value;
-    // final localCollections = _schemaRepository.read(dataDir: dir);
-    // final isSame = await _schemaSyncService.syncSchema(
-    //   remoteCollections: remoteCollections,
-    //   localCollections: localCollections,
-    // );
-
-    // // Always overwrite local schema with the latest from server
-    // _schemaRepository.write(collections: remoteCollections, dataDir: dir);
-
-    // syncProgress.complete(
-    //   isSame
-    //       ? 'Collections schema is already up to date.'
-    //       : 'Collections schema synced successfully.',
-    // );
-
-    // final config = _configRepository.read(dataDir: dir);
-    // final batchSize =
-    //     int.tryParse(argResults![S.batchSizeOptionName]) ??
-    //     int.parse(S.pullBatchSizeOptionDefault);
+    final batchSize =
+        int.tryParse(argResults![S.batchSizeOptionName]) ??
+        int.parse(S.pullBatchSizeOptionDefault);
 
     // for (final collectionName in config.managedCollections) {
     //   final recordsResult = await _collectionDataService.fetchAllRecords(

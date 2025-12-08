@@ -1,15 +1,14 @@
 import '../../common.dart';
-import '../../services/schema_sync.dart';
+import '../../services/schema_comparator_service.dart';
 
 final class CompareSchemaWithRemoteAction extends AppAction {
   @override
   AppState? reduce() {
-    final comparator = SchemaSyncService(logger: logger);
+    final local = select.localCollections;
+    final remote = select.remoteCollections;
 
-    final isSame = comparator.syncSchema(
-      localCollections: select.localCollections,
-      remoteCollections: select.remoteCollections,
-    );
+    final comparator = SchemaComparatorService(logger: logger);
+    final isSame = comparator.compare(local: local, remote: remote);
 
     logger.info(
       !isSame
