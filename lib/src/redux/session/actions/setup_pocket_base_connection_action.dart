@@ -7,10 +7,10 @@ final class SetupPocketBaseConnectionAction extends AppAction {
   @override
   Future<AppState?> reduce() async {
     final pocketBase = PocketBase(select.host!);
-
+    final progress = logger.progress('Checking PocketBase health...');
     final health = await pocketBase.health.check();
     if (health.code == 200) {
-      logger.detail('PocketBase health check passed');
+      progress.complete('PocketBase health check passed');
     }
 
     // Save PocketBase instance to the store

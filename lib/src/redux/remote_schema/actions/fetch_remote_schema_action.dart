@@ -14,10 +14,14 @@ import '../../common/app_action.dart';
 final class FetchRemoteSchemaAction extends AppAction {
   @override
   Future<AppState> reduce() async {
+    final progress = logger.progress('Fetching remote schema...');
+
     final collections = await pb.collections.getFullList();
 
-    logger.detail('Fetched ${collections.length} collections from PocketBase.');
-
+    progress.complete(
+      'Fetched ${collections.length} collections from PocketBase.',
+    );
+    
     final byId = <String, CollectionModel>{};
     final ids = <String>[];
     final sortedWithoutSystem = <String>[];

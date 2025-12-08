@@ -16,9 +16,15 @@ final class LogInAction extends AppAction {
 
     await pb.health.check();
 
+    final progress = logger.progress(
+      'Logging in user ${select.usernameOrEmail}',
+    );
+
     final result = await pb
         .collection('_superusers')
         .authWithPassword(select.usernameOrEmail!, select.password!);
+    
+    progress.complete('Logged in successfully.');
 
     logger.sectionMapped(
       level: .verbose,
