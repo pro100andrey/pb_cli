@@ -36,7 +36,7 @@ final class ConfigService {
   }
 
   static void _write(Map<ConfigKey, Object?> data, FilePath file) {
-    final json = const JsonEncoder.withIndent('  ').convert(data);
+    final json = const JsonEncoder.withIndent('\t').convert(data);
 
     file.writeAsString(json);
   }
