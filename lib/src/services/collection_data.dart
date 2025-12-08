@@ -6,11 +6,24 @@ import '../client/pb_client.dart';
 import '../failure/failure.dart';
 import '../models/result.dart';
 
+/// Service for fetching and managing collection data from PocketBase.
+///
+/// Handles batch fetching of records with progress tracking and
+/// comprehensive error handling.
 class CollectionDataService {
   const CollectionDataService({required Logger logger}) : _logger = logger;
 
   final Logger _logger;
 
+  /// Fetches all records from a collection in batches.
+  ///
+  /// Validates batch size (1-500) and provides progress updates.
+  /// Returns all records or a [Failure] if an error occurs.
+  ///
+  /// Parameters:
+  /// - [pbClient]: Authenticated PocketBase client
+  /// - [collectionName]: Name of the collection to fetch
+  /// - [batchSize]: Number of records per request (1-500)
   CliFuture<List<RecordModel>> fetchAllRecords({
     required PbClient pbClient,
     required String collectionName,

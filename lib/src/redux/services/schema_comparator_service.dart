@@ -4,11 +4,29 @@ import 'package:fast_immutable_collections/fast_immutable_collections.dart';
 import 'package:mason_logger/mason_logger.dart';
 import 'package:pocketbase/pocketbase.dart';
 
+/// Service for comparing local and remote PocketBase schemas.
+///
+/// Performs deep comparison of collection structures, including:
+/// - Collection names and counts
+/// - Field definitions and properties
+/// - Rule configurations
+/// - Index definitions
+///
+/// Normalizes data before comparison to handle internal fields,
+/// null/empty values, and ordering differences.
 class SchemaComparatorService {
   const SchemaComparatorService({required Logger logger}) : _logger = logger;
 
   final Logger _logger;
 
+  /// Compares local and remote collection schemas for equality.
+  ///
+  /// Returns `true` if schemas are identical (ignoring internal fields),
+  /// `false` otherwise. Logs detailed differences when found.
+  ///
+  /// Parameters:
+  /// - [local]: Local collection schema
+  /// - [remote]: Remote collection schema from PocketBase
   bool compare({
     required IList<CollectionModel> local,
     required IList<CollectionModel> remote,

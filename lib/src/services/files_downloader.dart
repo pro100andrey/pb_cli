@@ -7,13 +7,17 @@ import '../client/pb_client.dart';
 import '../failure/failure.dart';
 import '../models/result.dart';
 
+/// Service for downloading files from PocketBase storage.
+///
+/// Handles downloading files attached to records, including both
+/// single and multiple file fields.
 class FilesDownloaderService {
   const FilesDownloaderService({required Logger logger}) : _logger = logger;
 
   final Logger _logger;
 
   /// Downloads a single file from the given URL and saves it to the
-  /// specified path
+  /// specified path.
   Future<Result<String, Failure>> downloadFile(
     String url,
     String savePath,
