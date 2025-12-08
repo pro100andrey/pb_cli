@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:fast_immutable_collections/fast_immutable_collections.dart';
 import 'package:mason_logger/mason_logger.dart';
 import 'package:pocketbase/pocketbase.dart';
 
@@ -8,14 +9,14 @@ class SchemaSyncService {
 
   final Logger _logger;
 
-  Future<bool> syncSchema({
-    required List<CollectionModel> localCollections,
-    required List<CollectionModel> remoteCollections,
-  }) async {
+  bool syncSchema({
+    required IList<CollectionModel> localCollections,
+    required IList<CollectionModel> remoteCollections,
+  }) {
     // Create mutable copies of the collections lists to avoid modifying
     // the original data
-    final sCollections = List<CollectionModel>.from(remoteCollections);
-    final lCollections = List<CollectionModel>.from(localCollections);
+    final sCollections = remoteCollections.unlockLazy;
+    final lCollections = localCollections.unlockLazy;
 
     final isSame = _checkPBSchema(sCollections, lCollections, _logger);
 

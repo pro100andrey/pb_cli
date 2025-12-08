@@ -5,6 +5,8 @@ import 'package:mason_logger/mason_logger.dart';
 import '../../redux/common/app_action.dart';
 import '../../redux/config/actions/load_config_action.dart';
 import '../../redux/env/actions/load_env_action.dart';
+import '../../redux/local_schema/actions/compare_schema_with_remote_action.dart';
+import '../../redux/local_schema/actions/save_local_schema_action.dart';
 import '../../redux/local_schema/local_schema.dart';
 import '../../redux/remote_schema/actions/fetch_remote_schema_action.dart';
 import '../../redux/session/session.dart';
@@ -61,8 +63,9 @@ class PullCommand extends Command with WithStore {
 
     // 6. Fetch remote schema
     await dispatchAndWait(FetchRemoteSchemaAction());
-
     dispatchSync(LoadLocalSchemaAction());
+    dispatchSync(CompareSchemaWithRemoteAction());
+    dispatchSync(SaveLocalSchemaAction());
 
     // final syncProgress = logger.progress('Syncing collections schema');
 

@@ -79,12 +79,15 @@ extension type Selectors(AppState state) {
   /// in the PocketBase schema.
   IMap<String, CollectionModel> get remoteSchemaById => state.remoteSchema.byId;
 
+  /// All collections in the PocketBase schema.
+  IList<CollectionModel> get remoteCollections =>
+      state.remoteSchema.sorted.map((id) => remoteSchemaById[id]!).toIList();
+
   /// User-created collections (excludes system collections).
   IList<CollectionModel> get remoteCollectionsWithoutSystem => state
       .remoteSchema
-      .sorted
+      .sortedWithoutSystem
       .map((id) => remoteSchemaById[id]!)
-      .where((c) => !c.system)
       .toIList();
 
   /// Names of user-created collections.
@@ -102,6 +105,6 @@ extension type Selectors(AppState state) {
   /// All collections defined in the local schema.
   ///
   /// Returns an empty list if no local schema is defined.
-  Iterable<CollectionModel> get localCollections =>
-      state.localSchema.sorted.map((id) => localSchemaById[id]!);
+  IList<CollectionModel> get localCollections =>
+      state.localSchema.sorted.map((id) => localSchemaById[id]!).toIList();
 }

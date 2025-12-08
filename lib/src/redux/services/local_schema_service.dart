@@ -24,9 +24,10 @@ final class LocalSchemaService {
 
   static void write({
     required FilePath outputFile,
-    required IList<CollectionModel> data,
+    required IList<CollectionModel> collections,
   }) {
-    final json = const JsonEncoder.withIndent('  ').convert(data);
+    final view = collections.unlockView;
+    final json = const JsonEncoder.withIndent('\t').convert(view);
 
     outputFile.writeAsString(json);
   }
