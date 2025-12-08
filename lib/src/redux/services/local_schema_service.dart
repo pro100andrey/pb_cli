@@ -1,26 +1,30 @@
 import 'dart:convert';
 
 import 'package:cli_utils/cli_utils.dart';
+import 'package:fast_immutable_collections/fast_immutable_collections.dart';
+import 'package:pocketbase/pocketbase.dart';
 
 final class LocalSchemaService {
   const LocalSchemaService._();
 
   static const fileName = 'local_schema.json';
 
-  static Map<String, dynamic> read({required FilePath inputFile}) {
+  static IList<CollectionModel> read({required FilePath inputFile}) {
     if (inputFile.notFound) {
-      return {};
+      return const IListConst([]);
     }
 
     final contents = inputFile.readAsString();
-    final schemaMap = jsonDecode(contents) as Map<String, dynamic>;
+    final schemaData = jsonDecode(contents) as List;
 
-    return schemaMap;
+    return schemaData
+        .map((e) => CollectionModel.fromJson(e as Map<String, dynamic>))
+        .toIList();
   }
 
   static void write({
     required FilePath outputFile,
-    required Map<String, dynamic> data,
+    required IList<CollectionModel> data,
   }) {
     final json = const JsonEncoder.withIndent('  ').convert(data);
 
