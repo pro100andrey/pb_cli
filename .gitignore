@@ -10,7 +10,6 @@ build/
 pubspec.lock
 
 # IDE files
-.vscode/
 .idea/
 *.iml
 *.ipr
@@ -58,6 +57,7 @@ node_modules/
 .yarn-integrity
 
 # Project specific
+volumes/
 pb_data/
 *.sqlite
 *.db

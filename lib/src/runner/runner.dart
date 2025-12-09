@@ -1,6 +1,13 @@
 import 'package:args/command_runner.dart';
+import 'package:cli_async_redux/cli_async_redux.dart';
 import 'package:mason_logger/mason_logger.dart';
 
+import '../redux/common/app_action.dart';
+import '../redux/guards/wrap_reduce.dart';
+import '../redux/observers/action_observer.dart';
+import '../redux/observers/error_observer.dart';
+import '../redux/observers/global_wrap_error.dart';
+import '../utils/strings.dart';
 import 'commands/pull.dart';
 import 'commands/push.dart';
 import 'commands/setup.dart';
@@ -9,23 +16,37 @@ Future<int> run(List<String> args) async {
   final logger = Logger();
 
   try {
-    final runner =
-        CommandRunner(
-            'seeder',
-            'A utility for synchronizing PocketBase schemas and data.',
-          )
-          ..argParser.addFlag(
-            'verbose',
-            abbr: 'v',
-            help: 'Enable verbose logging.',
-            negatable: false,
-            callback: (value) =>
-                logger.level = value ? Level.verbose : Level.info,
-          )
-          ..addCommand(SetupCommand(logger: logger))
-          ..addCommand(PushCommand(logger: logger))
-          ..addCommand(PullCommand(logger: logger));
-    final runResult = await runner.run(args);
+    // Initialize the Redux store
+    final store = Store<AppState>(
+      initialState: AppState.initial(),
+      actionObservers: [AppActionLogger(logger: logger)],
+      errorObserver: AppErrorObserver(logger: logger),
+      globalWrapError: AppGlobalWrapError(),
+      wrapReduce: GuardsWrapReduce(),
+    );
+
+    // Setup the command runner
+    final runner = CommandRunner(S.appName, S.appDescription)
+      ..argParser.addFlag(
+        S.verboseFlagName,
+        abbr: S.verboseFlagAbbr,
+        help: S.verboseFlagHelp,
+        negatable: false,
+        callback: (value) => logger.level = value ? Level.verbose : Level.info,
+      )
+      ..addCommand(SetupCommand(store: store))
+      ..addCommand(PushCommand(store: store))
+      ..addCommand(PullCommand(store: store));
+
+    // Parse and run the command
+    final result = runner.parse(args);
+
+    // Store the logger in the Redux store for global access
+    store.setProp(logger);
+    logger.detail('Logger instance stored.');
+
+    // Run the command
+    final runResult = await Future.sync(() => runner.runCommand(result));
 
     if (runResult case int()) {
       return runResult;
@@ -34,6 +55,10 @@ Future<int> run(List<String> args) async {
     return 0;
   } on Object catch (e) {
     final exception = e;
+
+    if (e case ReduxException(:final exitCode?)) {
+      return exitCode;
+    }
 
     if (e case UsageException() || ArgumentError()) {
       logger

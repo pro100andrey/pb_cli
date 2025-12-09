@@ -1,0 +1,14 @@
+targets:
+  $default:
+    builders:
+      freezed:
+        generate_for:
+          - lib/src/redux/**.dart
+        options:
+          runs_before:
+            - json_serializable
+          map: false
+          when:
+            when: false
+            maybe_when: false
+            when_or_null: false

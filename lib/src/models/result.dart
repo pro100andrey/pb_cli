@@ -44,10 +44,7 @@ sealed class Result<T, E> {
   /// or [onFailure] if it's a failure.
   ///
   /// This method forces handling of both success and failure cases.
-  R fold<R>(
-    R Function(T value) onSuccess,
-    R Function(E error) onFailure,
-  );
+  R fold<R>(R Function(T value) onSuccess, R Function(E error) onFailure);
 
   /// Returns the success value if this is a [SuccessResult].
   ///
@@ -98,10 +95,14 @@ sealed class Result<T, E> {
   /// final value = result.getOrElse(() => 'default');
   /// print(value); // 'default'
   /// ```
-  T getOrElse(T Function() defaultValue) => fold(
-    (value) => value,
-    (_) => defaultValue(),
-  );
+  T getOrElse(T Function() defaultValue) =>
+      fold((value) => value, (_) => defaultValue());
+
+  /// Returns `true` if this is a [SuccessResult], otherwise `false`.
+  bool get isSuccess => this is SuccessResult<T, E>;
+
+  /// Returns `true` if this is a [FailureResult], otherwise `false`.
+  bool get isFailure => this is FailureResult<T, E>;
 }
 
 /// A successful result containing a [value] of type [T].
@@ -124,10 +125,8 @@ final class SuccessResult<T, E> extends Result<T, E> {
       SuccessResult<T, R>(value);
 
   @override
-  R fold<R>(
-    R Function(T value) onSuccess,
-    R Function(E error) onFailure,
-  ) => onSuccess(value);
+  R fold<R>(R Function(T value) onSuccess, R Function(E error) onFailure) =>
+      onSuccess(value);
 
   @override
   String toString() => 'SuccessResult($value)';
@@ -162,10 +161,8 @@ final class FailureResult<T, E> extends Result<T, E> {
       FailureResult<T, R>(errorMapper(error));
 
   @override
-  R fold<R>(
-    R Function(T value) onSuccess,
-    R Function(E error) onFailure,
-  ) => onFailure(error);
+  R fold<R>(R Function(T value) onSuccess, R Function(E error) onFailure) =>
+      onFailure(error);
 
   @override
   String toString() => 'FailureResult($error)';

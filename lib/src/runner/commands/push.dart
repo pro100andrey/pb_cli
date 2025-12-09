@@ -1,87 +1,60 @@
 import 'dart:convert';
 
 import 'package:args/command_runner.dart';
+import 'package:cli_async_redux/cli_async_redux.dart';
+import 'package:cli_utils/cli_utils.dart';
 import 'package:mason_logger/mason_logger.dart';
 import 'package:pocketbase/pocketbase.dart';
 
 import '../../client/pb_client.dart';
-import '../../extensions/string_style.dart';
-import '../../inputs/credentials.dart';
-import '../../models/credentials.dart';
-import '../../models/failure.dart';
+import '../../failure/common.dart';
+import '../../failure/failure.dart';
 import '../../models/result.dart';
-import '../../repositories/factory.dart';
-import '../../utils/path.dart';
-import '../../utils/schema_checker.dart';
-import '../../utils/utils.dart';
+import '../../redux/common/app_action.dart';
+import '../../utils/strings.dart';
+import 'base_command.dart';
 
-class PushCommand extends Command {
-  PushCommand({required Logger logger}) : _logger = logger {
+class PushCommand extends Command with WithStore {
+  PushCommand({required this.store}) {
     argParser
       ..addOption(
-        'batch-size',
-        abbr: 'b',
-        help: 'Number of records to create per batch. Maximum is 50.',
-        defaultsTo: '20',
+        S.batchSizeOptionName,
+        abbr: S.batchSizeOptionAbbr,
+        help: S.pushBatchSizeOptionHelp,
+        defaultsTo: S.pushBatchSizeOptionDefault,
       )
       ..addFlag(
-        'truncate',
-        abbr: 't',
-        help: 'Whether to truncate existing collections before import',
+        S.truncateFlagName,
+        abbr: S.truncateFlagAbbr,
+        help: S.truncateFlagHelp,
       );
   }
 
   @override
-  final name = 'push';
+  final name = S.pushCommand;
 
   @override
-  final description =
-      'Pushes the local PocketBase schema and seed data to the remote '
-      'instance.';
+  final description = S.pushDescription;
 
-  final Logger _logger;
+  @override
+  final Store<AppState> store;
 
   @override
   Future<int> run() async {
-    final dir = DirectoryPath(argResults!['dir']);
-    if (dir.validate() case final Failure result) {
-      return result.exitCode;
+    final dir = DirectoryPath(argResults![S.dirOptionName]);
+    // Validate directory path
+    if (dir.notFound) {
+      return Failure.exIO;
     }
 
-    final repositories = RepositoryFactory(dir);
-
-    final configRepository = repositories.createConfigRepository();
-    final schemaRepository = repositories.createSchemaRepository();
-    final envRepository = repositories.createEnvRepository();
-    final dotenv = envRepository.readEnv();
-    final config = configRepository.readConfig();
-
-    final credentialsResult = resolveCredentials(
-      config: config,
-      dotenv: dotenv,
-      input: ConsoleCredentialsInput(_logger),
-    );
-    if (credentialsResult case Result(:final error?)) {
-      _logger.err(error.message);
-
-      return error.exitCode;
+    if (!dir.notFound && !dir.isDirectory) {
+      return Failure.exIO;
     }
 
-    final credentials = credentialsResult.value;
+    // final dirArg = argResults![S.dirOptionName];
+    // resolveDataDir(dirArg);
 
-    final pbResult = await resolvePbClient(
-      host: credentials.host,
-      usernameOrEmail: credentials.usernameOrEmail,
-      password: credentials.password,
-      token: credentials.token,
-    );
-
-    if (pbResult case Result(:final error?)) {
-      _logger.err('Failed to connect to PocketBase: ${error.message}');
-      return error.exitCode;
-    }
-
-    final pb = pbResult.value;
+    // final pbClient = await resolvePBConnection();
 
     // final dirArg = argResults!['dir'] as String;
     // final dir = DirectoryPath(dirArg);
@@ -90,29 +63,30 @@ class PushCommand extends Command {
     // Import the schema
     // await _importPBSchema(config, pb);
 
-    var batchSize = int.tryParse(argResults!['batch-size'] as String) ?? 20;
-    if (batchSize <= 0 || batchSize > 50) {
-      _logger.warn('Batch size must be between 1 and 50. Using default of 20.');
-      batchSize = 20;
-    }
+    // var batchSize = int.tryParse(argResults!['batch-size'] as String) ?? 20;
+    // if (batchSize <= 0 || batchSize > 50) {
+    //   logger.warn('Batch size must be between 1 and 50. Using default of 20.');
+    //   batchSize = 20;
+    // }
 
-    final truncateArg = argResults!['truncate'] as bool;
-    if (truncateArg) {
-      _logger.detail(
-        'Truncate option enabled: Skipping confirmation prompt.',
-      );
-    }
+    // final truncateArg = argResults!['truncate'] as bool;
+    // if (truncateArg) {
+    //   logger.detail(
+    //     'Truncate option enabled: Skipping confirmation prompt.',
+    //   );
+    // }
+    // final hasTerminal =
+    //     io.IOOverrides.current?.stdout.hasTerminal ?? io.stdout.hasTerminal;
 
-    final truncate =
-        truncateArg ||
-        (terminalIsAttached() &&
-            _logger.confirm('Truncate collections before seeding?'));
+    // final truncate =
+    //     truncateArg ||
+    //     (hasTerminal && logger.confirm('Truncate collections before seeding?'));
 
-    await _seedCollections(
-      pb: pb,
-      batchSize: batchSize,
-      truncate: truncate,
-    );
+    // await _seedCollections(
+    //   pb: pbClient,
+    //   batchSize: batchSize,
+    //   truncate: truncate,
+    // );
 
     return ExitCode.success.code;
   }
@@ -123,11 +97,8 @@ class PushCommand extends Command {
     // Fetch the current schema from the remote PocketBase instance
     final collectionsResult = await pb.getCollections();
 
-    if (collectionsResult case Result(:final error)) {
-      _logger.err(
-        'Failed to fetch remote schema: $error. '
-        'Cannot proceed with schema import.',
-      );
+    if (collectionsResult case Result(:final error?)) {
+      logger.err(error.fetchCollectionsSchema);
       return;
     }
 
@@ -140,11 +111,11 @@ class PushCommand extends Command {
         .map((e) => CollectionModel.fromJson(e as Map<String, dynamic>))
         .toList(growable: false);
 
-    _logger.info('Comparing local schema with remote schema...');
-    final isSame = checkPBSchema(fromServer, fromJsonFile, _logger);
+    logger.info('Comparing local schema with remote schema...');
+    const isSame = false;
 
     if (isSame) {
-      _logger.info('Schema is up to date!'.green);
+      logger.info('Schema is up to date!'.green);
       return;
     }
 
@@ -154,7 +125,7 @@ class PushCommand extends Command {
     // call. await pb.collections.import(collections, deleteMissing: true);
     await pb.importCollections(fromJsonFile);
 
-    _logger.info('Schema imported/updated successfully!'.green);
+    logger.info('Schema imported/updated successfully!'.green);
   }
 
   Future<void> _seedCollections({
@@ -168,7 +139,7 @@ class PushCommand extends Command {
     if (!truncate) {}
 
     if (!truncate && emptyMap.entries.any((e) => !e.value)) {
-      _logger.info(
+      logger.info(
         'Not all collections are empty. Use --truncate option to force '
         'seeding.',
       );
@@ -181,33 +152,28 @@ class PushCommand extends Command {
       final shouldProcess = truncate || (emptyMap[entry.value] ?? false);
 
       if (!shouldProcess) {
-        _logger.info(
-          'Skipping seeding for ${entry.value} as it is not empty.',
-        );
+        logger.info('Skipping seeding for ${entry.value} as it is not empty.');
         continue;
       }
 
       if (truncate) {
         final truncateResult = await pb.truncateCollection(collectionName);
 
-        final shouldContinue = truncateResult.fold(
-          (v) => true,
-          (error) {
-            _logger.err(
-              'Failed to truncate $collectionName: $error. Seeding aborted.',
-            );
-            return false;
-          },
-        );
+        final shouldContinue = truncateResult.fold((v) => true, (error) {
+          logger.err(
+            'Failed to truncate $collectionName: $error. Seeding aborted.',
+          );
+          return false;
+        });
 
         if (!shouldContinue) {
           continue;
         }
 
-        _logger.info('Truncated collection: $collectionName');
+        logger.info('Truncated collection: $collectionName');
       }
 
-      final progress = _logger.progress('Reading $collectionName data...');
+      final progress = logger.progress('Reading $collectionName data...');
       const contents = ''; //jsonFilePath.readAsString();
       // Ensure we are decoding to a List of dynamic maps
       final itemsToSeed = (jsonDecode(contents) as List)

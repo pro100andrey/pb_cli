@@ -1,154 +1,86 @@
 import 'package:args/command_runner.dart';
+import 'package:cli_async_redux/cli_async_redux.dart';
 import 'package:mason_logger/mason_logger.dart';
 
-import '../../client/pb_client.dart';
-import '../../extensions/string_style.dart';
-import '../../inputs/factory.dart';
-import '../../models/credentials.dart';
-import '../../models/credentials_source.dart';
-import '../../models/failure.dart';
-import '../../models/result.dart';
-import '../../repositories/factory.dart';
-import '../../utils/path.dart';
+import '../../redux/app_state.dart';
+import '../../redux/config/config.dart';
+import '../../redux/env/env.dart';
+import '../../redux/remote_schema/remote_schema.dart';
+import '../../redux/session/session.dart';
+import '../../redux/work_dir/work_dir.dart';
+import '../../utils/strings.dart';
+import 'base_command.dart';
 
-class SetupCommand extends Command {
-  SetupCommand({required Logger logger}) : _logger = logger {
+/// Command to set up the PocketBase CLI environment.
+////
+/// This command guides the user through the initial setup process,
+/// including:
+/// - Resolving the working directory
+/// - Loading existing configuration and environment files
+/// - Populating session credentials from environment variables
+/// - Prompting the user for any missing credentials
+/// - Validating credentials and establishing a connection to PocketBase
+/// - Fetching the database schema
+/// - Allowing the user to select managed collections and credential sources
+/// - Saving the final configuration and environment settings
+/// This command is typically run once during initial setup
+/// or whenever the user wants to reconfigure their
+/// PocketBase CLI environment.
+class SetupCommand extends Command with WithStore {
+  SetupCommand({required this.store}) {
     argParser.addOption(
-      'dir',
-      abbr: 'd',
-      help:
-          'The local working directory for storing the PocketBase schema, '
-          'config, and seed data files.',
+      S.dirOptionName,
+      abbr: S.dirOptionAbbr,
+      help: S.dirOptionHelp,
       mandatory: true,
     );
   }
 
   @override
-  final name = 'setup';
+  final name = S.setupCommand;
 
   @override
-  final description =
-      'Setup the local environment for managing PocketBase schema and data.';
+  final description = S.setupDescription;
 
-  final Logger _logger;
+  @override
+  final Store<AppState> store;
 
   @override
   Future<int> run() async {
-    final dir = DirectoryPath(argResults!['dir']);
-    if (dir.validate() case final Failure result) {
-      return result.exitCode;
-    }
+    logger.info('Starting setup command...');
 
-    _logger.info('Configuring setup...');
+    // 1. Resolve working directory
+    final path = argResults![S.dirOptionName];
+    dispatchSync(ResolveWorkDirAction(path: path, context: .setup));
 
-    final repositories = RepositoryFactory(dir);
-    final configRepository = repositories.createConfigRepository();
-    final envRepository = repositories.createEnvRepository();
+    // 2. Load existing config and env files
+    dispatchSync(LoadConfigAction());
+    dispatchSync(LoadEnvAction());
 
-    final inputs = InputsFactory(_logger);
+    // 3. Populate session from env (use existing values if available)
+    dispatchSync(PopulateSessionFromEnvAction());
 
-    final dotenv = envRepository.readEnv();
-    final config = configRepository.readConfig();
+    // 4. Resolve missing credentials from user (only if needed)
+    dispatchSync(ResolveCredentialsAction());
+    dispatchSync(ValidateCredentialsAction());
 
-    final credentialsResult = resolveCredentials(
-      dotenv: dotenv,
-      config: config,
-      input: inputs.createCredentialsInput(),
-    );
+    // 5. Setup PocketBase connection and authenticate
+    await dispatchAndWait(SetupPocketBaseConnectionAction());
+    await dispatchAndWait(LogInAction());
 
-    if (credentialsResult case Result(:final error?)) {
-      _logger.err(error.message);
-      return error.exitCode;
-    }
+    // 6. Fetch schema and select collections/credentials source
+    await dispatchAndWait(FetchRemoteSchemaAction());
+    dispatchSync(SelectManagedCollectionsAction());
+    dispatchSync(SelectCredentialsSourceAction());
 
-    final credentials = credentialsResult.value;
-    final pbResult = await resolvePbClient(
-      host: credentials.host,
-      usernameOrEmail: credentials.usernameOrEmail,
-      password: credentials.password,
-      token: credentials.token,
-    );
+    // 7. Ensure working directory exists (or create it)
+    dispatchSync(EnsureWorkDirExistsAction());
 
-    if (pbResult case Result(:final error?)) {
-      _logger.err('Failed to connect to PocketBase: ${error.message}');
-      return error.exitCode;
-    }
+    // 8. Persist configuration
+    dispatchSync(SaveConfigAction());
+    dispatchSync(SaveEnvAction());
 
-    final pb = pbResult.value;
-
-    // Fetch the current schema from the remote PocketBase instance
-    final collectionsResult = await pb.getCollections();
-    if (collectionsResult case Result(:final error?)) {
-      _logger.err('Failed to fetch collections: ${error.message}');
-      return error.exitCode;
-    }
-
-    final collections = collectionsResult.value;
-    final userCollections = collections.where((e) => !e.system);
-    final collectionsNames = userCollections.map((e) => e.name).toList();
-
-    final setupInput = inputs.createSetupInput();
-
-    final managedCollections = setupInput.chooseCollections(
-      choices: collectionsNames,
-      defaultValues: config.managedCollections,
-    );
-
-    if (managedCollections.isEmpty) {
-      _logger.warn('No collections selected for management');
-    }
-
-    final source = CredentialsSource.fromTitle(
-      setupInput.chooseCredentialsSource(
-        choices: CredentialsSource.titles,
-        defaultValue: config.credentialsSource.title,
-      ),
-    );
-
-    final sourceChanged = source != config.credentialsSource;
-    final managedCollectionsChanged = managedCollections
-        .toSet()
-        .difference(config.managedCollections.toSet())
-        .isNotEmpty;
-
-    if (!sourceChanged && !managedCollectionsChanged) {
-      _logger.info('Setup is already up to date.'.green);
-      return ExitCode.success.code;
-    }
-
-    if (dir.notFound) {
-      dir.create();
-      _logger.info('Created directory: ${dir.path}');
-    }
-
-    switch (source) {
-      case CredentialsSource.dotenv:
-        envRepository.writeEnv(
-          dotenv.copyWith(
-            pbHost: credentials.host,
-            pbUsername: credentials.usernameOrEmail,
-            pbPassword: credentials.password,
-            pbToken: pb.instance.authStore.token,
-          ),
-        );
-
-        _logger.info('.env file updated with provided credentials.');
-
-      case _:
-        _logger.info('Using interactive credentials; no .env update needed.');
-    }
-
-    configRepository.writeConfig(
-      config.copyWith(
-        managedCollections: managedCollections,
-        credentialsSource: source,
-      ),
-    );
-    _logger
-      ..success('Setup completed successfully!')
-      ..info(
-        'You can now use other commands to manage your PocketBase data.',
-      );
+    logger.success('Setup completed successfully.');
 
     return ExitCode.success.code;
   }
