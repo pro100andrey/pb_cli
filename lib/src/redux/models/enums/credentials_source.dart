@@ -10,7 +10,10 @@ enum CredentialsSource {
   prompt
   ;
 
+  /// Checks if the source is [CredentialsSource.dotenv]
   bool get isDotenv => this == CredentialsSource.dotenv;
+
+  /// Checks if the source is [CredentialsSource.prompt]
   bool get isPrompt => this == CredentialsSource.prompt;
 
   /// Human-readable title of the credentials source
