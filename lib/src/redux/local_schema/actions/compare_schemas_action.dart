@@ -1,7 +1,7 @@
 import '../../common.dart';
 import '../schema_comparator.dart';
 
-final class CompareSchemaWithRemoteAction extends AppAction {
+final class CompareSchemasAction extends AppAction {
   @override
   AppState? reduce() {
     final local = select.localCollections;

@@ -62,7 +62,7 @@ class PullCommand extends Command with WithStore {
     // 6. Fetch remote schema
     await dispatchAndWait(FetchRemoteSchemaAction());
     dispatchSync(LoadLocalSchemaAction());
-    dispatchSync(CompareSchemaWithRemoteAction());
+    dispatchSync(CompareSchemasAction());
     dispatchSync(SaveLocalSchemaAction());
 
     final _ =
