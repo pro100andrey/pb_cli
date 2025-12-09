@@ -1,9 +1,9 @@
 import '../../../extensions/logger.dart';
 import '../../common/app_action.dart';
 import '../../env/env_state.dart';
-import '../../services/env_service.dart';
 import '../../session/session_state.dart';
 import '../../types/env.dart';
+import '../env_persistence.dart';
 
 /// Saves current session credentials to .env file.
 ///
@@ -25,9 +25,9 @@ final class SaveEnvAction extends AppAction {
       EnvKey.pbToken: ?select.token,
     });
 
-    final file = select.workDirPath!.joinFile(EnvService.fileName);
+    final file = select.workDirPath!.joinFile('.env');
 
-    EnvService.write(outputFile: file, env: data);
+    writeEnv(data, file);
 
     logger.sectionMapped(
       level: .verbose,

@@ -1,9 +1,9 @@
 import '../../../extensions/logger.dart';
 import '../../common/app_action.dart';
 import '../../env/env_state.dart';
-import '../../services/env_service.dart';
 import '../../session/actions/populate_session_from_env_action.dart';
 import '../../types/env.dart';
+import '../env_persistence.dart';
 
 /// Loads environment variables from .env file into [EnvState].
 ///
@@ -16,8 +16,8 @@ import '../../types/env.dart';
 final class LoadEnvAction extends AppAction {
   @override
   AppState reduce() {
-    final file = select.workDirPath!.joinFile(EnvService.fileName);
-    final data = EnvService.read(inputFile: file);
+    final file = select.workDirPath!.joinFile('.env');
+    final data = readEnv(file: file);
 
     logger.sectionMapped(
       level: .verbose,
