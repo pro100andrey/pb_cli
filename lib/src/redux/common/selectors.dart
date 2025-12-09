@@ -48,7 +48,8 @@ extension type Selectors(AppState state) {
   /// List of collection names that are managed by the CLI.
   ///
   /// Returns an empty list if no collections are configured.
-  IList<String> get managedCollections => state.config.data.managedCollections;
+  List<String> get managedCollections =>
+      state.config.data.managedCollections;
 
   /// The source for obtaining credentials (dotenv file or user prompt).
   ///
@@ -106,8 +107,8 @@ extension type Selectors(AppState state) {
   /// Names of user-created collections.
   ///
   /// Useful for displaying collection choices or filtering operations.
-  Iterable<String> get remoteCollectionNamesWithoutSystem =>
-      remoteCollectionsWithoutSystem.map((c) => c.name);
+  IList<String> get remoteCollectionNamesWithoutSystem =>
+      remoteCollectionsWithoutSystem.map((c) => c.name).toIList();
 
   // Local Schema selectors
 

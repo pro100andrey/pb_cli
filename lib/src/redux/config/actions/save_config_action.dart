@@ -15,7 +15,7 @@ final class SaveConfigAction extends AppAction {
   @override
   AppState reduce() {
     final data = ConfigData.data({
-      ConfigKey.managedCollections: select.managedCollections.unlockView,
+      ConfigKey.managedCollections: select.managedCollections,
       ConfigKey.credentialsSource: select.credentialsSource.key,
     });
 
