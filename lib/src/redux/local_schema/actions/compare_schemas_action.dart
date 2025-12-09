@@ -11,7 +11,7 @@ final class CompareSchemasAction extends AppAction {
     final local = select.localCollections;
     final remote = select.remoteCollections;
 
-    final isSame = compareSchemas(local: local, remote: remote);
+    final isSame = _compareSchemas(local: local, remote: remote);
 
     logger.info(
       !isSame
@@ -30,7 +30,7 @@ final class CompareSchemasAction extends AppAction {
   /// Parameters:
   /// - [local]: Local collection schema
   /// - [remote]: Remote collection schema from PocketBase
-  bool compareSchemas({
+  bool _compareSchemas({
     required IList<CollectionModel> local,
     required IList<CollectionModel> remote,
   }) {
