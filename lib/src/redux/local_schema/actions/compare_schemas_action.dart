@@ -61,10 +61,7 @@ final class CompareSchemasAction extends AppAction {
       }
 
       // Compare collection content (rules, type, fields, etc.)
-      if (!_collectionsHaveSameContent(
-        remoteCollection,
-        localCollection,
-      )) {
+      if (!_compareCollections(remoteCollection, localCollection)) {
         logger.detail(
           'Difference found in collection: ${remoteCollection.name}',
         );
@@ -75,7 +72,7 @@ final class CompareSchemasAction extends AppAction {
     return true;
   }
 
-  bool _collectionsHaveSameContent(
+  bool _compareCollections(
     CollectionModel remoteCollection,
     CollectionModel localCollection,
   ) {
