@@ -26,7 +26,7 @@ final class SaveEnvAction extends AppAction {
     });
 
     final file = select.envFilePath;
-    writeEnv(data, file);
+    writeEnv(data: data, file: file);
 
     logger.sectionMapped(
       level: .verbose,

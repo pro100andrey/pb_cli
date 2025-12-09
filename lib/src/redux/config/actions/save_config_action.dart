@@ -20,7 +20,7 @@ final class SaveConfigAction extends AppAction {
 
     final file = select.configFilePath;
 
-    writeConfig(data, file);
+    writeConfig(data: data, file: file);
 
     logger.detail(
       'Wrote config file to: ${file.canonicalized}',

@@ -2,13 +2,13 @@ import 'package:fast_immutable_collections/fast_immutable_collections.dart';
 import 'package:pocketbase/pocketbase.dart';
 
 import '../../common.dart';
-import '../../services/local_schema_service.dart';
+import '../local_schema_persistence.dart';
 
 final class LoadLocalSchemaAction extends AppAction {
   @override
   AppState? reduce() {
-    final file = select.workDirPath!.joinFile(LocalSchemaService.fileName);
-    final collections = LocalSchemaService.read(inputFile: file);
+    final file = select.localSchemaFilePath;
+    final collections = readLocalSchema(inputFile: file);
 
     final byId = <String, CollectionModel>{};
     final ids = <String>[];

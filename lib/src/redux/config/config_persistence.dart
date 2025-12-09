@@ -8,7 +8,7 @@ import '../types/config.dart';
 ///
 /// Serializes [data] to JSON with pretty printing (2-space indent).
 
-void writeConfig(ConfigData data, FilePath file) {
+void writeConfig({required ConfigData data, required FilePath file}) {
   final json = const JsonEncoder.withIndent('\t').convert(data);
 
   file.writeAsString(json);

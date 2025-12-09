@@ -3,7 +3,7 @@ import 'package:cli_utils/cli_utils.dart';
 import '../types/env.dart';
 
 /// Writes environment data to file, merging with existing content.
-void writeEnv(EnvData data, FilePath file) {
+void writeEnv({required EnvData data, required FilePath file}) {
   // 1. Read existing .env data with merge priority to new data
   final envData = readEnv(file: file)..addAll(data);
   // 2. Write back to .env file
