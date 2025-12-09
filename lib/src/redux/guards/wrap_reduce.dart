@@ -7,19 +7,30 @@ import '../common/selectors.dart';
 
 class GuardsWrapReduce extends WrapReduce<AppState> {
   @override
-  AppState process({required AppState oldState, required AppState newState}) =>
-      _applyGuards(oldState, newState);
+  AppState process({
+    required AppState oldState,
+    required AppState newState,
+    required ReduxAction<AppState> action,
+  }) => _applyGuards(oldState, newState, action);
 
-  AppState _applyGuards(AppState oldState, AppState newState) {
+  AppState _applyGuards(
+    AppState oldState,
+    AppState newState,
+    ReduxAction<AppState> action,
+  ) {
     final preSel = Selectors(oldState);
     final curSel = Selectors(newState);
 
-    _workDirExistGuard(preSel, curSel);
+    _workDirExistGuard(preSel, curSel, action);
 
     return newState;
   }
 
-  void _workDirExistGuard(Selectors preSel, Selectors curSel) {
+  void _workDirExistGuard(
+    Selectors preSel,
+    Selectors curSel,
+    ReduxAction<AppState> action,
+  ) {
     final oldWorkDir = preSel.workDirPath;
     final newWorkDir = curSel.workDirPath;
 

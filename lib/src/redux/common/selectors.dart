@@ -107,4 +107,15 @@ extension type Selectors(AppState state) {
   /// Returns an empty list if no local schema is defined.
   IList<CollectionModel> get localCollections =>
       state.localSchema.sorted.map((id) => localSchemaById[id]!).toIList();
+
+  // Files selectors
+
+  /// Path to the .env file in the working directory.
+  FilePath get envFilePath => workDirPath!.joinFile('.env');
+
+  /// Path to the local schema file in the working directory.
+  FilePath get localSchemaFilePath => workDirPath!.joinFile('pb_schema.json');
+
+  /// Path to the config file in the working directory.
+  FilePath get configFilePath => workDirPath!.joinFile('pb_cli_config.json');
 }

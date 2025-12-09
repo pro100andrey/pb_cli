@@ -25,9 +25,7 @@ final class SaveEnvAction extends AppAction {
       EnvKey.pbToken: ?select.token,
     });
 
-    final file = select.workDirPath!.joinFile('.env');
-
-    writeEnv(data, file);
+    writeEnv(data, select.envFilePath);
 
     logger.sectionMapped(
       level: .verbose,

@@ -650,7 +650,7 @@ final class Store<St> {
 
     // 1. Wrap the reducer with the global wrapper (if any).
     final reduce = (_wrapReduce != null)
-        ? _wrapReduce.wrapReduce(action.reduce, this)
+        ? _wrapReduce.wrapReduce(action.reduce, this, action)
         : action.reduce;
 
     // 2. Call wrapReduce, which returns a Future<St?>.
@@ -673,7 +673,7 @@ final class Store<St> {
 
   FutureOr<void> _applyReduce(ReduxAction<St> action) {
     final reduce = (_wrapReduce != null)
-        ? _wrapReduce.wrapReduce(action.reduce, this)
+        ? _wrapReduce.wrapReduce(action.reduce, this, action)
         : action.reduce;
 
     // Sync reducer.

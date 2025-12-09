@@ -27,13 +27,21 @@ abstract class WrapReduce<St> {
   /// [newState] is the state returned by the reducer.
   ///
   /// Returns the new state to be saved in the store.
-  St process({required St oldState, required St newState});
+  St process({
+    required St oldState,
+    required St newState,
+    required ReduxAction<St> action,
+  });
 
   /// Wraps the given [reduce] function.
   ///
   /// The [store] is provided for context.
   /// Returns a new reducer function that includes the wrapping logic.
-  Reducer<St> wrapReduce(Reducer<St> reduce, Store<St> store) {
+  Reducer<St> wrapReduce(
+    Reducer<St> reduce,
+    Store<St> store,
+    ReduxAction<St> action,
+  ) {
     if (!ifShouldProcess()) {
       return reduce;
     }
@@ -52,7 +60,11 @@ abstract class WrapReduce<St> {
             return newState;
           }
 
-          return process(oldState: oldState, newState: newState);
+          return process(
+            oldState: oldState,
+            newState: newState,
+            action: action,
+          );
         };
       }
       // 2) Async reducer.
@@ -72,7 +84,11 @@ abstract class WrapReduce<St> {
             return newState;
           }
 
-          return process(oldState: oldState, newState: newState);
+          return process(
+            oldState: oldState,
+            newState: newState,
+            action: action,
+          );
         };
       }
       // Not defined.
