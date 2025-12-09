@@ -5,6 +5,10 @@ import 'package:pocketbase/pocketbase.dart';
 
 import '../../common.dart';
 
+/// Action to compare local collection schemas with remote PocketBase schemas.
+/// Logs detailed differences if any discrepancies are found.
+///
+/// No state changes are made; this action is for informational purposes only.
 final class CompareSchemasAction extends AppAction {
   @override
   AppState? reduce() {
