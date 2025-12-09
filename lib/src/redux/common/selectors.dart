@@ -111,11 +111,17 @@ extension type Selectors(AppState state) {
   // Files selectors
 
   /// Path to the .env file in the working directory.
+  ///
+  /// Defaults to '.env'.
   FilePath get envFilePath => workDirPath!.joinFile('.env');
 
   /// Path to the local schema file in the working directory.
+  ///
+  /// Defaults to 'pb_schema.json'.
   FilePath get localSchemaFilePath => workDirPath!.joinFile('pb_schema.json');
 
   /// Path to the config file in the working directory.
+  ///
+  /// Defaults to 'pb_cli_config.json'.
   FilePath get configFilePath => workDirPath!.joinFile('pb_cli_config.json');
 }
