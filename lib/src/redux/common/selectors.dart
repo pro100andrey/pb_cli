@@ -25,6 +25,22 @@ import 'app_action.dart';
 /// }
 /// ```
 extension type Selectors(AppState state) {
+  // Files selectors
+
+  /// Path to the .env file in the working directory.
+  ///
+  /// Defaults to '.env'.
+  FilePath get envFilePath => workDirPath!.joinFile('.env');
+
+  /// Path to the local schema file in the working directory.
+  ///
+  /// Defaults to 'pb_schema.json'.
+  FilePath get localSchemaFilePath => workDirPath!.joinFile('pb_schema.json');
+
+  /// Path to the config file in the working directory.
+  ///
+  /// Defaults to 'pb_cli_config.json'.
+  FilePath get configFilePath => workDirPath!.joinFile('pb_cli_config.json');
   // WorkDir selectors
 
   ResolvedWorkDir get resolvedWorkDir => state.workDir as ResolvedWorkDir;
@@ -48,8 +64,7 @@ extension type Selectors(AppState state) {
   /// List of collection names that are managed by the CLI.
   ///
   /// Returns an empty list if no collections are configured.
-  List<String> get managedCollections =>
-      state.config.data.managedCollections;
+  List<String> get managedCollections => state.config.data.managedCollections;
 
   /// The source for obtaining credentials (dotenv file or user prompt).
   ///
@@ -122,20 +137,10 @@ extension type Selectors(AppState state) {
   IList<CollectionModel> get localCollections =>
       state.localSchema.sorted.map((id) => localSchemaById[id]!).toIList();
 
-  // Files selectors
 
-  /// Path to the .env file in the working directory.
-  ///
-  /// Defaults to '.env'.
-  FilePath get envFilePath => workDirPath!.joinFile('.env');
+  // Records selectors
 
-  /// Path to the local schema file in the working directory.
-  ///
-  /// Defaults to 'pb_schema.json'.
-  FilePath get localSchemaFilePath => workDirPath!.joinFile('pb_schema.json');
-
-  /// Path to the config file in the working directory.
-  ///
-  /// Defaults to 'pb_cli_config.json'.
-  FilePath get configFilePath => workDirPath!.joinFile('pb_cli_config.json');
+  /// Map of collection name to list of [RecordModel] for all fetched records.
+  IMap<String, IList<RecordModel>> get recordsByCollectionName =>
+      state.records.byCollectionName;
 }

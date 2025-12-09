@@ -7,6 +7,6 @@ part 'records_state.freezed.dart';
 @freezed
 abstract class RecordsState with _$RecordsState {
   const factory RecordsState({
-    @Default(IMapConst({})) IMap<String, RecordModel> byCollectionName,
+    @Default(IMapConst({})) IMap<String, IList<RecordModel>> byCollectionName,
   }) = _RecordsState;
 }

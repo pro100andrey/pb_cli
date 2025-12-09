@@ -14,7 +14,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$RecordsState {
 
- IMap<String, RecordModel> get byCollectionName;
+ IMap<String, IList<RecordModel>> get byCollectionName;
 /// Create a copy of RecordsState
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -45,7 +45,7 @@ abstract mixin class $RecordsStateCopyWith<$Res>  {
   factory $RecordsStateCopyWith(RecordsState value, $Res Function(RecordsState) _then) = _$RecordsStateCopyWithImpl;
 @useResult
 $Res call({
- IMap<String, RecordModel> byCollectionName
+ IMap<String, IList<RecordModel>> byCollectionName
 });
 
 
@@ -65,7 +65,7 @@ class _$RecordsStateCopyWithImpl<$Res>
 @pragma('vm:prefer-inline') @override $Res call({Object? byCollectionName = null,}) {
   return _then(_self.copyWith(
 byCollectionName: null == byCollectionName ? _self.byCollectionName : byCollectionName // ignore: cast_nullable_to_non_nullable
-as IMap<String, RecordModel>,
+as IMap<String, IList<RecordModel>>,
   ));
 }
 
@@ -80,7 +80,7 @@ class _RecordsState implements RecordsState {
   const _RecordsState({this.byCollectionName = const IMapConst({})});
   
 
-@override@JsonKey() final  IMap<String, RecordModel> byCollectionName;
+@override@JsonKey() final  IMap<String, IList<RecordModel>> byCollectionName;
 
 /// Create a copy of RecordsState
 /// with the given fields replaced by the non-null parameter values.
@@ -112,7 +112,7 @@ abstract mixin class _$RecordsStateCopyWith<$Res> implements $RecordsStateCopyWi
   factory _$RecordsStateCopyWith(_RecordsState value, $Res Function(_RecordsState) _then) = __$RecordsStateCopyWithImpl;
 @override @useResult
 $Res call({
- IMap<String, RecordModel> byCollectionName
+ IMap<String, IList<RecordModel>> byCollectionName
 });
 
 
@@ -132,7 +132,7 @@ class __$RecordsStateCopyWithImpl<$Res>
 @override @pragma('vm:prefer-inline') $Res call({Object? byCollectionName = null,}) {
   return _then(_RecordsState(
 byCollectionName: null == byCollectionName ? _self.byCollectionName : byCollectionName // ignore: cast_nullable_to_non_nullable
-as IMap<String, RecordModel>,
+as IMap<String, IList<RecordModel>>,
   ));
 }
 
