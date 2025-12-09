@@ -3,7 +3,6 @@ import '../../common/app_action.dart';
 import '../../env/env_state.dart';
 import '../../session/actions/populate_session_from_env_action.dart';
 import '../../types/env.dart';
-import '../env_persistence.dart';
 
 /// Loads environment variables from .env file into [EnvState].
 ///
@@ -17,7 +16,24 @@ final class LoadEnvAction extends AppAction {
   @override
   AppState reduce() {
     final file = select.envFilePath;
-    final data = readEnv(file: file);
+    final data = EnvData.data({});
+
+    if (!file.notFound) {
+      final lines = file.readAsLines();
+      for (final line in lines) {
+        // Skip empty lines or comments
+        if (line.trim().isEmpty || line.startsWith('#')) {
+          continue;
+        }
+        // Split at the first '=' to separate key and value
+        final parts = line.split('=');
+        if (parts.length >= 2) {
+          final key = parts[0].trim();
+          final value = parts.sublist(1).join('=').trim();
+          data[EnvKey(key)] = value;
+        }
+      }
+    }
 
     logger.sectionMapped(
       level: .verbose,

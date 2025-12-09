@@ -3,7 +3,6 @@ import '../../common/app_action.dart';
 import '../../env/env_state.dart';
 import '../../session/session_state.dart';
 import '../../types/env.dart';
-import '../env_persistence.dart';
 
 /// Saves current session credentials to .env file.
 ///
@@ -26,7 +25,12 @@ final class SaveEnvAction extends AppAction {
     });
 
     final file = select.envFilePath;
-    writeEnv(data: data, file: file);
+    final buffer = StringBuffer();
+    for (final entry in data.entries) {
+      buffer.writeln('${entry.key}=${entry.value}');
+    }
+    
+    file.writeAsString(buffer.toString());
 
     logger.sectionMapped(
       level: .verbose,

@@ -1,8 +1,10 @@
+import 'dart:convert';
+
 import '../../../extensions/logger.dart';
 import '../../common/app_action.dart';
 import '../../config/config_state.dart';
 import '../../types/config.dart';
-import '../config_persistence.dart';
+
 
 /// Loads configuration from config.json file into [ConfigState].
 ///
@@ -13,7 +15,9 @@ final class LoadConfigAction extends AppAction {
   @override
   AppState reduce() {
     final file = select.configFilePath;
-    final data = readConfig(file: file);
+    final contents = file.readAsString();
+    final configMap = jsonDecode(contents) as Map<ConfigKey, dynamic>;
+    final data = ConfigData.data(configMap);
 
     logger.sectionMapped(
       level: .verbose,

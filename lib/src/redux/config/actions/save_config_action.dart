@@ -1,7 +1,8 @@
+import 'dart:convert';
+
 import '../../common/app_action.dart';
 import '../../config/config_state.dart';
 import '../../types/config.dart';
-import '../config_persistence.dart';
 
 /// Saves current configuration to config.json file.
 ///
@@ -18,13 +19,10 @@ final class SaveConfigAction extends AppAction {
       ConfigKey.credentialsSource: select.credentialsSource.key,
     });
 
-    final file = select.configFilePath;
+    final json = const JsonEncoder.withIndent('\t').convert(data);
+    final file = select.configFilePath..writeAsString(json);
 
-    writeConfig(data: data, file: file);
-
-    logger.detail(
-      'Wrote config file to: ${file.canonicalized}',
-    );
+    logger.detail('Wrote config file to: ${file.canonicalized}');
 
     return state.copyWith.config(data: data);
   }
