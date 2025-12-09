@@ -2,9 +2,7 @@ import 'package:cli_utils/cli_utils.dart';
 import 'package:mason_logger/mason_logger.dart';
 import 'package:pocketbase/pocketbase.dart';
 
-import '../client/pb_client.dart';
 import '../failure/failure.dart';
-import '../models/result.dart';
 
 /// Service for fetching and managing collection data from PocketBase.
 ///
@@ -21,21 +19,14 @@ class CollectionDataService {
   /// Returns all records or a [Failure] if an error occurs.
   ///
   /// Parameters:
-  /// - [pbClient]: Authenticated PocketBase client
+  /// - [pb]: Authenticated PocketBase client
   /// - [collectionName]: Name of the collection to fetch
   /// - [batchSize]: Number of records per request (1-500)
   CliFuture<List<RecordModel>> fetchAllRecords({
-    required PbClient pbClient,
+    required PocketBase pb,
     required String collectionName,
     required int batchSize,
   }) async {
-    if (batchSize <= 0 || batchSize > 500) {
-      return Failure(
-        message:
-            'Invalid batch size: $batchSize. It must be between 1 and 500.',
-        exitCode: ExitCode.usage.code,
-      ).asResult();
-    }
 
     final styledCollectionName = collectionName.bold;
 
@@ -50,29 +41,16 @@ class CollectionDataService {
 
     while (true) {
       // Get the records batch
-      final result = await pbClient.getCollectionRecordsBatch(
-        collectionName,
-        batchSize,
-        offset,
-      );
-
-      // Handle potential errors
-      if (result case Result(error: final error?)) {
-        progress.fail(
-          'Failed to fetch records from collection $styledCollectionName: '
-          '${error.message}',
-        );
-        return error.asResult();
-      }
-
-      final resultList = result.value;
+      final result = await pb
+          .collection(collectionName)
+          .getList(perPage: batchSize, page: (offset ~/ batchSize) + 1);
 
       // initialize totalItems on the first fetch
       if (offset == 0) {
-        totalItems = resultList.totalItems;
+        totalItems = result.totalItems;
       }
 
-      final batch = resultList.items;
+      final batch = result.items;
 
       // Break the loop if no more records are returned
       if (batch.isEmpty) {

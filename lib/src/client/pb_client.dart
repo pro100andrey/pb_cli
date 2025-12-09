@@ -84,18 +84,6 @@ final class PbClient {
         return existingItems.items.isEmpty;
       });
 
-  CliFuture<ResultList<RecordModel>> getCollectionRecordsBatch(
-    String collectionName,
-    int batchSize,
-    int offset,
-  ) async => _op(() async {
-    final result = await _pb
-        .collection(collectionName)
-        .getList(perPage: batchSize, page: (offset ~/ batchSize) + 1);
-
-    return result;
-  });
-
   /// Executes a PocketBase operation and wraps it in a [CliResult].
   ///
   /// This method centralizes error handling for PocketBase API calls.
