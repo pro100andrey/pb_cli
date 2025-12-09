@@ -2,15 +2,20 @@ import 'package:cli_utils/cli_utils.dart';
 
 import '../../../extensions/logger.dart';
 import '../../common/app_action.dart';
+import '../../models/enums/command.dart';
+import '../work_dir_state.dart';
 
 /// Action to resolve and validate the working directory path.
 ///
 /// Throws an exception if the provided path is not a valid directory.
 final class ResolveWorkDirAction extends AppAction {
-  ResolveWorkDirAction({required this.path});
+  ResolveWorkDirAction({required this.path, required this.commandContext});
 
   /// The path to resolve as the working directory.
   final String path;
+
+  /// The command context associated with the working directory.
+  final CommandContext commandContext;
 
   @override
   AppState reduce() {
@@ -26,6 +31,11 @@ final class ResolveWorkDirAction extends AppAction {
       },
     );
 
-    return state.copyWith.workDir(path: workDirPath);
+    return state.copyWith(
+      workDir: ResolvedWorkDir(
+        path: workDirPath,
+        commandContext: commandContext,
+      ),
+    );
   }
 }

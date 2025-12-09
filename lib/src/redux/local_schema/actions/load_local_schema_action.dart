@@ -9,6 +9,11 @@ final class LoadLocalSchemaAction extends AppAction {
   @override
   AppState? reduce() {
     final file = select.localSchemaFilePath;
+
+    if (file.notFound) {
+      return null;
+    }
+
     final contents = file.readAsString();
     final schemaData = jsonDecode(contents) as List;
 

@@ -2,8 +2,10 @@ import 'package:cli_utils/cli_utils.dart';
 import 'package:fast_immutable_collections/fast_immutable_collections.dart';
 import 'package:pocketbase/pocketbase.dart';
 
+import '../models/enums/command.dart';
 import '../models/enums/credentials_source.dart';
 import '../types/session_token.dart';
+import '../work_dir/work_dir_state.dart';
 import 'app_action.dart';
 
 /// Extension type providing convenient read-only access to
@@ -25,10 +27,22 @@ import 'app_action.dart';
 extension type Selectors(AppState state) {
   // WorkDir selectors
 
+  ResolvedWorkDir get resolvedWorkDir => state.workDir as ResolvedWorkDir;
+
   /// The current working directory path.
   ///
   /// Returns `null` if not yet resolved.
-  DirectoryPath? get workDirPath => state.workDir.path;
+  DirectoryPath? get workDirPath => switch (state.workDir) {
+    UnresolvedWorkDir() => null,
+    ResolvedWorkDir(:final path, commandContext: _) => path,
+  };
+
+  /// The command context associated with the working directory.
+  CommandContext? get workDirCommandContext => switch (state.workDir) {
+    UnresolvedWorkDir() => null,
+    ResolvedWorkDir(path: _, :final commandContext) => commandContext,
+  };
+
 
   // Config selectors
 

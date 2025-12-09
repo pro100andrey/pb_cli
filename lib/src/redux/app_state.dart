@@ -33,7 +33,7 @@ abstract class AppState with _$AppState {
   }) = _AppState;
 
   factory AppState.initial() => const AppState(
-    workDir: WorkDirState(),
+    workDir: UnresolvedWorkDir(),
     env: EnvState(),
     config: ConfigState(),
     session: SessionState(),

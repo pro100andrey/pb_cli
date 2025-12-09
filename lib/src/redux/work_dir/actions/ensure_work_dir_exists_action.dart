@@ -8,7 +8,11 @@ final class EnsureWorkDirExistsAction extends AppAction {
       workDirPath.create(recursive: true);
       logger.info('Created working directory at ${workDirPath.path}');
 
-      return state.copyWith.workDir(path: workDirPath.sync);
+      final workDir = select.resolvedWorkDir.copyWith(
+        path: workDirPath.sync,
+      );
+
+      return state.copyWith(workDir: workDir);
     }
 
     logger.detail(

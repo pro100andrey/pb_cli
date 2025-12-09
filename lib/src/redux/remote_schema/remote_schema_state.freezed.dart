@@ -14,7 +14,10 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$RemoteSchemaState {
 
- IMap<String, CollectionModel> get byId; IList<String> get sorted; IList<String> get sortedWithoutSystem;
+/// Map of collections by their ID for fast O(1) access.
+ IMap<String, CollectionModel> get byId;/// List of all collection IDs in the order received from the server.
+ IList<String> get sorted;/// List of IDs for user collections only (excluding system collections).
+ IList<String> get sortedWithoutSystem;
 /// Create a copy of RemoteSchemaState
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -82,8 +85,11 @@ class _RemoteSchemaState implements RemoteSchemaState {
   const _RemoteSchemaState({this.byId = const IMapConst({}), this.sorted = const IListConst([]), this.sortedWithoutSystem = const IListConst([])});
   
 
+/// Map of collections by their ID for fast O(1) access.
 @override@JsonKey() final  IMap<String, CollectionModel> byId;
+/// List of all collection IDs in the order received from the server.
 @override@JsonKey() final  IList<String> sorted;
+/// List of IDs for user collections only (excluding system collections).
 @override@JsonKey() final  IList<String> sortedWithoutSystem;
 
 /// Create a copy of RemoteSchemaState

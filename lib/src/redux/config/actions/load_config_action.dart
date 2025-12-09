@@ -5,7 +5,6 @@ import '../../common/app_action.dart';
 import '../../config/config_state.dart';
 import '../../types/config.dart';
 
-
 /// Loads configuration from config.json file into [ConfigState].
 ///
 /// Reads the config.json file from the working directory and stores the
@@ -15,9 +14,15 @@ final class LoadConfigAction extends AppAction {
   @override
   AppState reduce() {
     final file = select.configFilePath;
-    final contents = file.readAsString();
-    final configMap = jsonDecode(contents) as Map<ConfigKey, dynamic>;
-    final data = ConfigData.data(configMap);
+
+    final data = ConfigData.data({});
+
+    if (!file.notFound) {
+      final contents = file.readAsString();
+      final configMap = jsonDecode(contents) as Map<ConfigKey, dynamic>;
+
+      data.addAll(configMap);
+    }
 
     logger.sectionMapped(
       level: .verbose,

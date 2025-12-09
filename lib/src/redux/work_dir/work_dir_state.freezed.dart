@@ -14,38 +14,107 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$WorkDirState {
 
- DirectoryPath? get path;
+
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is WorkDirState);
+}
+
+
+@override
+int get hashCode => runtimeType.hashCode;
+
+@override
+String toString() {
+  return 'WorkDirState()';
+}
+
+
+}
+
+/// @nodoc
+class $WorkDirStateCopyWith<$Res>  {
+$WorkDirStateCopyWith(WorkDirState _, $Res Function(WorkDirState) __);
+}
+
+
+
+/// @nodoc
+
+
+class UnresolvedWorkDir implements WorkDirState {
+  const UnresolvedWorkDir();
+  
+
+
+
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is UnresolvedWorkDir);
+}
+
+
+@override
+int get hashCode => runtimeType.hashCode;
+
+@override
+String toString() {
+  return 'WorkDirState.unresolved()';
+}
+
+
+}
+
+
+
+
+/// @nodoc
+
+
+class ResolvedWorkDir implements WorkDirState {
+  const ResolvedWorkDir({required this.path, required this.commandContext});
+  
+
+ final  DirectoryPath path;
+ final  CommandContext commandContext;
+
 /// Create a copy of WorkDirState
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
 @pragma('vm:prefer-inline')
-$WorkDirStateCopyWith<WorkDirState> get copyWith => _$WorkDirStateCopyWithImpl<WorkDirState>(this as WorkDirState, _$identity);
+$ResolvedWorkDirCopyWith<ResolvedWorkDir> get copyWith => _$ResolvedWorkDirCopyWithImpl<ResolvedWorkDir>(this, _$identity);
 
 
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is WorkDirState&&(identical(other.path, path) || other.path == path));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is ResolvedWorkDir&&(identical(other.path, path) || other.path == path)&&(identical(other.commandContext, commandContext) || other.commandContext == commandContext));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,path);
+int get hashCode => Object.hash(runtimeType,path,commandContext);
 
 @override
 String toString() {
-  return 'WorkDirState(path: $path)';
+  return 'WorkDirState.resolved(path: $path, commandContext: $commandContext)';
 }
 
 
 }
 
 /// @nodoc
-abstract mixin class $WorkDirStateCopyWith<$Res>  {
-  factory $WorkDirStateCopyWith(WorkDirState value, $Res Function(WorkDirState) _then) = _$WorkDirStateCopyWithImpl;
+abstract mixin class $ResolvedWorkDirCopyWith<$Res> implements $WorkDirStateCopyWith<$Res> {
+  factory $ResolvedWorkDirCopyWith(ResolvedWorkDir value, $Res Function(ResolvedWorkDir) _then) = _$ResolvedWorkDirCopyWithImpl;
 @useResult
 $Res call({
- DirectoryPath? path
+ DirectoryPath path, CommandContext commandContext
 });
 
 
@@ -53,86 +122,20 @@ $Res call({
 
 }
 /// @nodoc
-class _$WorkDirStateCopyWithImpl<$Res>
-    implements $WorkDirStateCopyWith<$Res> {
-  _$WorkDirStateCopyWithImpl(this._self, this._then);
+class _$ResolvedWorkDirCopyWithImpl<$Res>
+    implements $ResolvedWorkDirCopyWith<$Res> {
+  _$ResolvedWorkDirCopyWithImpl(this._self, this._then);
 
-  final WorkDirState _self;
-  final $Res Function(WorkDirState) _then;
-
-/// Create a copy of WorkDirState
-/// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? path = freezed,}) {
-  return _then(_self.copyWith(
-path: freezed == path ? _self.path : path // ignore: cast_nullable_to_non_nullable
-as DirectoryPath?,
-  ));
-}
-
-}
-
-
-
-/// @nodoc
-
-
-class _WorkDirState implements WorkDirState {
-  const _WorkDirState({this.path});
-  
-
-@override final  DirectoryPath? path;
+  final ResolvedWorkDir _self;
+  final $Res Function(ResolvedWorkDir) _then;
 
 /// Create a copy of WorkDirState
 /// with the given fields replaced by the non-null parameter values.
-@override @JsonKey(includeFromJson: false, includeToJson: false)
-@pragma('vm:prefer-inline')
-_$WorkDirStateCopyWith<_WorkDirState> get copyWith => __$WorkDirStateCopyWithImpl<_WorkDirState>(this, _$identity);
-
-
-
-@override
-bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _WorkDirState&&(identical(other.path, path) || other.path == path));
-}
-
-
-@override
-int get hashCode => Object.hash(runtimeType,path);
-
-@override
-String toString() {
-  return 'WorkDirState(path: $path)';
-}
-
-
-}
-
-/// @nodoc
-abstract mixin class _$WorkDirStateCopyWith<$Res> implements $WorkDirStateCopyWith<$Res> {
-  factory _$WorkDirStateCopyWith(_WorkDirState value, $Res Function(_WorkDirState) _then) = __$WorkDirStateCopyWithImpl;
-@override @useResult
-$Res call({
- DirectoryPath? path
-});
-
-
-
-
-}
-/// @nodoc
-class __$WorkDirStateCopyWithImpl<$Res>
-    implements _$WorkDirStateCopyWith<$Res> {
-  __$WorkDirStateCopyWithImpl(this._self, this._then);
-
-  final _WorkDirState _self;
-  final $Res Function(_WorkDirState) _then;
-
-/// Create a copy of WorkDirState
-/// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? path = freezed,}) {
-  return _then(_WorkDirState(
-path: freezed == path ? _self.path : path // ignore: cast_nullable_to_non_nullable
-as DirectoryPath?,
+@pragma('vm:prefer-inline') $Res call({Object? path = null,Object? commandContext = null,}) {
+  return _then(ResolvedWorkDir(
+path: null == path ? _self.path : path // ignore: cast_nullable_to_non_nullable
+as DirectoryPath,commandContext: null == commandContext ? _self.commandContext : commandContext // ignore: cast_nullable_to_non_nullable
+as CommandContext,
   ));
 }
 
