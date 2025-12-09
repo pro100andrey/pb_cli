@@ -78,11 +78,11 @@ String toString() {
 
 
 class ResolvedWorkDir implements WorkDirState {
-  const ResolvedWorkDir({required this.path, required this.commandContext});
+  const ResolvedWorkDir({required this.path, required this.context});
   
 
  final  DirectoryPath path;
- final  CommandContext commandContext;
+ final  CommandContext context;
 
 /// Create a copy of WorkDirState
 /// with the given fields replaced by the non-null parameter values.
@@ -94,16 +94,16 @@ $ResolvedWorkDirCopyWith<ResolvedWorkDir> get copyWith => _$ResolvedWorkDirCopyW
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is ResolvedWorkDir&&(identical(other.path, path) || other.path == path)&&(identical(other.commandContext, commandContext) || other.commandContext == commandContext));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is ResolvedWorkDir&&(identical(other.path, path) || other.path == path)&&(identical(other.context, context) || other.context == context));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,path,commandContext);
+int get hashCode => Object.hash(runtimeType,path,context);
 
 @override
 String toString() {
-  return 'WorkDirState.resolved(path: $path, commandContext: $commandContext)';
+  return 'WorkDirState.resolved(path: $path, context: $context)';
 }
 
 
@@ -114,7 +114,7 @@ abstract mixin class $ResolvedWorkDirCopyWith<$Res> implements $WorkDirStateCopy
   factory $ResolvedWorkDirCopyWith(ResolvedWorkDir value, $Res Function(ResolvedWorkDir) _then) = _$ResolvedWorkDirCopyWithImpl;
 @useResult
 $Res call({
- DirectoryPath path, CommandContext commandContext
+ DirectoryPath path, CommandContext context
 });
 
 
@@ -131,10 +131,10 @@ class _$ResolvedWorkDirCopyWithImpl<$Res>
 
 /// Create a copy of WorkDirState
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') $Res call({Object? path = null,Object? commandContext = null,}) {
+@pragma('vm:prefer-inline') $Res call({Object? path = null,Object? context = null,}) {
   return _then(ResolvedWorkDir(
 path: null == path ? _self.path : path // ignore: cast_nullable_to_non_nullable
-as DirectoryPath,commandContext: null == commandContext ? _self.commandContext : commandContext // ignore: cast_nullable_to_non_nullable
+as DirectoryPath,context: null == context ? _self.context : context // ignore: cast_nullable_to_non_nullable
 as CommandContext,
   ));
 }

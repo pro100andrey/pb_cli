@@ -11,6 +11,6 @@ sealed class WorkDirState with _$WorkDirState {
 
   const factory WorkDirState.resolved({
     required DirectoryPath path,
-    required CommandContext commandContext,
+    required CommandContext context,
   }) = ResolvedWorkDir;
 }

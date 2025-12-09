@@ -41,13 +41,10 @@ class PullCommand extends Command with WithStore {
   @override
   Future<int> run() async {
     logger.info('Starting pull command...');
+
     // 1. Resolve working directory
-    dispatchSync(
-      ResolveWorkDirAction(
-        path: argResults![S.dirOptionName],
-        commandContext: .pull,
-      ),
-    );
+    final path = argResults![S.dirOptionName];
+    dispatchSync(ResolveWorkDirAction(path: path, context: .pull));
 
     // 2. Load existing config and env files
     dispatchSync(LoadConfigAction());

@@ -34,15 +34,14 @@ extension type Selectors(AppState state) {
   /// Returns `null` if not yet resolved.
   DirectoryPath? get workDirPath => switch (state.workDir) {
     UnresolvedWorkDir() => null,
-    ResolvedWorkDir(:final path, commandContext: _) => path,
+    ResolvedWorkDir(:final path) => path,
   };
 
   /// The command context associated with the working directory.
   CommandContext? get workDirCommandContext => switch (state.workDir) {
     UnresolvedWorkDir() => null,
-    ResolvedWorkDir(path: _, :final commandContext) => commandContext,
+    ResolvedWorkDir(:final context) => context,
   };
-
 
   // Config selectors
 

@@ -9,13 +9,13 @@ import '../work_dir_state.dart';
 ///
 /// Throws an exception if the provided path is not a valid directory.
 final class ResolveWorkDirAction extends AppAction {
-  ResolveWorkDirAction({required this.path, required this.commandContext});
+  ResolveWorkDirAction({required this.path, required this.context});
 
   /// The path to resolve as the working directory.
   final String path;
 
   /// The command context associated with the working directory.
-  final CommandContext commandContext;
+  final CommandContext context;
 
   @override
   AppState reduce() {
@@ -32,10 +32,7 @@ final class ResolveWorkDirAction extends AppAction {
     );
 
     return state.copyWith(
-      workDir: ResolvedWorkDir(
-        path: workDirPath,
-        commandContext: commandContext,
-      ),
+      workDir: ResolvedWorkDir(path: workDirPath, context: context),
     );
   }
 }
