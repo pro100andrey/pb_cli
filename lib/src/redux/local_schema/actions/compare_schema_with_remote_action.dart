@@ -1,5 +1,5 @@
 import '../../common.dart';
-import '../../services/schema_comparator_service.dart';
+import '../schema_comparator.dart';
 
 final class CompareSchemaWithRemoteAction extends AppAction {
   @override
@@ -7,8 +7,7 @@ final class CompareSchemaWithRemoteAction extends AppAction {
     final local = select.localCollections;
     final remote = select.remoteCollections;
 
-    final comparator = SchemaComparatorService(logger: logger);
-    final isSame = comparator.compare(local: local, remote: remote);
+    final isSame = compareSchemas(local: local, remote: remote, logger: logger);
 
     logger.info(
       !isSame
