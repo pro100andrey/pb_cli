@@ -47,19 +47,4 @@ enum CredentialsSource {
         orElse: () =>
             throw ArgumentError('No CredentialsSource found for key: $key'),
       );
-
-  /// Creates a [CredentialsSource] instance from its title
-  ///
-  /// Throws [ArgumentError] if no source with the given title is found
-  ///
-  /// Example:
-  /// ```dart
-  /// final source = CredentialsSource.fromTitle('Dotenv File');
-  /// ```
-  static CredentialsSource fromTitle(String title) =>
-      CredentialsSource.values.firstWhere(
-        (e) => e.title == title,
-        orElse: () =>
-            throw ArgumentError('No CredentialsSource found for title: $title'),
-      );
 }
