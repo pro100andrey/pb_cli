@@ -32,7 +32,8 @@ extension type const ConfigKey._(String value) implements String {
 /// Configuration data structure representing config.json key-value pairs.
 ///
 /// Provides type-safe access to configuration values with convenient getters.
-extension type ConfigData._(Map<ConfigKey, Object?> data) implements Map {
+extension type ConfigData._(Map<ConfigKey, Object?> data)
+    implements Map<ConfigKey, Object?> {
   /// Creates an empty [ConfigData] instance.
   const ConfigData.empty() : data = const {};
 

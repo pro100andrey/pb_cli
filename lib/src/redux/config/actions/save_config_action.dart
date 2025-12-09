@@ -1,7 +1,7 @@
 import '../../common/app_action.dart';
 import '../../config/config_state.dart';
-import '../../services/config_service.dart';
 import '../../types/config.dart';
+import '../config_persistence.dart';
 
 /// Saves current configuration to config.json file.
 ///
@@ -18,11 +18,13 @@ final class SaveConfigAction extends AppAction {
       ConfigKey.credentialsSource: select.credentialsSource.key,
     });
 
-    final file = select.workDirPath!.joinFile(ConfigService.fileName);
+    final file = select.configFilePath;
 
-    ConfigService.write(outputFile: file, data: data);
+    writeConfig(data, file);
 
-    logger.detail('Wrote config file to: ${file.canonicalized}');
+    logger.detail(
+      'Wrote config file to: ${file.canonicalized}',
+    );
 
     return state.copyWith.config(data: data);
   }

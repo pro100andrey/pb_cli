@@ -16,7 +16,8 @@ import '../env_persistence.dart';
 final class LoadEnvAction extends AppAction {
   @override
   AppState reduce() {
-    final data = readEnv(file: select.envFilePath);
+    final file = select.envFilePath;
+    final data = readEnv(file: file);
 
     logger.sectionMapped(
       level: .verbose,
