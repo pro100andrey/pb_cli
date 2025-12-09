@@ -6,6 +6,7 @@ import '../../redux/common/app_action.dart';
 import '../../redux/config/actions/load_config_action.dart';
 import '../../redux/env/actions/load_env_action.dart';
 import '../../redux/local_schema/local_schema.dart';
+import '../../redux/records/actions/download_files_action.dart';
 import '../../redux/records/actions/fetch_all_records_action.dart';
 import '../../redux/remote_schema/remote_schema.dart';
 import '../../redux/session/session.dart';
@@ -73,6 +74,7 @@ class PullCommand extends Command with WithStore {
         int.parse(S.pullBatchSizeOptionDefault);
 
     await dispatchAndWait(FetchAllRecordsAction(batchSize: batchSize));
+    await dispatchAndWait(DownloadFilesAction());
 
     // for (final collectionName in config.managedCollections) {
     //   final recordsResult = await _collectionDataService.fetchAllRecords(
