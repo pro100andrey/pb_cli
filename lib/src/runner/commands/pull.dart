@@ -71,7 +71,6 @@ class PullCommand extends Command with WithStore {
     final batchSize =
         int.tryParse(argResults![S.batchSizeOptionName]) ??
         int.parse(S.pullBatchSizeOptionDefault);
-
     await dispatchAndWait(FetchAllRecordsAction(batchSize: batchSize));
     dispatchSync(SaveRecordsAction());
     await dispatchAndWait(DownloadFilesAction());
