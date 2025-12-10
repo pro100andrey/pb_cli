@@ -10,31 +10,32 @@ import '../../redux/records/records.dart';
 import '../../redux/remote_schema/remote_schema.dart';
 import '../../redux/session/session.dart';
 import '../../redux/work_dir/work_dir.dart';
-import '../../utils/strings.dart';
 import 'base_command.dart';
 
 class PullCommand extends Command with WithStore {
   PullCommand({required this.store}) {
     argParser
       ..addOption(
-        S.dirOptionName,
-        abbr: S.dirOptionAbbr,
-        help: S.dirOptionHelp,
+        'dir',
+        abbr: 'd',
+        help:
+            'The local working directory for storing the PocketBase schema, '
+            'config, and seed data files.',
         mandatory: true,
       )
       ..addOption(
-        S.batchSizeOptionName,
-        abbr: S.batchSizeOptionAbbr,
-        help: S.pullBatchSizeOptionHelp,
-        defaultsTo: S.pullBatchSizeOptionDefault,
+        'batch-size',
+        abbr: 'b',
+        help: 'Number of records to fetch per batch. Maximum is 500.',
+        defaultsTo: '100',
       );
   }
 
   @override
-  final name = S.pullCommand;
+  final name = 'pull';
 
   @override
-  final description = S.pullDescription;
+  final description = 'Pull data from PocketBase and save it locally.';
 
   @override
   final Store<AppState> store;
@@ -44,7 +45,7 @@ class PullCommand extends Command with WithStore {
     logger.info('Starting pull command...');
 
     // 1. Resolve working directory
-    final path = argResults![S.dirOptionName];
+    final path = argResults!['dir'];
     dispatchSync(ResolveWorkDirAction(path: path, context: .pull));
 
     // 2. Load existing config and env files
@@ -68,9 +69,8 @@ class PullCommand extends Command with WithStore {
     dispatchSync(CompareSchemasAction());
     dispatchSync(SaveLocalSchemaAction());
 
-    final batchSize =
-        int.tryParse(argResults![S.batchSizeOptionName]) ??
-        int.parse(S.pullBatchSizeOptionDefault);
+    final batchSize = int.tryParse(argResults!['batch-size']) ?? 100;
+
     await dispatchAndWait(FetchAllRecordsAction(batchSize: batchSize));
     dispatchSync(SaveRecordsAction());
     await dispatchAndWait(DownloadFilesAction());

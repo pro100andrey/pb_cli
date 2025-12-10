@@ -7,7 +7,6 @@ import '../redux/guards/wrap_reduce.dart';
 import '../redux/observers/action_observer.dart';
 import '../redux/observers/error_observer.dart';
 import '../redux/observers/global_wrap_error.dart';
-import '../utils/strings.dart';
 import 'commands/pull.dart';
 import 'commands/push.dart';
 import 'commands/setup.dart';
@@ -26,17 +25,22 @@ Future<int> run(List<String> args) async {
     );
 
     // Setup the command runner
-    final runner = CommandRunner(S.appName, S.appDescription)
-      ..argParser.addFlag(
-        S.verboseFlagName,
-        abbr: S.verboseFlagAbbr,
-        help: S.verboseFlagHelp,
-        negatable: false,
-        callback: (value) => logger.level = value ? Level.verbose : Level.info,
-      )
-      ..addCommand(SetupCommand(store: store))
-      ..addCommand(PushCommand(store: store))
-      ..addCommand(PullCommand(store: store));
+    final runner =
+        CommandRunner(
+            'pb_cli',
+            'A utility for synchronizing PocketBase schemas and data.',
+          )
+          ..argParser.addFlag(
+            'verbose',
+            abbr: 'v',
+            help: 'Enable verbose logging output.',
+            negatable: false,
+            callback: (value) =>
+                logger.level = value ? Level.verbose : Level.info,
+          )
+          ..addCommand(SetupCommand(store: store))
+          ..addCommand(PushCommand(store: store))
+          ..addCommand(PullCommand(store: store));
 
     // Parse and run the command
     final result = runner.parse(args);

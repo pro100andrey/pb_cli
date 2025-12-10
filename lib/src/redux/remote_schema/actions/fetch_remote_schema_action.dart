@@ -21,7 +21,7 @@ final class FetchRemoteSchemaAction extends AppAction {
     progress.complete(
       'Fetched ${collections.length} collections from PocketBase.',
     );
-    
+
     final byId = <String, CollectionModel>{};
     final ids = <String>[];
     final sortedWithoutSystem = <String>[];

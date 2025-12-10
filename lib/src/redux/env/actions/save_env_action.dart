@@ -29,7 +29,7 @@ final class SaveEnvAction extends AppAction {
     for (final entry in data.entries) {
       buffer.writeln('${entry.key}=${entry.value}');
     }
-    
+
     file.writeAsString(buffer.toString());
 
     logger.sectionMapped(

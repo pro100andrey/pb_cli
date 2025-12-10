@@ -11,37 +11,38 @@ import '../../failure/common.dart';
 import '../../failure/failure.dart';
 import '../../models/result.dart';
 import '../../redux/common/app_action.dart';
-import '../../utils/strings.dart';
 import 'base_command.dart';
 
 class PushCommand extends Command with WithStore {
   PushCommand({required this.store}) {
     argParser
       ..addOption(
-        S.batchSizeOptionName,
-        abbr: S.batchSizeOptionAbbr,
-        help: S.pushBatchSizeOptionHelp,
-        defaultsTo: S.pushBatchSizeOptionDefault,
+        'batch-size',
+        abbr: 'b',
+        help: 'Number of records to create per batch. Maximum is 50.',
+        defaultsTo: '20',
       )
       ..addFlag(
-        S.truncateFlagName,
-        abbr: S.truncateFlagAbbr,
-        help: S.truncateFlagHelp,
+        'truncate',
+        abbr: 't',
+        help: 'Whether to truncate existing collections before import.',
       );
   }
 
   @override
-  final name = S.pushCommand;
+  final name = 'push';
 
   @override
-  final description = S.pushDescription;
+  final description =
+      'Pushes the local PocketBase schema and seed data to the '
+      'remote instance.';
 
   @override
   final Store<AppState> store;
 
   @override
   Future<int> run() async {
-    final dir = DirectoryPath(argResults![S.dirOptionName]);
+    final dir = DirectoryPath(argResults!['dir']);
     // Validate directory path
     if (dir.notFound) {
       return Failure.exIO;

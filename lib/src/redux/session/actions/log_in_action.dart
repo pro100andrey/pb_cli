@@ -23,7 +23,7 @@ final class LogInAction extends AppAction {
     final result = await pb
         .collection('_superusers')
         .authWithPassword(select.usernameOrEmail!, select.password!);
-    
+
     progress.complete('Logged in successfully.');
 
     logger.sectionMapped(

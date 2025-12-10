@@ -4,7 +4,6 @@ import 'package:pocketbase/pocketbase.dart';
 import '../failure/failure.dart';
 import '../models/result.dart';
 import '../utils/console.dart';
-import '../utils/strings.dart';
 
 /// A wrapper around the [PocketBase] client providing simplified error handling
 /// and CLI-specific functionality.
@@ -169,7 +168,7 @@ CliFuture<PbClient> resolvePbClient({
   if (authResult case Result(:final error?)) {
     loginProgress.fail(
       Console.error(
-        S.pocketBaseFailed(error.message),
+        'PocketBase connection failed: ${error.message}',
         context: error.details?.toString(),
         suggestion: 'Check your credentials and try again.',
       ),

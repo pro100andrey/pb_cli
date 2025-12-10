@@ -8,7 +8,6 @@ import '../../redux/env/env.dart';
 import '../../redux/remote_schema/remote_schema.dart';
 import '../../redux/session/session.dart';
 import '../../redux/work_dir/work_dir.dart';
-import '../../utils/strings.dart';
 import 'base_command.dart';
 
 /// Command to set up the PocketBase CLI environment.
@@ -29,18 +28,22 @@ import 'base_command.dart';
 class SetupCommand extends Command with WithStore {
   SetupCommand({required this.store}) {
     argParser.addOption(
-      S.dirOptionName,
-      abbr: S.dirOptionAbbr,
-      help: S.dirOptionHelp,
+      'dir',
+      abbr: 'd',
+      help:
+          'The local working directory for storing the PocketBase schema, '
+          'config, and seed data files.',
       mandatory: true,
     );
   }
 
   @override
-  final name = S.setupCommand;
+  final name = 'setup';
 
   @override
-  final description = S.setupDescription;
+  final description =
+      'Setup the local environment for managing PocketBase '
+      'schema and data.';
 
   @override
   final Store<AppState> store;
@@ -50,7 +53,7 @@ class SetupCommand extends Command with WithStore {
     logger.info('Starting setup command...');
 
     // 1. Resolve working directory
-    final path = argResults![S.dirOptionName];
+    final path = argResults!['dir'];
     dispatchSync(ResolveWorkDirAction(path: path, context: .setup));
 
     // 2. Load existing config and env files

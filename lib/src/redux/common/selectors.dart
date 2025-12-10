@@ -137,7 +137,6 @@ extension type Selectors(AppState state) {
   IList<CollectionModel> get localCollections =>
       state.localSchema.sorted.map((id) => localSchemaById[id]!).toIList();
 
-
   // Records selectors
 
   /// Map of collection name to list of [RecordModel] for all fetched records.
